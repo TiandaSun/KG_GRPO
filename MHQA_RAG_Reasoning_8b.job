@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=GQA_RAG_llama3.1_8B               # Job name
+#SBATCH --nodes=1                       # Number of nodes
+#SBATCH --ntasks=1                      # Number of MPI tasks to request
+#SBATCH --cpus-per-task=1               # Number of CPU cores per MPI task
+#SBATCH --mem=150G
+#SBATCH --time=24:00:00               # Time limit (DD-HH:MM:SS)
+#SBATCH --account=cs-ontrel-2021        # Project account to use
+#SBATCH --mail-type=END,FAIL            # Mail events (NONE, BEGIN, END, FAIL, ALL)
+#SBATCH --mail-user=tianda.sun@york.ac.uk   # Where to send mail
+#SBATCH --output=%x-%j.log              # Standard output log
+#SBATCH --error=%x-%j.err               # Standard error log
+#SBATCH --partition=gpu                 # Which partition to use
+#SBATCH --gres=gpu:2                    # Generic resources required per node
+
+cd ~/scratch
+OLLAMA_MODELS=/users/ts1201/scratch/ollama_model ./bin/ollama serve &
+cd MHQA-ontology
+
+module load Miniconda3/23.5.2-0
+source activate MHQA
+
+python evaluation_MHQA_8B.py

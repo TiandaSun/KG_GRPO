@@ -1,0 +1,12 @@
+# KG server configuration
+server:
+  host: "0.0.0.0"
+  port: 8001
+  workers: 1
+
+conceptnet:
+  assertions_path: "data/raw/conceptnet-assertions-5.7.0.csv.gz"
+  min_weight: 2.0
+
+freebase:
+  data_dir: "data_kg"

@@ -1,0 +1,39 @@
+# Stage 4: SFT Warmup Configuration — 7B Scale-Up
+# Based on sft_warmup.yaml but for Qwen2.5-7B-Instruct on 1x H100.
+# Estimated VRAM: ~25GB. Estimated runtime: ~1-2 hours.
+
+model:
+  name: "Qwen/Qwen2.5-7B-Instruct"
+  torch_dtype: "bfloat16"
+  attn_implementation: "flash_attention_2"
+
+lora:
+  r: 16
+  lora_alpha: 32
+  target_modules: "all-linear"
+  lora_dropout: 0.05
+  use_dora: true
+  use_rslora: true
+
+sft:
+  num_train_epochs: 2
+  per_device_train_batch_size: 4          # Reduced from 8 (1.5B) for VRAM
+  learning_rate: 2.0e-4
+  lr_scheduler_type: "cosine"
+  warmup_ratio: 0.05
+  gradient_checkpointing: true
+  max_seq_length: 512
+  logging_steps: 10
+  save_strategy: "epoch"
+  optim: "adamw_8bit"
+  bf16: true
+  seed: 42
+  report_to: "wandb"
+  run_name: "kg-align-sft-warmup-7b"
+
+data:
+  train_file: "data/processed/conceptnet_qa_train.jsonl"
+  val_file: "data/processed/conceptnet_qa_val.jsonl"
+
+output:
+  dir: "outputs/sft-warmup-7b"

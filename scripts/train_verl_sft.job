@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=verl_sft
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=64G
+#SBATCH --time=14:00:00
+#SBATCH --account=cs-ontrel-2021
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=tianda.sun@york.ac.uk
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=gpuplus
+#SBATCH --gpus-per-node=1
+
+# SFT warmup for multi-turn KG agent (1x H100)
+#
+# Usage: sbatch scripts/train_verl_sft.job
+
+set -eo pipefail
+
+# --- Environment Setup ---
+module load Miniconda3
+module load CUDA/12.8.0
+source activate kg_verl
+
+cd /mnt/scratch/users/ts1201/KG_lora
+export PYTHONPATH=/mnt/scratch/users/ts1201/KG_lora:${PYTHONPATH:-}
+export HF_HOME=/mnt/scratch/users/ts1201/hf_cache
+export TORCH_HOME=/mnt/scratch/users/ts1201/torch_cache
+export WANDB_PROJECT=kg-align-verl
+
+mkdir -p logs outputs/verl-sft
+
+echo "=== SFT Warmup (multi-turn) ==="
+echo "Date: $(date)"
+echo "Node: $(hostname)"
+echo "GPU: $(nvidia-smi --query-gpu=name --format=csv,noheader)"
+echo "Model: Qwen/Qwen2.5-1.5B-Instruct"
+echo "Data: data/processed/sft_trajectories.jsonl"
+echo ""
+
+python src_verl/training/sft_multiturn.py \
+    --config configs_verl/sft_multiturn.yaml
+
+echo ""
+echo "=== SFT Training Complete ==="
+echo "End: $(date)"
+echo ""
+echo "SFT adapter files:"
+ls -lh outputs/verl-sft/
+echo ""
+
+# --- Merge LoRA adapter into base model ---
+# verl's FSDP backend requires a full merged model, not a PEFT adapter.
+echo "=== Merging SFT adapter into base model ==="
+python scripts/merge_sft_adapter.py \
+    --base_model Qwen/Qwen2.5-1.5B-Instruct \
+    --adapter_path outputs/verl-sft \
+    --output_path outputs/verl-sft-merged
+
+echo ""
+echo "=== SFT + Merge Complete ==="
+echo "Merged model files:"
+ls -lh outputs/verl-sft-merged/

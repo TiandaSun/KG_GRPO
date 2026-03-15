@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=kg_grpo_7b
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=64G
+#SBATCH --time=72:00:00
+#SBATCH --account=cs-ontrel-2021
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=tianda.sun@york.ac.uk
+#SBATCH --output=logs_archive/%x-%j.log
+#SBATCH --error=logs_archive/%x-%j.err
+#SBATCH --partition=gpuplus
+#SBATCH --gpus-per-node=2
+#SBATCH --nodelist=gpu23
+
+# Stage 5 (7B): GRPO Curriculum Training on Qwen2.5-7B-Instruct
+# Uses vLLM colocate mode with TP=1, DDP over 2x H100 via torchrun.
+# TP=1 means each rank has a local vLLM engine (no cross-GPU NCCL for vLLM).
+# DDP handles gradient sync — this is the only NCCL user, so no deadlock.
+# NOTE: TP=2 + DDP deadlocks (NCCL conflict). TP=1 + DDP is safe.
+# Each phase runs as a separate torchrun to guarantee full GPU memory cleanup.
+# 3-phase curriculum: 1-hop (350) -> 2-hop (350) -> all (300) = 1000 steps.
+
+set -eo pipefail
+
+# --- Environment Setup ---
+module load Miniconda3
+module load CUDA/12.1.1
+source activate kg_align
+
+export HF_HOME=/mnt/scratch/users/ts1201/hf_cache
+export TORCH_HOME=/mnt/scratch/users/ts1201/torch_cache
+export WANDB_PROJECT=kg-align-rl
+
+cd /mnt/scratch/users/ts1201/KG_lora
+export PYTHONPATH=/mnt/scratch/users/ts1201/KG_lora:${PYTHONPATH:-}
+
+# Ensure vLLM is installed (needed for colocate mode)
+python -c "import vllm; print(f'vLLM {vllm.__version__} available')" 2>/dev/null || {
+    echo "vLLM not found, installing..."
+    pip install vllm --quiet
+}
+
+# --- GPU info ---
+echo "=== Stage 5 (7B): GRPO Curriculum Training ==="
+echo "Date: $(date)"
+echo "Node: $(hostname)"
+nvidia-smi --query-gpu=index,name,memory.total --format=csv,noheader 2>/dev/null
+echo ""
+
+CONFIG=configs/grpo_7b.yaml
+
+# --- Phase 1: 1-hop (skip if already completed) ---
+if [ -f "outputs/grpo-7b/phase1_1hop/adapter_config.json" ]; then
+    echo "Phase 1 already complete, skipping."
+else
+    echo "=== Phase 1: 1-hop (steps 1-350) ==="
+    echo "Start: $(date)"
+    torchrun --nproc_per_node=2 --master_port=29500 src/training/train_grpo.py --config "$CONFIG" --phase_index 0
+    echo "Phase 1 done: $(date)"
+fi
+echo ""
+
+# --- Phase 2: <=2-hop (skip if already completed) ---
+if [ -f "outputs/grpo-7b/phase2_2hop/adapter_config.json" ]; then
+    echo "Phase 2 already complete, skipping."
+else
+    echo "=== Phase 2: <=2-hop (steps 1-350) ==="
+    echo "Start: $(date)"
+    torchrun --nproc_per_node=2 --master_port=29500 src/training/train_grpo.py --config "$CONFIG" --phase_index 1
+    echo "Phase 2 done: $(date)"
+fi
+echo ""
+
+# --- Phase 3: all hops (skip if already completed) ---
+if [ -f "outputs/grpo-7b/phase3_all/adapter_config.json" ]; then
+    echo "Phase 3 already complete, skipping."
+else
+    echo "=== Phase 3: all hops (steps 1-300) ==="
+    echo "Start: $(date)"
+    torchrun --nproc_per_node=2 --master_port=29500 src/training/train_grpo.py --config "$CONFIG" --phase_index 2
+    echo "Phase 3 done: $(date)"
+fi
+
+echo ""
+echo "=== Stage 5 (7B) Complete ==="
+echo "End: $(date)"
+echo ""
+echo "Output files:"
+ls -lh outputs/grpo-7b/*/adapter_config.json 2>/dev/null || echo "No adapter outputs found"

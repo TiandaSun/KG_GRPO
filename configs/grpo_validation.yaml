@@ -1,0 +1,68 @@
+# Stage 5: GRPO Training with Curriculum
+# See MINIMAL_VALIDATION_PLAN.md Stage 5 for rationale.
+
+model:
+  name: "Qwen/Qwen2.5-1.5B-Instruct"
+  torch_dtype: "bfloat16"
+  attn_implementation: "sdpa"
+
+lora:
+  r: 16
+  lora_alpha: 32
+  target_modules: "all-linear"
+  lora_dropout: 0.05
+  use_dora: true
+  use_rslora: true
+
+grpo:
+  num_generations: 8
+  max_completion_length: 512
+  max_prompt_length: 256
+  temperature: 1.0                   # Was 0.7 — more diverse generations for GRPO variance
+  learning_rate: 5.0e-5
+  per_device_train_batch_size: 2
+  gradient_accumulation_steps: 8
+  gradient_checkpointing: true
+  save_steps: 200
+  logging_steps: 10
+  bf16: true
+  seed: 42
+  optim: "adamw_8bit"
+  report_to: "wandb"
+
+  # Dr. GRPO optimisations (arXiv:2503.20783)
+  scale_rewards: false               # Was true — removes difficulty bias (Dr. GRPO)
+  beta: 0.02                         # Was 0.0 — gentle KL anchor to prevent policy drift (v3 fix)
+  loss_type: "dr_grpo"              # Was "grpo" — removes length bias
+  num_iterations: 2                  # Was 1 — activates clipping, visible loss signal
+  mask_truncated_completions: true   # Exclude truncated completions from loss
+
+  # vLLM is not installed in kg_align env — use HF generate.
+  # 1.5B model generates fast enough without vLLM on 2x H100.
+  use_vllm: false
+  # vllm_mode: "colocate"
+  # vllm_gpu_memory_utilization: 0.4
+
+data:
+  train_file: "data/processed/conceptnet_qa_train.jsonl"
+  val_file: "data/processed/conceptnet_qa_val.jsonl"
+
+# Curriculum: 3 phases sorted by hop complexity
+curriculum:
+  phases:
+    - name: "phase1_1hop"
+      max_hops: 1
+      max_steps: 350
+      run_name: "kg-align-grpo-phase1"
+    - name: "phase2_2hop"
+      max_hops: 2
+      max_steps: 350
+      run_name: "kg-align-grpo-phase2"
+    - name: "phase3_all"
+      max_hops: 3
+      max_steps: 300
+      run_name: "kg-align-grpo-phase3"
+
+output:
+  dir: "outputs/grpo"
+  sft_adapter_path: "outputs/sft-warmup"

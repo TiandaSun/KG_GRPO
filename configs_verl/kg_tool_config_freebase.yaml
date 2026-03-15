@@ -1,0 +1,33 @@
+# verl tool configuration for Freebase KG
+tools:
+  - class_name: "src_verl.interaction.kg_interaction.KGQueryTool"
+    config:
+      type: native
+      kg_server_url: "http://localhost:8001"
+      reward_type: "verifiable"
+      distances_path: "data/processed/freebase_distances.pkl"
+    tool_schema:
+      type: "function"
+      function:
+        name: "kg_query"
+        description: "Query the knowledge graph. Supports 4 actions: get_tail_relations(entity), get_head_relations(entity), get_tail_entities(entity, relation), get_head_entities(entity, relation)."
+        parameters:
+          type: "object"
+          properties:
+            action:
+              type: "string"
+              description: "The query action"
+              enum:
+                - "get_tail_relations"
+                - "get_head_relations"
+                - "get_tail_entities"
+                - "get_head_entities"
+            entity:
+              type: "string"
+              description: "The entity to query about"
+            relation:
+              type: "string"
+              description: "The relation type (for entity queries)"
+          required:
+            - "action"
+            - "entity"

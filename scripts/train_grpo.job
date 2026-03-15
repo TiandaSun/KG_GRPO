@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=kg_grpo_train
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=64G
+#SBATCH --time=48:00:00
+#SBATCH --account=cs-ontrel-2021
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=tianda.sun@york.ac.uk
+#SBATCH --output=logs_archive/%x-%j.log
+#SBATCH --error=logs_archive/%x-%j.err
+#SBATCH --partition=gpuplus
+#SBATCH --gpus-per-node=2
+
+# Stage 5: GRPO Curriculum Training
+# Prompt filtering is SKIPPED — only filtered ~5% of prompts and took 54+ hours.
+# Auto-detects GPU count: uses DDP if 2+ GPUs, single-GPU otherwise.
+
+set -eo pipefail
+
+# --- Environment Setup ---
+module load Miniconda3
+module load CUDA/12.1.1
+source activate kg_align
+
+export HF_HOME=/mnt/scratch/users/ts1201/hf_cache
+export TORCH_HOME=/mnt/scratch/users/ts1201/torch_cache
+# WANDB_API_KEY: load from ~/.netrc or set via `wandb login`
+export WANDB_API_KEY=${WANDB_API_KEY:-}
+export WANDB_PROJECT=kg-align-rl
+
+cd /mnt/scratch/users/ts1201/KG_lora
+export PYTHONPATH=/mnt/scratch/users/ts1201/KG_lora:${PYTHONPATH:-}
+
+# --- Detect available GPUs ---
+NUM_GPUS=$(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | wc -l)
+echo "=== Stage 5: GRPO Training Pipeline ==="
+echo "Date: $(date)"
+echo "Node: $(hostname)"
+echo "GPUs detected: ${NUM_GPUS}"
+echo "CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES:-not set}"
+nvidia-smi --query-gpu=index,name,memory.total --format=csv,noheader 2>/dev/null
+echo ""
+
+# --- GRPO Curriculum Training ---
+echo "=== GRPO Curriculum Training ==="
+echo "Start: $(date)"
+
+if [ "${NUM_GPUS}" -ge 2 ]; then
+    echo "Using ${NUM_GPUS}-GPU DDP via accelerate"
+    accelerate launch \
+        --num_processes "${NUM_GPUS}" \
+        --mixed_precision bf16 \
+        --multi_gpu \
+        src/training/train_grpo.py --config configs/grpo_validation.yaml
+else
+    echo "Single GPU detected — running without DDP"
+    python src/training/train_grpo.py --config configs/grpo_validation.yaml
+fi
+
+echo "Training complete: $(date)"
+echo ""
+
+# --- Summary ---
+echo "=== Stage 5 Complete ==="
+echo "End: $(date)"
+echo ""
+echo "Output files:"
+ls -lh outputs/grpo/*/adapter_config.json 2>/dev/null || echo "No adapter outputs found"

@@ -1,0 +1,6 @@
+{
+  "data_source": "conceptnet",
+  "split": "train",
+  "num_records": 4000,
+  "parquet_path": "data/processed/verl_conceptnet/train.parquet"
+}

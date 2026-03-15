@@ -1,0 +1,62 @@
+# ===== Data (large, regenerable or downloadable) =====
+data/raw/
+data/processed/*_raw.jsonl
+data/processed/*_scored.jsonl
+data/processed/*.scored.jsonl
+data/processed/conceptnet_paths.jsonl
+data/processed/conceptnet_qa_train_with_neg.jsonl
+data/processed/*.pkl
+data/processed/*.bak
+data_kg/
+
+# ===== Training artifacts =====
+outputs/
+checkpoints/
+
+# ===== Experiment tracking =====
+wandb/
+logs/
+logs_archive/
+
+# ===== Pre-built wheels =====
+*.whl
+
+# ===== Python =====
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.Python
+*.eggs/
+dist/
+build/
+
+# ===== Environments =====
+envs/
+.venv/
+venv/
+miniforge3/
+
+# ===== IDE / Editor =====
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+
+# ===== Testing =====
+.pytest_cache/
+htmlcov/
+.coverage
+
+# ===== Misc =====
+.claude/
+*.safetensors
+*.pt
+*.bin
+*.gguf

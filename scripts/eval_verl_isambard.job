@@ -1,0 +1,119 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=verl_eval
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=06:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Multi-turn evaluation of verl GRPO checkpoint (Isambard GH200)
+#
+# Compares: base (Instruct) vs SFT-merged vs GRPO
+# Requires KG server for live tool calls during inference.
+#
+# Usage:
+#   sbatch scripts/eval_verl_isambard.job
+#   GRPO_STEP=100 sbatch scripts/eval_verl_isambard.job
+
+set -eo pipefail
+
+# --- Environment Setup (Isambard ARM GH200) ---
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+export HF_HOME="${SCRATCH:-$SCRATCHDIR}/hf_cache"
+export TORCH_HOME="${SCRATCH:-$SCRATCHDIR}/torch_cache"
+
+# --- Configuration ---
+GRPO_STEP=${GRPO_STEP:-latest}
+EXPERIMENT=${EXPERIMENT:-isambard}
+REWARD_TYPE=${REWARD_TYPE:-verifiable}
+MODEL_SIZE=${MODEL_SIZE:-1.5b}
+NUM_SAMPLES=${NUM_SAMPLES:-500}
+KG_PORT=8001
+
+CKPT_DIR="checkpoints/kg-align-verl/grpo-conceptnet-${MODEL_SIZE}-${EXPERIMENT}-${REWARD_TYPE}/global_step_${GRPO_STEP}"
+MERGED_DIR="outputs/verl-grpo-merged/step_${GRPO_STEP}"
+BASE_MODEL="Qwen/Qwen2.5-1.5B-Instruct"
+SFT_MODEL="outputs/verl-sft-merged"
+OUTPUT_DIR="outputs/eval_verl_multiturn/step_${GRPO_STEP}"
+
+echo "=== verl Evaluation (Isambard GH200) ==="
+echo "Date: $(date)"
+echo "Node: $(hostname)"
+echo "GPU: $(nvidia-smi --query-gpu=name --format=csv,noheader)"
+echo "GRPO step: $GRPO_STEP"
+echo "Num samples: $NUM_SAMPLES"
+echo ""
+
+# --- Merge verl checkpoint to HF format ---
+if [ -f "$MERGED_DIR/model.safetensors" ] || [ -f "$MERGED_DIR/model-00001-of-00002.safetensors" ]; then
+    echo "HF model already exists at $MERGED_DIR, skipping merge."
+else
+    echo "Converting verl checkpoint to HF format..."
+    python -m verl.model_merger merge \
+        --backend fsdp \
+        --local_dir "${CKPT_DIR}/actor" \
+        --target_dir "$MERGED_DIR"
+    echo "Merged model saved to $MERGED_DIR"
+fi
+echo ""
+
+# --- Start KG server ---
+echo "Starting KG server on localhost:$KG_PORT ..."
+python src_verl/kg_server/server.py \
+    --kg conceptnet \
+    --assertions_path data/raw/conceptnet-assertions-5.7.0.csv.gz \
+    --port "$KG_PORT" \
+    --host 0.0.0.0 &
+KG_SERVER_PID=$!
+
+echo "Waiting for KG server (PID $KG_SERVER_PID) to start..."
+for i in $(seq 1 150); do
+    if curl -s "http://localhost:$KG_PORT/health" > /dev/null 2>&1; then
+        echo "KG server ready after $((i * 2))s"
+        break
+    fi
+    if ! kill -0 $KG_SERVER_PID 2>/dev/null; then
+        echo "ERROR: KG server process died"; exit 1
+    fi
+    sleep 2
+done
+
+if ! curl -s "http://localhost:$KG_PORT/health" > /dev/null 2>&1; then
+    echo "ERROR: KG server did not start within 300s"
+    kill $KG_SERVER_PID 2>/dev/null; exit 1
+fi
+curl -s "http://localhost:$KG_PORT/health" | python -m json.tool
+echo ""
+
+# --- Run evaluation ---
+echo "Running multi-turn evaluation..."
+python src_verl/evaluation/evaluate_multiturn.py \
+    --benchmark conceptnet \
+    --base_model "$BASE_MODEL" \
+    --sft_adapter "$SFT_MODEL" \
+    --grpo_adapter "$MERGED_DIR" \
+    --test_file data/processed/conceptnet_qa_test.jsonl \
+    --num_samples "$NUM_SAMPLES" \
+    --kg_server_url "http://localhost:$KG_PORT" \
+    --output_dir "$OUTPUT_DIR" \
+    --num_qualitative 20
+EVAL_EXIT=$?
+
+# --- Cleanup ---
+echo "Stopping KG server (PID $KG_SERVER_PID)..."
+kill $KG_SERVER_PID 2>/dev/null
+wait $KG_SERVER_PID 2>/dev/null || true
+
+echo ""
+echo "=== Evaluation Complete (exit code: $EVAL_EXIT) ==="
+echo "End: $(date)"
+echo ""
+echo "Output files:"
+ls -lh "$OUTPUT_DIR/" 2>/dev/null || echo "No output files found"
+exit $EVAL_EXIT

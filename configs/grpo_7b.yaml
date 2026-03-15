@@ -1,0 +1,72 @@
+# Stage 5: GRPO Training with Curriculum — 7B Scale-Up
+# Based on grpo_validation.yaml but for Qwen2.5-7B-Instruct on 2x H100 (80GB each).
+# Uses DDP (torchrun --nproc_per_node=2) + vLLM colocate TP=1 per rank.
+# TP=1 avoids NCCL deadlock between DDP gradient sync and vLLM tensor parallelism.
+# Each phase runs as a separate process (--phase_index) to avoid vLLM memory leaks.
+# Estimated VRAM: ~30-40 GB/GPU. Estimated runtime: ~48-72 hours.
+
+model:
+  name: "Qwen/Qwen2.5-7B-Instruct"
+  torch_dtype: "bfloat16"
+  attn_implementation: "flash_attention_2"
+
+lora:
+  r: 16
+  lora_alpha: 32
+  target_modules: "all-linear"
+  lora_dropout: 0.05
+  use_dora: true
+  use_rslora: true
+
+grpo:
+  num_generations: 8
+  max_completion_length: 512
+  max_prompt_length: 256
+  temperature: 1.0
+  learning_rate: 5.0e-5
+  per_device_train_batch_size: 1          # Reduced from 2 (1.5B) for VRAM
+  gradient_accumulation_steps: 16         # Increased from 8 to maintain effective batch (1*16*8=128)
+  gradient_checkpointing: true
+  save_steps: 200
+  logging_steps: 10
+  bf16: true
+  seed: 42
+  optim: "adamw_8bit"
+  report_to: "wandb"
+
+  # Dr. GRPO optimisations (arXiv:2503.20783)
+  scale_rewards: false
+  beta: 0.02                              # Gentle KL anchor
+  loss_type: "dr_grpo"
+  num_iterations: 2
+  mask_truncated_completions: true
+
+  # vLLM colocate mode — TP=1 per rank (each rank gets local vLLM engine, no cross-GPU NCCL)
+  use_vllm: true
+  vllm_mode: "colocate"
+  vllm_gpu_memory_utilization: 0.45       # Leave headroom for training on same GPU
+  vllm_tensor_parallel_size: 1
+
+data:
+  train_file: "data/processed/conceptnet_qa_train.jsonl"
+  val_file: "data/processed/conceptnet_qa_val.jsonl"
+
+# Curriculum: 3 phases sorted by hop complexity
+curriculum:
+  phases:
+    - name: "phase1_1hop"
+      max_hops: 1
+      max_steps: 350
+      run_name: "kg-align-grpo-7b-phase1"
+    - name: "phase2_2hop"
+      max_hops: 2
+      max_steps: 350
+      run_name: "kg-align-grpo-7b-phase2"
+    - name: "phase3_all"
+      max_hops: 3
+      max_steps: 300
+      run_name: "kg-align-grpo-7b-phase3"
+
+output:
+  dir: "outputs/grpo-7b"
+  sft_adapter_path: "outputs/sft-warmup-7b"

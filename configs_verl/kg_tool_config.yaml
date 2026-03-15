@@ -1,0 +1,34 @@
+# verl tool configuration for KG query tool
+# Referenced by actor_rollout_ref.rollout.multi_turn.tool_config_path in training config
+tools:
+  - class_name: "src_verl.interaction.kg_interaction.KGQueryTool"
+    config:
+      type: native
+      kg_server_url: "http://localhost:8001"
+      reward_type: "verifiable"  # "outcome", "heuristic", or "verifiable"
+      distances_path: "data/processed/conceptnet_distances.pkl"  # for R_progress
+    tool_schema:
+      type: "function"
+      function:
+        name: "kg_query"
+        description: "Query the knowledge graph. Supports 4 actions: get_tail_relations(entity), get_head_relations(entity), get_tail_entities(entity, relation), get_head_entities(entity, relation)."
+        parameters:
+          type: "object"
+          properties:
+            action:
+              type: "string"
+              description: "The query action: get_tail_relations, get_head_relations, get_tail_entities, or get_head_entities"
+              enum:
+                - "get_tail_relations"
+                - "get_head_relations"
+                - "get_tail_entities"
+                - "get_head_entities"
+            entity:
+              type: "string"
+              description: "The entity to query about"
+            relation:
+              type: "string"
+              description: "The relation type (required for get_tail_entities and get_head_entities)"
+          required:
+            - "action"
+            - "entity"

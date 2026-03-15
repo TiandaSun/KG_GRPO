@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=verl_sft_datagen
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=16G
+#SBATCH --time=01:00:00
+#SBATCH --account=cs-ontrel-2021
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=tianda.sun@york.ac.uk
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=nodes
+
+# Generate SFT trajectories (offline mode — no KG server needed)
+# Then convert ConceptNet QA to verl parquet format.
+#
+# Usage: sbatch scripts/generate_sft_data.job
+
+set -eo pipefail
+
+# --- Environment Setup ---
+module load Miniconda3
+module load CUDA/12.8.0
+source activate kg_verl
+
+cd /mnt/scratch/users/ts1201/KG_lora
+export PYTHONPATH=/mnt/scratch/users/ts1201/KG_lora:${PYTHONPATH:-}
+
+mkdir -p logs data/processed/verl_conceptnet
+
+echo "=== SFT Data Generation ==="
+echo "Date: $(date)"
+echo "Node: $(hostname)"
+echo ""
+
+echo "=== Step 1: Generate SFT trajectories (offline) ==="
+python src_verl/data/generate_sft_trajectories.py \
+    --input_file data/processed/conceptnet_qa_train.jsonl \
+    --output_file data/processed/sft_trajectories.jsonl \
+    --offline
+
+echo ""
+echo "=== Step 2: Convert ConceptNet QA to verl parquet ==="
+for SPLIT in train val test; do
+    INPUT="data/processed/conceptnet_qa_${SPLIT}.jsonl"
+    if [ -f "$INPUT" ]; then
+        python src_verl/data/prepare_conceptnet.py \
+            --input_file "$INPUT" \
+            --output_dir data/processed/verl_conceptnet \
+            --split "$SPLIT"
+    else
+        echo "Skipping $SPLIT (file not found: $INPUT)"
+    fi
+done
+
+echo ""
+echo "=== Done ==="
+echo "End: $(date)"
+echo ""
+echo "Output files:"
+ls -lh data/processed/sft_trajectories.jsonl
+ls -lh data/processed/verl_conceptnet/

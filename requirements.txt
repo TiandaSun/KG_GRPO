@@ -1,0 +1,36 @@
+# KG-Align-RL dependencies
+#
+# Install order:
+#   1. module load CUDA/12.1.1
+#   2. pip install torch --index-url https://download.pytorch.org/whl/cu121
+#   3. pip install -r requirements.txt
+#   4. pip install flash-attn --no-build-isolation
+#   5. pip install vllm  (optional, see note below)
+
+# Build dependency (required before flash-attn)
+psutil
+
+# Core ML
+transformers>=4.45.0
+trl>=0.14.0              # GRPOTrainer with scale_rewards, loss_type, vLLM colocate support
+peft>=0.14.0             # DoRA (use_dora), rsLoRA (use_rslora), all-linear targets
+datasets>=2.18.0
+accelerate>=0.34.0
+bitsandbytes>=0.44.0     # 8-bit AdamW optimizer
+
+# KG processing
+networkx>=3.0
+
+# Experiment tracking
+wandb
+
+# Evaluation
+rouge-score
+nltk
+
+# NOTE: The following are installed separately (not via this file):
+# - torch: pip install torch --index-url https://download.pytorch.org/whl/cu121
+# - flash-attn: pip install flash-attn --no-build-isolation (requires torch + psutil first)
+# - vllm: pip install vllm (optional — requires CUDA module loaded, may need
+#     a specific version compatible with your torch; pipeline falls back to
+#     HF generate if unavailable)
