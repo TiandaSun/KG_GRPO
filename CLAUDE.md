@@ -1,28 +1,32 @@
-# KG-Align-RL
+# KG-Align-RL: Verifiable Process Supervision via Knowledge Graphs
 
-Cross-domain transfer in knowledge graph-aligned RL for LLM reasoning. Reference paper: Kansal & Jha (arXiv:2601.15160).
+## Project goal
 
-For detailed pipeline rationale and stage-by-stage plan, see @MINIMAL_VALIDATION_PLAN.md
+Train agentic KG reasoning models with GRPO, comparing three reward types (outcome / heuristic-step / KG-verifiable-step) to study when and why reward verifiability matters. KG is a **verification oracle**, not a knowledge source.
 
-## Architecture
+Target: EMNLP 2026 (May 25). Paper framing is insight/analysis, not method.
 
-```
-src/
-  kg/                   # KG loading, path extraction, subgraph sampling
-  datagen/              # Question generation from KG paths, quality filtering
-  rewards/              # KG path-alignment reward functions
-  training/             # SFT warmup + GRPO training loop
-  evaluation/           # Benchmark evaluation scripts
-configs/                # YAML configs (sft_warmup.yaml, grpo_validation.yaml)
-scripts/                # SLURM job scripts for Viking HPC
-tests/                  # Unit tests (reward function, data pipeline)
-data/
-  raw/                  # ConceptNet dump (not committed)
-  processed/            # Extracted paths, generated QA pairs (not committed)
-  eval/                 # Evaluation benchmark subsets (not committed)
-```
+## Core implementation spec
 
+See `hpc_implementation_spec.md` for the full specification (experiments, rewards, timeline, compute budget). This file covers daily workflow rules, environment setup, and coding standards.
 
+## Key references
+
+- Current code repo: https://github.com/TiandaSun/KG_GRPO (sync between Isambard and Viking)
+- KG-R1: https://github.com/Jinyeop3110/KG-R1 — closest template for verl + multi-turn KG GRPO
+- Search-R1: https://github.com/PeterGriffinJin/Search-R1 — verl + multi-turn search agent
+- verl-tool: https://github.com/TIGER-AI-Lab/verl-tool — unified tool API for verl
+- Isambard docs: https://docs.isambard.ac.uk/user-documentation/guides/python/#conda-installing-and-using-miniforge
+
+## Historical context
+
+Previous TRL-based experiments (1.5B and 7B, single-turn, Feb 2026) are documented in:
+- `PROJECT_SUMMARY.md` — results, lessons learned, reward evolution v1→v2→v3
+- `CHANGELOG.md` — detailed code change history
+
+The current project has pivoted to **verl** (multi-turn agentic) based on those findings. Existing code under `src/` and `src_verl/` may be reused.
+
+---
 
 ## Environment
 
@@ -34,25 +38,112 @@ This project runs on two HPC clusters. Detect which one from `uname -m`: `x86_64
 - **HF cache**: `export HF_HOME=/mnt/scratch/users/ts1201/hf_cache`
 - **Conda**: `module load Miniconda3` then `source activate kg_verl` (NOT `conda activate`)
 - **CUDA**: `module load CUDA/12.8.0`
-- **Conda env**: `kg_verl` (for verl pipeline) or `kg_align` (for TRL pipeline)
+- **Role**: development, debugging, SFT experiments, 1.5B ablation
 
 ### Isambard-AI (Bristol, GH200)
 - **GPU**: NVIDIA GH200 120GB HBM3, **4 per node** (each gets 72 CPU cores + 115GB RAM)
 - **CPU**: ARM aarch64 (Grace Hopper) — no x86 wheels, use conda-forge
-- **Scratch**: `$SCRATCH` or `$SCRATCHDIR` (`/scratch/<PROJECT>/<USER>.<PROJECT>`)
-- **HF cache**: `export HF_HOME=$SCRATCH/hf_cache`
-- **Conda**: Miniforge self-installed at `~/miniforge3/bin/activate` then `conda activate kg_verl`
+- **Scratch**: `/scratch/u6gg/ts1201.u6gg`
+- **HF cache**: `export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache`
+- **Conda**: `source ~/miniforge3/bin/activate && conda activate kg_verl`
 - **CUDA**: `module load cudatoolkit`
 - **NCCL**: `module load brics/nccl` (required for multi-GPU)
 - **Partition**: `workq`, QOS: `workq_qos`, max walltime: **24h**, max GPUs/project: **32**
-- **flash-attn**: NOT available on ARM — use `attn_implementation: "sdpa"` everywhere
+- **Role**: all 7B and 14B GRPO experiments (2,500 node-hours = 10,000 GPU-hours)
+
+#### Isambard ARM workarounds (CRITICAL)
+- **Compiler**: Default `nvc/nvc++` breaks Triton/DeepSpeed JIT. MUST set: `module load gcc-native/14.2 && export CC=gcc CXX=g++`
+- **curand**: DeepSpeed JIT needs: `export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:$LIBRARY_PATH`
+- **vLLM**: Must use `enforce_eager=True` (Triton graph compilation fails on ARM)
+- **SGLang**: Engine broken on ARM (sgl_kernel ABI mismatch). **Use vLLM backend for verl instead.**
+- **flash-attn**: NOT available on ARM — use `attn_implementation: "sdpa"` (but vLLM uses its own FlashAttention v3)
+- **Triton cache**: `export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton` (avoid NFS home)
 - **GPU request**: `#SBATCH --gpus=N` (not `--gpus-per-node`)
 
 ### Common
-- **Python**: 3.10+ (via conda)
+- **Python**: 3.10 (via conda)
 - **Conda env**: `kg_verl`
+- **Framework**: verl + vLLM + DeepSpeed (NOT TRL — TRL multi-turn GRPO has critical bugs)
 - Always add `export PYTHONPATH=$PWD:$PYTHONPATH` in SLURM scripts
 - Do NOT use `set -u` in SLURM scripts (causes unbound variable errors with conda)
+
+---
+
+## Models
+
+| Role | Model | Purpose |
+|------|-------|---------|
+| **Primary** | Qwen2.5-7B-Instruct | All tasks, all rewards, all KGs, full analysis |
+| **Scaling** | Qwen2.5-14B-Instruct | Core QA task, verify findings hold at scale |
+| **Ablation** (optional) | Qwen2.5-1.5B-Instruct | Show "too small fails" for multi-turn agent |
+
+- Always use **Instruct** models (base models never produce `<|im_end|>` EOS, causing GRPO to fail)
+- Do NOT use PiSSA initialisation — causes instability with GRPO
+
+## Three Tasks
+
+1. **KG-Grounded Multi-hop QA** — agent queries KG to answer questions (comparable to KG-R1)
+2. **Claim Verification** — agent verifies each sub-claim against KG (our distinctive task)
+3. **Think-then-Verify** — model reasons freely, then verifies each step via KG, then revises
+
+## Four Reward Functions
+
+1. **R_outcome** — answer EM + F1 only (baseline)
+2. **R_heuristic_step** — R_outcome + entity overlap per step (ProGraph-R1 style)
+3. **R_verifiable_step** — R_valid + R_on_path + R_progress + R_coherence (our method)
+4. **R_random** — random step rewards + real outcome (ablation)
+
+See `hpc_implementation_spec.md` Section 5 for full pseudocode.
+
+## Training Pipeline (verl)
+
+1. **SFT warmup** — teaches multi-turn tool-use format
+2. **Merge SFT adapter** — verl needs full model, not PEFT adapter
+3. **GRPO training** — multi-turn rollouts with live KG tool calls
+4. **Evaluation** — with-KG and without-KG reasoning quality
+
+## KG Server
+
+Unified API server supporting all KGs with 5 endpoints:
+- `search(entity, relation)` — forward search
+- `search_reverse(entity, relation)` — reverse search
+- `get_relations(entity)` — list relations
+- `verify(head, relation, tail)` — triple existence check (verification oracle)
+- `shortest_path(entity_a, entity_b)` — path finding
+
+Must run as a **separate HTTP process**, not embedded in training loop.
+
+---
+
+## Project structure (target)
+
+```
+src/
+  kg_server/          # KG retrieval server (5 endpoints)
+  rewards/            # 4 reward functions (outcome, heuristic_step, verifiable_step, random)
+  data/               # SFT data generation for 3 tasks
+  training/           # verl GRPO configs and launch scripts
+  evaluation/         # Eval metrics including without-KG reasoning quality
+scripts/              # SLURM job scripts
+configs/              # verl training configs per experiment
+data/
+  conceptnet/         # Existing ConceptNet data
+  freebase/           # WebQSP + CWQ
+  wikidata/           # T-REx or KGQAGen-10k (P1)
+```
+
+Existing code under `src/` (TRL pipeline) and `src_verl/` (early verl work) may be reused where applicable.
+
+---
+
+## Workflow rules
+
+- Always run small-scale validation (100 samples, 7B, ConceptNet) before launching full experiments
+- Log ALL training runs to W&B with descriptive names: `{model}_{kg}_{reward}_{task}_{date}`
+- Save checkpoints every 50 steps for Goodhart analysis
+- Save 100 random trajectories at steps 0, 250, 500, 750, 1000 for hacking taxonomy analysis
+- Never overwrite existing checkpoints — use versioned directories
+- Prefer SLURM job scripts over interactive sessions for GPU runs
 
 ## Coding Standards
 
@@ -63,89 +154,15 @@ This project runs on two HPC clusters. Detect which one from `uname -m`: `x86_64
 - Seed everything for reproducibility; log all hyperparameters to wandb
 - Every module must have a `if __name__ == "__main__":` block with argparse or Hydra for standalone use
 
+## Important constraints
 
-## HPC/SLURM Notes
-- Viking: `module load Miniconda3 && source activate kg_verl` — never use `conda activate`
-- Isambard: `source ~/miniforge3/bin/activate && conda activate kg_verl`
-- Viking GPU: `--gpus-per-node=N`; Isambard GPU: `--gpus=N`
-- Always include CUDA module in SLURM scripts
-- Do NOT use `set -u` in SLURM scripts (causes unbound variable errors with conda)
-- Isambard 24h walltime limit — checkpoint every 200 steps, use job chaining for long runs
-- Isambard multi-GPU: `module load brics/nccl` + set `NCCL_SOCKET_IFNAME=hsn`
-
-## Python/ML Libraries
-- When using TRL's SFTConfig, the parameter is `max_seq_length` (not `max_length`)
-- Always check current API signatures before generating training configs
-- Verify wandb is either configured or disabled (`WANDB_DISABLED=true`) in SLURM scripts
-
-
-## Model & LoRA Configuration
-
-- **Validation model**: `Qwen/Qwen2.5-1.5B-Instruct` with `torch.bfloat16` (switched from base model — base model never produces `<|im_end|>` EOS tokens, causing GRPO to fail)
-- **LoRA variant**: DoRA (`use_dora=True`) with rsLoRA (`use_rslora=True`)
-- **LoRA rank**: 16, alpha: 32
-- **Target modules**: `"all-linear"` (q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj)
-- **Attention**: Flash Attention 2 (`attn_implementation="flash_attention_2"`)
-- Do NOT use PiSSA initialisation — it causes instability with GRPO training
-
-## GRPO Training
-
-- Framework: TRL's `GRPOTrainer`
-- `scale_rewards: false` (Dr. GRPO bias fix)
-- `beta: 0.0` (no KL penalty)
-- `num_generations: 8`, `temperature: 0.7`
-- `optim: "adamw_8bit"`
-- Gradient checkpointing: always enabled
-- vLLM colocate mode when available (`use_vllm=True, vllm_mode="colocate"`)
-- If vLLM is unavailable in the TRL version, fall back to standard HF generate — do not error
-
-## Reward Function Design
-
-Two reward functions passed as a list to `GRPOTrainer.reward_funcs`:
-
-1. **KG path-alignment reward** (`compute_kg_reward`):
-   - Token-level path coverage with minimum-hit constraint (>= 2 entities)
-   - Repetition penalty to prevent entity stuffing
-   - Asymmetric binary correctness: +0.1 correct, -1.0 incorrect
-   - Based on Kansal & Jha's proven ablation results
-2. **Format reward** (`compute_format_reward`):
-   - Checks for `<think>...</think>` tags with non-empty reasoning (> 20 chars)
-
-Do NOT add extra reward signals (similarity, thinking quality) — the reference paper showed this causes performance collapse.
-
-## Data Format
-
-All QA data uses `<think>` CoT format:
-```json
-{
-  "question": "...",
-  "answer": "<think>[step-by-step KG path reasoning]</think>\n[short final answer]",
-  "kg_path": [["entity1", "relation", "entity2"], ...],
-  "gold_answer_short": "...",
-  "hops": 2
-}
-```
-
-## Training Pipeline Order
-
-### TRL pipeline (src/, single-turn, original)
-1. **SFT warmup** (2 epochs) — teaches `<think>` format before RL
-2. **GRPO with curriculum** — 1-hop first, then 2-hop, then 3-hop paths
-
-### verl pipeline (src_verl/, multi-turn agentic, current focus)
-1. **SFT warmup** — teaches `<think>/<search>/<answer>` multi-turn tool-use format
-2. **Merge SFT adapter** — verl needs full model, not PEFT adapter
-3. **GRPO training** — multi-turn rollouts with live KG tool calls
-4. **Evaluation** — 3-way comparison: base vs SFT vs SFT+GRPO
-
-### verl reward function (CRITICAL knowledge)
-- verl's `NaiveRewardManager` does NOT pass `tool_rewards` from `ToolAgentLoop` to `compute_score`
-- Therefore `verl_reward.py` parses `<search>` tags directly from the flat `solution_str`
-- Outputs without any `<search>` tags get a -1.0 penalty (r_no_tool)
-- SFT training, GRPO rollouts, and evaluation MUST all use the same tool response format:
-  - Role: `"tool"` (native, not mapped to `"user"`)
-  - Content: wrapped in `<information>...</information>` tags
-- Qwen2.5 renders `role="tool"` as `<|im_start|>user\n<tool_response>\n...\n</tool_response>`
+- KG server must run as a separate process, NOT embedded in training loop
+- Token masking: system prompt + tool response tokens must be masked from policy gradient (verl delta-based tokenization)
+- Reward function weights (0.3/0.3/0.2/0.2 and 0.4/0.6) are initial — tune on small-scale first
+- Do NOT use MetaQA (20% factual accuracy). Use WebQSP/CWQ for Freebase.
+- For Think-Verify task: model must NOT access KG during Think phase, only during Verify phase
+- Keep all large files on scratch (home quota is limited on both clusters)
+- Isambard 24h walltime limit — checkpoint every 50 steps, use `--dependency=afterok:JOBID` for chaining
 
 ## Common Commands
 
@@ -155,36 +172,16 @@ module load Miniconda3 && module load CUDA/12.8.0 && source activate kg_verl
 
 # === Isambard ===
 source ~/miniforge3/bin/activate && conda activate kg_verl
-module load cudatoolkit && module load brics/nccl
+module load cudatoolkit && module load gcc-native/14.2 && module load brics/nccl
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:$LIBRARY_PATH
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
 
 # === Both ===
-# Run tests
 python -m pytest tests/ -v
-
-# Submit verl pipeline (Viking)
-sbatch scripts/train_verl_sft.job          # SFT + auto-merge
-sbatch scripts/train_verl_grpo.job         # GRPO training
-sbatch scripts/eval_verl_grpo.job          # Evaluation
-
-# Submit verl pipeline (Isambard)
-sbatch scripts/train_verl_sft_isambard.job
-sbatch scripts/train_verl_grpo_isambard.job
-sbatch scripts/eval_verl_isambard.job
-
-# Check jobs
 squeue -u $USER
 ```
-
-## Important Constraints
-
-- Keep all large files on scratch (home quota is limited on both clusters)
-- SLURM jobs have wall-time limits — checkpoint every 200 steps
-- Isambard max walltime is **24h** — use `--dependency=afterok:JOBID` for chaining
-- ConceptNet assertions: ~30M triples; always work with filtered subsets (weight >= 2.0, English only)
-- GRPO generation is the bottleneck — use vLLM colocate when possible
-- HotpotQA: use the `bridge` subset for multi-hop focus
-- Isambard is ARM aarch64 — no flash-attn, always use `attn_implementation: "sdpa"`
-- `ToolAgentLoop._call_tool()` calls `create()/release()` per tool call, not per trajectory — step reward state resets between calls
 
 ## Git Workflow
 

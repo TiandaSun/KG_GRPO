@@ -1,111 +1,66 @@
-# KG-Align-RL
+# KG-Align-RL: Verifiable Process Supervision via Knowledge Graphs
 
-Knowledge Graph-Aligned Reinforcement Learning for LLM Reasoning.
+Train agentic KG reasoning models with GRPO (Group Relative Policy Optimisation), comparing three reward types to study when and why reward verifiability matters. KG serves as a **verification oracle**, not a knowledge source.
 
-Trains LLMs to perform multi-turn knowledge graph reasoning using GRPO (Group Relative Policy Optimisation) with verifiable step-level rewards. The model learns to query a KG via tool calls and produce grounded, step-by-step answers.
+**Target**: EMNLP 2026
 
-**Reference**: Kansal & Jha, *"KG-Align: Aligning Language Model Reasoning with Knowledge Graph Structures"* (arXiv:2601.15160)
+## Research Question
 
-## Pipeline Overview
+> When and why does deterministic step-level verification outperform heuristic rewards in RL post-training?
 
-```
-ConceptNet  →  KG Path Extraction  →  Question Generation  →  Quality Filtering
-                                                                      ↓
-                                              SFT Trajectories (multi-turn tool use)
-                                                                      ↓
-                                                    SFT Warmup (learns <think>/<search>/<answer> format)
-                                                                      ↓
-                                                    GRPO Training (with live KG tool calls + verifiable rewards)
-                                                                      ↓
-                                                    Evaluation (base vs SFT vs SFT+GRPO)
-```
+KG reasoning is the ideal testbed because KG provides free, deterministic, step-level ground truth via triple existence checks.
 
-### Two pipeline implementations
+## Three Tasks
 
-| Pipeline | Framework | Location | Description |
-|----------|-----------|----------|-------------|
-| **TRL** (original) | TRL `GRPOTrainer` | `src/`, `configs/` | Single-turn, `<think>` CoT format |
-| **verl** (current) | verl `main_ppo` | `src_verl/`, `configs_verl/` | Multi-turn agentic with live KG tool calls |
+1. **KG-Grounded Multi-hop QA** — agent queries KG to answer questions
+2. **Claim Verification** — agent verifies each sub-claim against KG
+3. **Think-then-Verify** — model reasons freely, then verifies via KG, then revises
 
-The verl pipeline is the active focus. The model learns to use `<search>get_tail_relations(entity)</search>` tool calls during GRPO rollouts, receiving step-level rewards for valid, on-path, progressive queries.
+## Four Reward Types
 
-## Quick Start
+| Reward | Description |
+|--------|-------------|
+| R_outcome | Answer EM + F1 only (baseline) |
+| R_heuristic_step | R_outcome + entity overlap per step |
+| R_verifiable_step | R_valid + R_on_path + R_progress + R_coherence |
+| R_random | Random step rewards + real outcome (ablation) |
 
-### 1. Clone and setup
+## Setup
 
 ```bash
-git clone https://github.com/YOUR_ORG/KG-Align-RL.git
-cd KG-Align-RL
+# Isambard (GH200, ARM)
+source ~/miniforge3/bin/activate && conda activate kg_verl
+module load cudatoolkit && module load gcc-native/14.2
 
-# Setup environment (auto-detects Viking x86 vs Isambard ARM)
-bash scripts/setup_env.sh
-
-# Download ConceptNet data
-bash scripts/download_data.sh
-```
-
-### 2. Run tests
-
-```bash
-python -m pytest tests/ -v
-```
-
-### 3. Train (SLURM)
-
-**Viking (H100)**:
-```bash
-sbatch scripts/train_verl_sft.job           # SFT warmup + auto-merge
-sbatch scripts/train_verl_grpo.job          # GRPO with KG rewards
-sbatch scripts/eval_verl_grpo.job           # 3-way evaluation
-```
-
-**Isambard (GH200)**:
-```bash
-sbatch scripts/train_verl_sft_isambard.job
-sbatch scripts/train_verl_grpo_isambard.job   # 4x GH200 for 7B
-sbatch scripts/eval_verl_isambard.job
+# Viking (H100, x86)
+module load Miniconda3 && module load CUDA/12.8.0 && source activate kg_verl
 ```
 
 ## Project Structure
 
 ```
-src_verl/                    # Multi-turn verl pipeline (current focus)
-  kg_server/                 # HTTP KG query server (ConceptNet, Freebase)
-  interaction/               # KGQueryTool (verl BaseTool) + search parser
-  data/                      # Data preparation (JSONL → verl parquet)
-  rewards/                   # Reward functions (outcome, heuristic, verifiable)
-  training/                  # SFT warmup trainer
-  evaluation/                # Multi-turn evaluation with live tool calls
-
-src/                         # Original TRL pipeline (preserved, not active)
-  kg/                        # ConceptNet path extraction
-  datagen/                   # Question generation + quality filtering
-  rewards/                   # KG reward functions (single-turn)
-  training/                  # SFT + GRPO trainers
-  evaluation/                # Benchmark evaluation
-
-configs_verl/                # verl training configs (GRPO, SFT, tool, KG server)
-configs/                     # TRL training configs
-scripts/                     # SLURM jobs, environment setup, utilities
-tests/                       # Unit tests (241 passing)
-data/processed/              # Training/eval data (included in repo, ~36MB)
+src/
+  kg_server/          # KG retrieval server (5 endpoints)
+  rewards/            # 4 reward functions
+  data/               # SFT data generation for 3 tasks
+  training/           # verl GRPO configs and launch scripts
+  evaluation/         # Eval metrics including without-KG reasoning quality
+scripts/              # SLURM job scripts
+configs/              # verl training configs per experiment
+data/
+  conceptnet/         # ConceptNet data
+  freebase/           # WebQSP + CWQ
 ```
 
-## Reward Functions
+## Key Docs
 
-Three reward variants for controlled experiments:
-
-| Reward | Components | Purpose |
-|--------|-----------|---------|
-| **R_outcome** | Answer EM + F1 | Baseline (no step signal) |
-| **R_heuristic** | R_outcome + entity overlap per step | Weak step signal |
-| **R_verifiable** | R_valid + R_on_path + R_progress + R_coherence | Full verifiable step reward |
-
-The GRPO training reward (`verl_reward.py`) additionally includes:
-- `r_tool_use`: Bonus for making valid `<search>` tool calls
-- `r_no_tool`: **-1.0 penalty** for outputs without any tool calls
-- `r_coverage`: KG path entity mention coverage
-- `r_format`: Proper `<answer>` tag usage
+| File | Purpose |
+|------|---------|
+| `hpc_implementation_spec.md` | Full experiment spec (rewards, timeline, compute) |
+| `CLAUDE.md` | Environment, coding standards, daily workflow |
+| `PROJECT_SUMMARY.md` | Historical: TRL experiment results & lessons learned |
+| `CHANGELOG.md` | Historical: detailed code change log |
+| `SETUP_PROGRESS.md` | Isambard environment setup tracking |
 
 ## HPC Platforms
 
@@ -114,38 +69,5 @@ The GRPO training reward (`verl_reward.py`) additionally includes:
 | GPU | H100 80GB | GH200 120GB |
 | GPUs/node | 1-2 | 4 |
 | Architecture | x86_64 | aarch64 (ARM) |
-| Partition | `gpuplus` | `workq` |
-| Max walltime | varies | 24h |
-| Conda | `module load Miniconda3` | Miniforge (self-install) |
-| CUDA | `module load CUDA/12.8.0` | `module load cudatoolkit` |
-| flash-attn | Yes | No (SDPA fallback) |
-
-## Data
-
-**Included in repo** (`data/processed/`):
-- `conceptnet_qa_{train,val,test}.jsonl` — 4000/500/500 QA pairs with KG paths
-- `sft_trajectories.jsonl` — 3997 multi-turn tool-use trajectories for SFT
-- `verl_conceptnet/{train,val,test}.parquet` — verl-format training data
-
-**Downloaded separately** (via `scripts/download_data.sh`):
-- ConceptNet assertions (~230MB compressed)
-- Qwen2.5 models (via HuggingFace Hub)
-
-## Key Design Decisions
-
-- **Instruct model, not base**: Base Qwen2.5 never produces `<|im_end|>` EOS → GRPO fails
-- **DoRA + rsLoRA**: Outperforms standard LoRA for RLVR (arXiv:2512.23165)
-- **`scale_rewards: false`**: Dr. GRPO bias fix (arXiv:2503.20783)
-- **SFT warmup before GRPO**: Small models have severe cold-start without it (DeepSeek-R1)
-- **Tool response format**: Native `role="tool"` with `<information>` tags — must be consistent across SFT, GRPO rollouts, and evaluation
-
-## Citation
-
-```bibtex
-@article{kansal2025kgalign,
-  title={KG-Align: Aligning Language Model Reasoning with Knowledge Graph Structures},
-  author={Kansal, Esha and Jha, Saurabh},
-  journal={arXiv preprint arXiv:2601.15160},
-  year={2025}
-}
-```
+| Role | Dev, debug, SFT | All GRPO experiments |
+| Budget | supplementary | 10,000 GPU-hours |
