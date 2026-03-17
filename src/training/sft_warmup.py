@@ -243,7 +243,7 @@ def train_sft(config: SFTWarmupConfig) -> None:
         lr_scheduler_type=config.lr_scheduler_type,
         warmup_ratio=config.warmup_ratio,
         gradient_checkpointing=config.gradient_checkpointing,
-        max_seq_length=config.max_seq_length,
+        max_length=config.max_seq_length,
         logging_steps=config.logging_steps,
         save_strategy=config.save_strategy,
         optim=config.optim,

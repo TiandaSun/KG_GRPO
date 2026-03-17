@@ -204,7 +204,7 @@ def main() -> None:
         gradient_accumulation_steps=config.gradient_accumulation_steps,
         learning_rate=config.learning_rate,
         gradient_checkpointing=config.gradient_checkpointing,
-        max_seq_length=config.max_seq_length,
+        max_length=config.max_seq_length,
         logging_steps=config.logging_steps,
         save_strategy=config.save_strategy,
         warmup_ratio=config.warmup_ratio,

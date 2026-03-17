@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=diag_sft
+#SBATCH --nodes=1
+#SBATCH --gpus-per-node=1
+#SBATCH --time=01:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=gpu
+
+# Quick diagnostic: does the SFT-merged model generate <search> tags?
+# Expected runtime: ~5 minutes on 1x H100
+
+module load Miniconda3
+module load CUDA/12.8.0
+source activate kg_verl
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+export HF_HOME=/mnt/scratch/users/ts1201/hf_cache
+export PYTHONUNBUFFERED=1
+
+echo "=== SFT-Merged Model Diagnostic ==="
+echo "Date: $(date)"
+echo "Node: $(hostname)"
+echo "GPU: $(nvidia-smi --query-gpu=name --format=csv,noheader)"
+echo ""
+
+python scripts/diagnose_sft_merged.py \
+    --model_path outputs/verl-sft-merged \
+    --data_path data/processed/conceptnet_qa_val.jsonl \
+    --num_samples 5 \
+    --temperature 0.7 \
+    --max_new_tokens 256
+
+echo ""
+echo "=== Diagnostic Complete ==="
+echo "End: $(date)"
