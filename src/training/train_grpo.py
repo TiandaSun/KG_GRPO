@@ -484,7 +484,7 @@ def run_single_phase(config: GRPOTrainingConfig, phase_idx: int) -> None:
         args=grpo_config,
         train_dataset=train_dataset,
         reward_funcs=reward_funcs,
-        processing_class=tokenizer,
+        tokenizer=tokenizer,
     )
 
     # Verify EOS token setup

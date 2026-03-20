@@ -261,7 +261,7 @@ def train_sft(config: SFTWarmupConfig) -> None:
         args=sft_config,
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
-        processing_class=tokenizer,
+        tokenizer=tokenizer,
     )
 
     # Train

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#SBATCH --job-name=verl_sft
+#SBATCH --job-name=verl_sft_7b
 #SBATCH --nodes=1
 #SBATCH --gpus=1
 #SBATCH --time=06:00:00
@@ -8,7 +8,8 @@
 #SBATCH --partition=workq
 
 # SFT warmup for multi-turn KG agent (1x GH200, Isambard)
-# Each GH200 GPU allocation includes 72 CPU cores + 115GB RAM.
+# Trains Qwen2.5-7B-Instruct with LoRA on gold trajectories,
+# then merges adapter for verl GRPO training.
 #
 # Usage: sbatch scripts/train_verl_sft_isambard.job
 
@@ -18,22 +19,35 @@ set -eo pipefail
 source "$HOME/miniforge3/bin/activate"
 conda activate kg_verl
 module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+module load brics/nccl 2>/dev/null || true
+
+# ARM GH200 compiler and library workarounds
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
 
 cd "$SLURM_SUBMIT_DIR"
 export PYTHONPATH="$PWD:${PYTHONPATH:-}"
 export HF_HOME="${SCRATCH:-$SCRATCHDIR}/hf_cache"
 export TORCH_HOME="${SCRATCH:-$SCRATCHDIR}/torch_cache"
 export WANDB_PROJECT=kg-align-verl
+export WANDB_MODE=offline  # Isambard compute nodes have no internet; sync later with `wandb sync`
 
-mkdir -p logs outputs/verl-sft
+MODEL_NAME="Qwen/Qwen2.5-7B-Instruct"
+SFT_OUTPUT="outputs/verl-sft-7b"
+MERGED_OUTPUT="outputs/verl-sft-7b-merged"
 
-echo "=== SFT Warmup (multi-turn, Isambard GH200) ==="
+mkdir -p logs "$SFT_OUTPUT"
+
+echo "=== SFT Warmup (7B multi-turn, Isambard GH200) ==="
 echo "Date: $(date)"
 echo "Node: $(hostname)"
-echo "GPU: $(nvidia-smi --query-gpu=name --format=csv,noheader)"
-echo "Model: Qwen/Qwen2.5-1.5B-Instruct"
+echo "GPU: $(nvidia-smi --query-gpu=name,memory.total --format=csv,noheader)"
+echo "Model: $MODEL_NAME"
 echo ""
 
+# --- SFT Training ---
 python src_verl/training/sft_multiturn.py \
     --config configs_verl/sft_multiturn.yaml
 
@@ -44,11 +58,11 @@ echo ""
 # --- Merge LoRA adapter into base model ---
 echo "=== Merging SFT adapter into base model ==="
 python scripts/merge_sft_adapter.py \
-    --base_model Qwen/Qwen2.5-1.5B-Instruct \
-    --adapter_path outputs/verl-sft \
-    --output_path outputs/verl-sft-merged
+    --base_model "$MODEL_NAME" \
+    --adapter_path "$SFT_OUTPUT" \
+    --output_path "$MERGED_OUTPUT"
 
 echo ""
 echo "=== SFT + Merge Complete ==="
 echo "End: $(date)"
-ls -lh outputs/verl-sft-merged/
+ls -lh "$MERGED_OUTPUT/"

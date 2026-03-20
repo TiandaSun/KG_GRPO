@@ -183,6 +183,12 @@ python -m pytest tests/ -v
 squeue -u $USER
 ```
 
+## HPC / SLURM Workflows
+
+- **Pre-flight validation**: Before submitting any SLURM job, always validate Python scripts with `python -c 'import ast; ast.parse(open("script.py").read())'`. Double-check: 1) correct parameter names for the scheduler, 2) all Python imports are present, 3) f-strings are properly quoted. Each resubmission costs 5-15 min of queue time.
+- **ARM PyTorch wheels**: On aarch64/ARM (GH200) systems, always use `--index-url` with the correct PyTorch CUDA wheel URL when pip installing. Never rely on default pip resolution for torch on ARM — it pulls CPU-only wheels.
+- **Ray init on GH200**: Always pass explicit `num_cpus` to `ray.init()` on Isambard. Auto-detection hangs on ARM. Use `ray_kwargs.ray_init.num_cpus: 72 * N_GPUS` in verl configs.
+
 ## Git Workflow
 
 - Feature branches per pipeline component

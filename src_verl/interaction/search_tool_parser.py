@@ -53,7 +53,7 @@ class KGSearchToolParser(ToolParser):
 
     @rollout_trace_op
     async def extract_tool_calls(
-        self, responses_ids: list[int]
+        self, responses_ids: list[int], tools: list | None = None
     ) -> tuple[str, list[FunctionCall]]:
         loop = asyncio.get_running_loop()
         text = await loop.run_in_executor(

@@ -27,7 +27,20 @@ set -eo pipefail
 source "$HOME/miniforge3/bin/activate"
 conda activate kg_verl
 module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true  # CRITICAL: default nvc/nvc++ breaks Triton/DeepSpeed JIT
 module load brics/nccl 2>/dev/null || true  # Required for multi-GPU NCCL
+
+# ARM GH200 compiler and library workarounds
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+
+# Fix ZMQ socket collision on shared nodes (verl uses GPU-UUID-based IPC sockets in /tmp)
+export VERL_ZMQ_DIR="/tmp/verl-zmq-$(id -u)"
+mkdir -p "$VERL_ZMQ_DIR"
+
+# Extend Ray worker startup timeout for ARM (slow imports)
+export RAY_worker_register_timeout_seconds=180
 
 cd "$SLURM_SUBMIT_DIR"
 export PYTHONPATH="$PWD:${PYTHONPATH:-}"
@@ -53,7 +66,7 @@ if [[ "$MODEL_SIZE" == "1.5b" ]]; then
     N_GPUS=1
 else
     CONFIG_NAME="grpo_conceptnet_7b"
-    MODEL_PATH="Qwen/Qwen2.5-7B-Instruct"
+    MODEL_PATH="outputs/verl-sft-7b-merged"
     N_GPUS=4
 fi
 
@@ -110,7 +123,8 @@ python3 -m verl.trainer.main_ppo \
     actor_rollout_ref.model.path="$MODEL_PATH" \
     actor_rollout_ref.rollout.multi_turn.tool_config_path="configs_verl/kg_tool_config.yaml" \
     trainer.n_gpus_per_node="$N_GPUS" \
-    data.dataloader_num_workers=0
+    data.dataloader_num_workers=0 \
+    ray_kwargs.ray_init.num_cpus=$((N_GPUS * 72))
 TRAIN_EXIT=$?
 
 # --- Cleanup ---

@@ -102,30 +102,29 @@ def trajectories_to_dataset(
 ) -> Dataset:
     """Convert trajectories to HF Dataset for SFTTrainer.
 
-    SFTTrainer with chat format expects a 'messages' column containing
-    the full multi-turn conversation as a list of {role, content} dicts.
+    Applies the tokenizer's chat template to produce a pre-formatted 'text'
+    column, since the installed TRL version does not auto-detect 'messages'.
     """
-    all_messages: list[list[dict[str, str]]] = []
+    all_texts: list[str] = []
 
     for record in records:
         trajectory = record["trajectory"]
 
-        # Filter to only include messages the model should learn from
-        # (system, user, assistant, tool — all in sequence)
-        messages: list[dict[str, str]] = []
-        for msg in trajectory:
-            role = msg["role"]
-            content = msg["content"]
+        # Keep native 'tool' role — Qwen2.5's chat template supports it
+        # (renders as <|im_start|>user\n<tool_response>\n...\n</tool_response>).
+        # This MUST match the format used during GRPO rollouts (verl's
+        # ToolAgentLoop also uses role="tool") and evaluation.
+        messages: list[dict[str, str]] = [
+            {"role": msg["role"], "content": msg["content"]}
+            for msg in trajectory
+        ]
 
-            # Keep native 'tool' role — Qwen2.5's chat template supports it
-            # (renders as <|im_start|>user\n<tool_response>\n...\n</tool_response>).
-            # This MUST match the format used during GRPO rollouts (verl's
-            # ToolAgentLoop also uses role="tool") and evaluation.
-            messages.append({"role": role, "content": content})
+        text = tokenizer.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=False
+        )
+        all_texts.append(text)
 
-        all_messages.append(messages)
-
-    dataset = Dataset.from_dict({"messages": all_messages})
+    dataset = Dataset.from_dict({"text": all_texts})
     logger.info("Created dataset with %d samples", len(dataset))
     return dataset
 
@@ -204,7 +203,7 @@ def main() -> None:
         gradient_accumulation_steps=config.gradient_accumulation_steps,
         learning_rate=config.learning_rate,
         gradient_checkpointing=config.gradient_checkpointing,
-        max_length=config.max_seq_length,
+        max_seq_length=config.max_seq_length,
         logging_steps=config.logging_steps,
         save_strategy=config.save_strategy,
         warmup_ratio=config.warmup_ratio,
@@ -212,16 +211,16 @@ def main() -> None:
         bf16=True,
         report_to="wandb",
         run_name=config.wandb_run_name,
-        remove_unused_columns=False,
+        dataset_text_field="text",
         seed=42,
     )
 
-    # Create trainer
+    # Create trainer — SFTTrainer auto-creates DataCollatorForLanguageModeling
     trainer = SFTTrainer(
         model=model,
         args=sft_config,
         train_dataset=train_dataset,
-        processing_class=tokenizer,
+        tokenizer=tokenizer,
         peft_config=peft_config,
     )
 
