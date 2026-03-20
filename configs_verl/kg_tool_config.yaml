@@ -4,7 +4,7 @@ tools:
   - class_name: "src_verl.interaction.kg_interaction.KGQueryTool"
     config:
       type: native
-      kg_server_url: "http://localhost:8001"
+      kg_server_url: "http://localhost:18901"
       reward_type: "verifiable"  # "outcome", "heuristic", or "verifiable"
       distances_path: "data/processed/conceptnet_distances.pkl"  # for R_progress
     tool_schema:

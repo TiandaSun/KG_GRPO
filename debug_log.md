@@ -1,27 +1,36 @@
-# GRPO 7B Smoke Test Debug Log
+# Tool Call Debug Log
 
-## Attempt 1: Job 3234336 (OOM)
-- **Error**: `torch.OutOfMemoryError: CUDA out of memory` — FSDP used ~52GB + vLLM tried 50% = OOM
-- **Fix**: `gpu_memory_utilization=0.5 → 0.3` in smoke job and main config
+## Background
+GRPO 7B runs on 2+ GPUs with FSDP + vLLM sleep mode (established in prior sessions).
+Key infra fixes already applied: gpu_memory_utilization=0.3-0.5, bucket_megabytes=4096, enable_sleep_mode=true, min 2 GPUs, default_agent_loop=tool_agent, kg_server port=18901, parser accepts aliases.
 
-## Attempt 2: Job 3234401 (bucket too small)
-- **Error**: `Weight model.embed_tokens.weight is too large to fit in the bucket` — Qwen2.5-7B embeddings are 2079MB, bucket default is 2048MB
-- **Fix**: Added `+actor_rollout_ref.rollout.update_weights_bucket_megabytes=4096`
+Despite all infra fixes, the model still produces zero tool calls (num_tool_calls=0). The SFT model does not generate `<search>` tags at all.
 
-## Attempt 3: Job 3234411 (Hydra config error)
-- **Error**: `RolloutConfig.__init__() got an unexpected keyword argument 'update_weights_bucket_megabytes'` — wrong Hydra path, `update_weights_bucket_megabytes` is under `checkpoint_engine`
-- **Fix**: Changed to `actor_rollout_ref.rollout.checkpoint_engine.update_weights_bucket_megabytes=4096`
+---
 
-## Attempt 4: Job 3234433 (OOM during optimizer init)
-- **Error**: `torch.OutOfMemoryError` during `adam.py _init_group` — FSDP model (70.6GB) + vLLM worker (23.7GB) = 94.3GB, no room for optimizer states
-- **Root cause**: vLLM holds GPU memory during training because `enable_sleep_mode=false`. With sleep mode, vLLM releases GPU memory during training and only allocates during rollout.
-- **Fix**: `enable_sleep_mode=true`, `ppo_micro_batch_size_per_gpu=1`, `max_response_length=1024`, `gpu_memory_utilization=0.4`
+## Attempt 1 — 2026-03-20
 
-## Attempt 5: Job 3234520 (OOM — same class as attempt 4)
-- **Error**: Same `torch.OutOfMemoryError` during Adam `_init_group` — 94GB used, 0.09GB free
-- **Root cause**: With 1 GPU, FSDP switches to `NO_SHARD` (can't shard with world_size=1). Full fp32 optimizer states for 7B = ~45GB + model ~15GB + gradients ~15GB = ~75GB minimum, plus vLLM. Sleep mode helped vLLM release memory but optimizer states alone exceed budget.
-- **Conclusion**: **7B GRPO on 1 GPU is not feasible** without CPU offloading. Need minimum 2 GPUs for FSDP to shard optimizer states.
-- **Fix**: Changed to 2 GPUs (`--gpus=2`, `trainer.n_gpus_per_node=2`, `ray_kwargs.ray_init.num_cpus=144`)
+**Job ID**: 3244443
+**Fix**: `_VALID_ACTIONS` was referenced before definition in `src_verl/interaction/search_tool_parser.py` (line 41 used `_VALID_ACTIONS`, defined on line 49). This caused `NameError` at import time, meaning the `kg_search` ToolParser never registered. Moved `_VALID_ACTIONS` definition above its first use.
 
-## Attempt 6: Job pending
-- 2 GPUs, FSDP FULL_SHARD, sleep mode enabled. Each GPU gets ~half the optimizer states (~37GB) + vLLM.
+**Root cause**: The `@ToolParser.register("kg_search")` decorator on `KGSearchToolParser` never executed because importing the module crashed silently. verl fell back to no parser, so no tool calls were ever extracted from model output.
+
+**Validation**: After fix, `python -c "from src_verl.interaction.search_tool_parser import KGSearchToolParser"` succeeds and `kg_search` appears in `ToolParser._registry`.
+
+**Metrics**:
+- `num_tool_calls/mean@1`: **3.3125** (was 0)
+- `num_turns/mean`: 8.5 (min 2, max 16)
+- `r_tool_use/mean@1`: 0.846
+- `r_no_tool/mean@1`: 0.0 (all samples used tools)
+- `r_answer/mean@1`: 0.539
+- `r_coverage/mean@1`: 0.379
+- `r_format/mean@1`: 0.469
+- Exit code: 0, runtime: 131s (~21s/step)
+- KG server received many `/retrieve` POST 200 responses
+
+**Parser debug**: Model generates both `<search>get_tail_relations(...)` and bare `<get_tail_relations(...)>` formats — both caught by the parser.
+
+**Outcome**: **SUCCESS** — tool calls working. Issue resolved in 1 attempt.
+
+---
+

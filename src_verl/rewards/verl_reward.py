@@ -90,10 +90,12 @@ def compute_score(
         # Quality bonus: reward valid tool call syntax
         valid_actions = {"get_tail_relations", "get_head_relations",
                          "get_tail_entities", "get_head_entities"}
+        # Also accept aliases that the parser can resolve
+        alias_actions = {"kg_query", "search", "query", "get_relations", "get_entities"}
         valid_calls = 0
         for call_str in search_calls:
             func_match = re.match(r"(\w+)\(", call_str.strip())
-            if func_match and func_match.group(1) in valid_actions:
+            if func_match and func_match.group(1) in (valid_actions | alias_actions):
                 valid_calls += 1
 
         if valid_calls > 0:

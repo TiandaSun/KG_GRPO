@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=grpo_7b_full
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --time=12:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# 7B GRPO full training on 4x GH200 (120GB each)
+# Config: Qwen2.5-7B-Instruct SFT-merged, 4000 samples, 3 epochs
+# Reward: verifiable (R_valid + R_on_path + R_progress + R_coherence)
+# Estimated: ~187 steps at ~25s/step = ~1.3h (well within 12h limit)
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+module load brics/nccl 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export VLLM_USE_V1=1
+export RAY_DEDUP_LOGS=0
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+echo "=== 7B GRPO Full Training (4x GH200) ==="
+echo "Date: $(date)"
+echo "Node: $(hostname)"
+echo "GPUs: $(nvidia-smi --query-gpu=name,memory.total --format=csv,noheader | wc -l)x GH200"
+nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
+echo ""
+
+# --- Start KG server ---
+echo "Starting KG server..."
+python -m src_verl.kg_server.server --port 18901 &
+KG_PID=$!
+sleep 8
+echo "Testing KG server on port 18901..."
+if curl -s -o /dev/null -w "%{http_code}" http://localhost:18901/health 2>/dev/null | grep -q "200"; then
+    echo "KG server healthy"
+else
+    echo "WARNING: KG server may not be ready, waiting 10 more seconds..."
+    sleep 10
+fi
+echo "KG server PID: $KG_PID"
+echo ""
+
+ray stop 2>/dev/null || true
+
+echo "=== Launching 7B GRPO ==="
+echo "Start: $(date)"
+START_TIME=$(date +%s)
+
+set +e
+python -m verl.trainer.main_ppo \
+    --config-path="$PWD/configs_verl" \
+    --config-name=grpo_conceptnet_7b \
+    trainer.experiment_name=grpo-7b-conceptnet-verifiable-$(date +%Y%m%d) \
+    data.train_files="['data/processed/verl_conceptnet/train.parquet']" \
+    data.val_files="['data/processed/verl_conceptnet/val.parquet']" \
+    data.return_raw_chat=true \
+    data.train_batch_size=64 \
+    data.shuffle=false \
+    algorithm.adv_estimator=grpo \
+    actor_rollout_ref.model.path=outputs/verl-sft-7b-merged \
+    actor_rollout_ref.actor.ppo_mini_batch_size=16 \
+    actor_rollout_ref.actor.ppo_micro_batch_size_per_gpu=2 \
+    data.max_response_length=2048 \
+    actor_rollout_ref.rollout.n=8 \
+    actor_rollout_ref.rollout.gpu_memory_utilization=0.4 \
+    actor_rollout_ref.rollout.enforce_eager=true \
+    actor_rollout_ref.rollout.tensor_model_parallel_size=1 \
+    +actor_rollout_ref.rollout.enable_sleep_mode=true \
+    actor_rollout_ref.rollout.checkpoint_engine.update_weights_bucket_megabytes=4096 \
+    actor_rollout_ref.rollout.agent.default_agent_loop=tool_agent \
+    trainer.n_gpus_per_node=4 \
+    trainer.total_epochs=3 \
+    trainer.save_freq=50 \
+    trainer.test_freq=50 \
+    "trainer.logger=[wandb]" \
+    data.dataloader_num_workers=0 \
+    ray_kwargs.ray_init.num_cpus=288
+GRPO_EXIT=$?
+set -e
+
+END_TIME=$(date +%s)
+ELAPSED=$((END_TIME - START_TIME))
+
+echo ""
+echo "=== Results ==="
+echo "Exit code: $GRPO_EXIT"
+echo "Total time: ${ELAPSED}s ($((ELAPSED / 60))m $((ELAPSED % 60))s)"
+echo ""
+
+# Cleanup
+kill $KG_PID 2>/dev/null
+echo "=== Done ==="
+echo "End: $(date)"
