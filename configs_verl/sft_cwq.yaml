@@ -1,0 +1,33 @@
+# SFT warmup for CWQ/Freebase multi-turn KG agent trajectories
+model:
+  model_name: "Qwen/Qwen2.5-7B-Instruct"
+  torch_dtype: "bfloat16"
+  attn_implementation: "eager"  # flash_attn unavailable on ARM GH200
+
+lora:
+  lora_r: 64
+  lora_alpha: 128
+  lora_target_modules: "all-linear"
+  lora_dropout: 0.05
+  use_dora: true
+  use_rslora: true
+
+training:
+  num_train_epochs: 2
+  per_device_train_batch_size: 2
+  gradient_accumulation_steps: 8
+  learning_rate: 2.0e-5
+  gradient_checkpointing: true
+  max_seq_length: 2048
+  logging_steps: 10
+  save_strategy: "epoch"
+  warmup_ratio: 0.05
+  optim: "adamw_torch"
+
+data:
+  train_file: "data/freebase/sft_trajectories.jsonl"
+  output_dir: "outputs/verl-sft-cwq-7b"
+
+wandb:
+  wandb_project: "kg-align-verl"
+  wandb_run_name: "sft-cwq-7b"

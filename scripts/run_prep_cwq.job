@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=prep_cwq
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=01:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Preprocess CWQ/Freebase data for verl GRPO training
+# KG (entities/relations/triples) is already built — this only does parquet conversion
+# Runs on compute node to avoid login node OOM kills
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+cd "$SLURM_SUBMIT_DIR"
+
+echo "=== CWQ/Freebase Preprocessing ==="
+echo "Date: $(date)"
+echo "Node: $(hostname)"
+echo ""
+
+# Check KG status
+echo "KG status:"
+wc -l data/freebase/kg/entities.txt data/freebase/kg/relations.txt data/freebase/kg/triples.txt
+echo ""
+
+# Check if parquets already exist (in case of restart)
+if [ -f data/freebase/verl_cwq/train.parquet ] && [ -f data/freebase/verl_webqsp/train.parquet ] && [ -f data/freebase/stats.json ]; then
+    echo "Parquets already exist — skipping conversion"
+    python -c "import json; print(json.dumps(json.load(open('data/freebase/stats.json')), indent=2))"
+    exit 0
+fi
+
+# Run full preprocessing (will reuse cached HF downloads, skip KG if exists)
+python scripts/prepare_cwq_freebase.py --output_dir data/freebase --hf_cache "$HF_HOME"
+EXIT_CODE=$?
+
+echo ""
+echo "=== Results ==="
+echo "Exit code: $EXIT_CODE"
+ls -lh data/freebase/verl_cwq/ 2>/dev/null
+ls -lh data/freebase/verl_webqsp/ 2>/dev/null
+cat data/freebase/stats.json 2>/dev/null
+echo ""
+echo "Done: $(date)"

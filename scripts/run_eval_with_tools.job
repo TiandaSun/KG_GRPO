@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=eval_tools
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=06:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Eval E1 + E3 checkpoints WITH KG tool access (multi-turn agent inference)
+# This is the fair comparison: tool-trained models get to use tools during eval
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+echo "=== With-Tool Eval: E1 + E3 ==="
+echo "Date: $(date)"
+echo ""
+
+# Start KG server
+echo "Starting Freebase KG server..."
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port 18901 &
+KG_PID=$!
+sleep 30
+curl -s http://localhost:18901/health && echo " KG server healthy" || echo " KG server NOT ready"
+echo ""
+
+mkdir -p results
+
+# Eval E3 (verifiable) — most important, this model was trained with tools
+echo "=== E3 (R_verifiable) WITH tools ==="
+python scripts/eval_with_tools.py \
+    --checkpoint_dir checkpoints/kg-align-verl/grpo-cwq-7b-verifiable-20260321 \
+    --steps 500 1250 \
+    --eval_data data/freebase/verl_cwq/val.parquet \
+    --output results/eval_e3_with_tools.json \
+    --kg_server_url http://localhost:18901 \
+    --max_samples 500 \
+    --max_turns 5
+echo ""
+
+# Eval E1 (outcome) — baseline comparison with tools
+echo "=== E1 (R_outcome) WITH tools ==="
+python scripts/eval_with_tools.py \
+    --checkpoint_dir checkpoints/kg-align-verl/grpo-cwq-7b-outcome-20260321 \
+    --steps 500 1250 \
+    --eval_data data/freebase/verl_cwq/val.parquet \
+    --output results/eval_e1_with_tools.json \
+    --kg_server_url http://localhost:18901 \
+    --max_samples 500 \
+    --max_turns 5
+echo ""
+
+kill $KG_PID 2>/dev/null
+echo "=== Done ==="
+echo "End: $(date)"

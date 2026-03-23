@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=sft_cwq_7b
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=03:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# CWQ SFT warmup: generate trajectories + train + merge adapter
+# All 3 steps in one job to avoid queue overhead
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+module load brics/nccl 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+echo "=== CWQ SFT Pipeline (7B, 1x GH200) ==="
+echo "Date: $(date)"
+echo "Node: $(hostname)"
+echo "GPU: $(nvidia-smi --query-gpu=name,memory.total --format=csv,noheader)"
+echo ""
+
+# === Step 1: Generate SFT trajectories ===
+echo "=== Step 1: Generate SFT trajectories ==="
+SFT_DATA="data/freebase/sft_trajectories.jsonl"
+
+# Always regenerate to pick up fixes
+python scripts/generate_cwq_sft.py \
+    --input data/freebase/verl_cwq/train.parquet \
+    --output "$SFT_DATA" \
+    --max_samples 5000
+echo "Generated: $(wc -l < "$SFT_DATA") trajectories"
+echo ""
+
+# === Step 2: SFT training ===
+echo "=== Step 2: SFT Training ==="
+SFT_OUTPUT="outputs/verl-sft-cwq-7b"
+SFT_MERGED="outputs/verl-sft-cwq-7b-merged"
+
+if [ -d "$SFT_MERGED" ] && [ -f "$SFT_MERGED/config.json" ]; then
+    echo "Merged SFT model already exists at $SFT_MERGED, skipping training"
+else
+    python src_verl/training/sft_multiturn.py \
+        --config configs_verl/sft_cwq.yaml
+
+    echo ""
+    echo "=== Step 3: Merge LoRA adapter ==="
+    python -c "
+from peft import PeftModel
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
+
+base_model = 'Qwen/Qwen2.5-7B-Instruct'
+adapter_path = '$SFT_OUTPUT'
+output_path = '$SFT_MERGED'
+
+print(f'Loading base model: {base_model}')
+model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.bfloat16)
+tokenizer = AutoTokenizer.from_pretrained(base_model)
+
+print(f'Loading adapter: {adapter_path}')
+model = PeftModel.from_pretrained(model, adapter_path)
+
+print('Merging adapter...')
+model = model.merge_and_unload()
+
+print(f'Saving merged model to: {output_path}')
+model.save_pretrained(output_path)
+tokenizer.save_pretrained(output_path)
+print('Done!')
+"
+fi
+
+echo ""
+echo "=== Results ==="
+echo "SFT data: $(wc -l < "$SFT_DATA") trajectories"
+ls -lh "$SFT_MERGED"/*.safetensors 2>/dev/null | head -5
+echo ""
+echo "=== Done ==="
+echo "End: $(date)"

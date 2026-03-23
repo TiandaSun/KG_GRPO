@@ -1,0 +1,76 @@
+# GRPO training config: 7B model, CWQ/Freebase, verl
+# For experiments E1-E3 (set REWARD_TYPE env var: outcome/heuristic/verifiable)
+
+hydra:
+  searchpath:
+    - pkg://verl.trainer.config
+
+defaults:
+  - ppo_trainer
+  - _self_
+
+data:
+  train_files:
+    - "data/freebase/verl_cwq/train.parquet"
+  val_files:
+    - "data/freebase/verl_cwq/val.parquet"
+  max_prompt_length: 1024
+  max_response_length: 2048
+  train_batch_size: 64
+  return_raw_chat: true
+  shuffle: false
+
+algorithm:
+  adv_estimator: grpo
+  use_kl_in_reward: false
+
+actor_rollout_ref:
+  model:
+    path: "outputs/verl-sft-cwq-7b-merged"
+    enable_gradient_checkpointing: true
+    override_config:
+      attn_implementation: "eager"  # SDPA + bf16 + padding = NaN grads on GH200
+  actor:
+    optim:
+      lr: 5.0e-7   # REDUCED from 5e-6 — high lr caused tool-use collapse on ConceptNet
+    use_kl_loss: false
+    ppo_mini_batch_size: 16
+    ppo_micro_batch_size_per_gpu: 2
+  ref:
+    log_prob_micro_batch_size_per_gpu: 4
+  rollout:
+    name: vllm
+    mode: "async"  # CRITICAL: enables AgentLoopManager for multi-turn tool calls
+    tensor_model_parallel_size: 1
+    gpu_memory_utilization: 0.4
+    enforce_eager: true
+    checkpoint_engine:
+      update_weights_bucket_megabytes: 4096
+    log_prob_micro_batch_size_per_gpu: 4
+    n: 8
+    temperature: 0.7
+    top_p: 1.0
+    multi_turn:
+      enable: true
+      max_assistant_turns: 5
+      max_tool_response_length: 512
+      tool_config_path: "configs_verl/kg_tool_config_freebase.yaml"
+      format: "kg_search"
+
+custom_reward_function:
+  path: "src_verl/rewards/verl_reward.py"
+  name: "compute_score"
+
+trainer:
+  n_gpus_per_node: 4
+  total_epochs: 3
+  save_freq: 50
+  test_freq: 50
+  project_name: "kg-align-verl"
+  experiment_name: "grpo-cwq-7b"
+  logger:
+    - wandb
+
+ray_kwargs:
+  ray_init:
+    num_cpus: 288  # 72 cores x 4 GPUs

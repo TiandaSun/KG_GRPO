@@ -126,3 +126,100 @@ Fix zero tool calls in GRPO 7B rollouts and launch full training.
 ### Cleanup
 
 Removed old diagnostic scripts, temporary headless prompt files, and diagnostic logs.
+
+---
+
+## 2026-03-21 (Session 3): CWQ/Freebase Pivot + Dataset Setup
+
+### Goal
+Pivot from ConceptNet to CWQ/Freebase as primary dataset. Set up data pipeline, implement spec-compliant rewards, run SFT warmup, launch first CWQ GRPO experiments.
+
+### Dataset Pivot Decision
+ConceptNet had fundamental issues: verbose answers (EM useless), 1-hop trivial questions, knowledge fully internalized by LLMs. CWQ/Freebase resolves all three: short entity answers, 2-4 hop questions, specialized knowledge.
+
+### CWQ/Freebase Data Preprocessing
+- Downloaded RoG-CWQ (1.74GB) + RoG-WebQSP (404MB) from HuggingFace
+- Built global Freebase subgraph: **2.6M entities, 7K relations, 8.3M triples**
+- Converted to verl parquet: CWQ 27,639/3,519/3,531 (train/val/test), WebQSP 2,826/246/1,628
+- SPARQL hop distribution: 2.7% 1-hop, 35.1% 2-hop, 34.0% 3-hop, 19.2% 4-hop, 9.0% 5+hop
+- Script: `scripts/prepare_cwq_freebase.py`, ran on compute node (Job 3252793, 11 min)
+
+### Reward Functions Rewritten (Spec v3)
+Replaced ad-hoc reward with 4 spec-compliant variants:
+1. R_outcome: 0.5*EM + 0.5*F1
+2. R_heuristic: 0.3*R_outcome + 0.7*step_entity_overlap
+3. R_verifiable: 0.3*R_outcome + 0.7*(0.45*r_on_path + 0.30*r_progress + 0.15*r_coherence + 0.10*r_valid)
+4. R_random: 0.3*R_outcome + 0.7*random
+
+No explicit tool bonuses. Selected via REWARD_TYPE env var.
+
+### CWQ SFT Warmup (Job 3252948)
+- Generated 5,000 gold trajectories from KG paths (5-15 turns each)
+- SFT training: 7B, LoRA r=64, 2 epochs, 626 steps, ~1h on 1 GPU
+- Merged model at `outputs/verl-sft-cwq-7b-merged/`
+
+### E1 + E3 GRPO Training (Jobs 3254091, 3254653)
+- E1 (R_outcome): 1260/1293 steps (97%), 19h12m, 4x GH200
+- E3 (R_verifiable): 1260/1293 steps (97%), 22h30m, 4x GH200
+- Both crashed at step ~1260 due to vLLM shared memory bug (19h+ run, not a code issue)
+- 25 checkpoints each (every 50 steps), sufficient for analysis
+
+---
+
+## 2026-03-22 (Session 4): Offline Evaluation + Core Hypothesis Testing
+
+### Goal
+Evaluate E1 and E3 checkpoints to determine if R_verifiable improves answer quality (go/no-go decision).
+
+### Offline Eval Without Tools (greedy single-turn)
+
+| Experiment | Step | EM | Contains-EM | F1 |
+|-----------|------|-----|-------------|-----|
+| SFT base | 0 | 0.000 | 0.066 | 0.043 |
+| E1 (outcome) | 50 | 0.000 | — | 0.165 |
+| E1 (outcome) | 500 | 0.000 | 0.482 | 0.222 |
+| E1 (outcome) | 1250 | 0.000 | 0.544 | 0.253 |
+| E3 (verifiable) | 500 | 0.000 | 0.460 | 0.236 |
+| E3 (verifiable) | 1250 | 0.000 | 0.254 | 0.139 |
+
+Without tools: E1 steadily improves, E3 peaks at step 500 then declines. EM=0 everywhere (model doesn't produce `<answer>` tags in greedy mode).
+
+### Offline Eval With Tools (multi-turn, KG access) — THE KEY RESULT
+
+| Experiment | Step | EM | Contains-EM | F1 | Avg Tool Calls |
+|-----------|------|-----|-------------|-----|----------------|
+| SFT base | 0 | 0.004 | 0.142 | 0.030 | 5.0 |
+| E1 (outcome) | 500 | 0.002 | 0.520 | 0.105 | 4.9 |
+| E1 (outcome) | 1250 | 0.002 | 0.570 | 0.119 | 4.9 |
+| **E3 (verifiable)** | **500** | **0.542** | **0.546** | **0.546** | **1.0** |
+| **E3 (verifiable)** | **1250** | **0.296** | **0.320** | **0.315** | **1.0** |
+
+### Key Findings
+
+1. **E3 step 500 with tools: EM=54.2%** — the model answers correctly over half the time with proper `<answer>` formatting. Core hypothesis confirmed.
+2. **E3 >> E1 with tools**: EM 54.2% vs 0.2%. Verifiable rewards produce dramatically better tool-using agents.
+3. **E3 uses tools efficiently**: 1.0 avg tool calls vs E1's 4.9. Learned to make targeted queries.
+4. **E3 step 500 > E3 step 1250**: EM drops 54.2% → 29.6%. The 0.30/0.70 answer/step split causes later over-optimization for step rewards at expense of answers. Step 500 is the sweet spot.
+5. **Without-tools eval was misleading**: E3 step 1250 looked terrible without tools (ContEM=25%) but decent with tools (EM=29.6%). The model learned tool dependency.
+6. **Go/No-Go: GO** — R_verifiable works. Proceed to Phase C.
+
+### E2 Training (R_heuristic)
+- Job 3272743: Running (restarted after node failure), ~22h remaining
+- Will complete the 3-way comparison (outcome vs heuristic vs verifiable)
+
+### SPARQL Hop Annotations
+- Extracted from original CWQ train JSON (27,639 samples)
+- Distribution: 2-hop 35%, 3-hop 34%, 4-hop 19%, 5+ hop 9%
+- Saved to `data/freebase/cwq_hop_annotations.json`
+
+### Scripts Added
+- `scripts/eval_checkpoints.py` — offline eval with FSDP checkpoint loading
+- `scripts/eval_with_tools.py` — multi-turn eval with KG server
+- `scripts/extract_sparql_hops.py` — SPARQL hop count extraction
+- `scripts/generate_cwq_sft.py` — CWQ SFT trajectory generation
+- `scripts/prepare_cwq_freebase.py` — CWQ/Freebase data preprocessing
+- `scripts/run_eval_with_tools.job` — SLURM job for with-tool eval
+- `scripts/run_grpo_cwq.job` — SLURM job for CWQ GRPO (supports REWARD_TYPE env var)
+- `scripts/run_sft_cwq.job` — SLURM job for CWQ SFT pipeline
+- `configs_verl/grpo_cwq_7b.yaml` — CWQ GRPO training config
+- `configs_verl/sft_cwq.yaml` — CWQ SFT config

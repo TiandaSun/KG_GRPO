@@ -3,7 +3,7 @@ tools:
   - class_name: "src_verl.interaction.kg_interaction.KGQueryTool"
     config:
       type: native
-      kg_server_url: "http://localhost:8001"
+      kg_server_url: "http://localhost:18901"
       reward_type: "verifiable"
       distances_path: "data/processed/freebase_distances.pkl"
     tool_schema:
