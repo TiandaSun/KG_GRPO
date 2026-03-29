@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=pass_at_k
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=12:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Task 17: Pass@k — parallelized version
+# Set MODEL and CHUNK via environment:
+#   MODEL: sft, e3, or e2
+#   CHUNK: 0 (q0-49), 1 (q50-99)
+# Each job evaluates 1 model on 50 questions = 32×50=1600 inferences
+# E3: ~1s/inference → ~0.5h. SFT: ~9s/inference → ~4h.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+MODEL="${MODEL:-e3}"
+CHUNK="${CHUNK:-0}"
+START_IDX=$((CHUNK * 100))
+END_IDX=$(((CHUNK + 1) * 100))
+
+echo "=== Pass@k: model=$MODEL chunk=$CHUNK (q${START_IDX}-${END_IDX}) ==="
+echo "Date: $(date)"
+echo ""
+
+# Start KG server
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port 18901 --log-level warning &
+KG_PID=$!
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:18901/health 2>/dev/null | grep -q "200" && echo "KG healthy" && break
+    sleep 10
+done
+echo ""
+
+python scripts/task17_pass_at_k.py \
+    --checkpoint_dir /projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/grpo-cwq-7b-verifiable-20260321 \
+    --step 500 \
+    --e2_checkpoint_dir /projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/grpo-cwq-7b-heuristic-20260325 \
+    --e2_step 1200 \
+    --n_samples 32 \
+    --n_questions 200 \
+    --start_idx "$START_IDX" \
+    --end_idx "$END_IDX" \
+    --temperature 0.7 \
+    --models "$MODEL" \
+    --output "results/task17_pass_at_k_${MODEL}_chunk${CHUNK}.json"
+
+kill $KG_PID 2>/dev/null
+echo "=== Done ==="
+echo "End: $(date)"

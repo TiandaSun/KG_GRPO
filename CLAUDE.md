@@ -10,6 +10,10 @@ Target: EMNLP 2026 (May 25). Paper framing is insight/analysis, not method.
 
 See `hpc_implementation_spec.md` for the full specification (experiments, rewards, timeline, compute budget). This file covers daily workflow rules, environment setup, and coding standards.
 
+## Active task queue
+
+See `hpc_tasks.md` for the current task queue. This file is the **primary source of truth** for what to work on next. It is updated from the discussion repo after each planning iteration. Always read this file at the start of a conversation to know the current priorities.
+
 ## Key references
 
 - Current code repo: https://github.com/TiandaSun/KG_GRPO (sync between Isambard and Viking)

@@ -1,0 +1,10227 @@
+{
+  "E1_outcome": {
+    "reward_key": "critic/score/mean",
+    "n_reward_points": 12,
+    "n_eval_points": 4,
+    "merged": [
+      {
+        "step": 1,
+        "train_reward": 0.0127
+      },
+      {
+        "step": 2,
+        "train_reward": 0.014
+      },
+      {
+        "step": 3,
+        "train_reward": 0.0215
+      },
+      {
+        "step": 4,
+        "train_reward": 0.0202
+      },
+      {
+        "step": 5,
+        "train_reward": 0.0101
+      },
+      {
+        "step": 6,
+        "train_reward": 0.0279
+      },
+      {
+        "step": 7,
+        "train_reward": 0.0092
+      },
+      {
+        "step": 8,
+        "train_reward": 0.021
+      },
+      {
+        "step": 9,
+        "train_reward": 0.0214
+      },
+      {
+        "step": 10,
+        "train_reward": 0.0328
+      },
+      {
+        "step": 11,
+        "train_reward": 0.0315
+      },
+      {
+        "step": 12,
+        "train_reward": 0.0507
+      },
+      {
+        "step": 100,
+        "eval_em": 0.0,
+        "eval_contains_em": 0.388,
+        "eval_f1": 0.08076594195518681,
+        "eval_avg_tool_calls": 5.0
+      },
+      {
+        "step": 250,
+        "eval_em": 0.0,
+        "eval_contains_em": 0.442,
+        "eval_f1": 0.08352009879177218,
+        "eval_avg_tool_calls": 4.994
+      },
+      {
+        "step": 750,
+        "eval_em": 0.002,
+        "eval_contains_em": 0.55,
+        "eval_f1": 0.10827438767160084,
+        "eval_avg_tool_calls": 4.878
+      },
+      {
+        "step": 1000,
+        "eval_em": 0.006,
+        "eval_contains_em": 0.55,
+        "eval_f1": 0.11856748918739722,
+        "eval_avg_tool_calls": 4.832
+      }
+    ]
+  },
+  "E2_heuristic": {
+    "reward_key": "critic/score/mean",
+    "n_reward_points": 1259,
+    "n_eval_points": 6,
+    "merged": [
+      {
+        "step": 1,
+        "train_reward": 0.003
+      },
+      {
+        "step": 2,
+        "train_reward": 0.0039
+      },
+      {
+        "step": 3,
+        "train_reward": 0.0066
+      },
+      {
+        "step": 4,
+        "train_reward": 0.0058
+      },
+      {
+        "step": 5,
+        "train_reward": 0.0034
+      },
+      {
+        "step": 6,
+        "train_reward": 0.0066
+      },
+      {
+        "step": 7,
+        "train_reward": 0.0029
+      },
+      {
+        "step": 8,
+        "train_reward": 0.006
+      },
+      {
+        "step": 9,
+        "train_reward": 0.0056
+      },
+      {
+        "step": 10,
+        "train_reward": 0.0089
+      },
+      {
+        "step": 11,
+        "train_reward": 0.01
+      },
+      {
+        "step": 12,
+        "train_reward": 0.0133
+      },
+      {
+        "step": 13,
+        "train_reward": 0.0132
+      },
+      {
+        "step": 14,
+        "train_reward": 0.0147
+      },
+      {
+        "step": 15,
+        "train_reward": 0.0195
+      },
+      {
+        "step": 16,
+        "train_reward": 0.0209
+      },
+      {
+        "step": 17,
+        "train_reward": 0.019
+      },
+      {
+        "step": 18,
+        "train_reward": 0.0262
+      },
+      {
+        "step": 19,
+        "train_reward": 0.0276
+      },
+      {
+        "step": 20,
+        "train_reward": 0.0211
+      },
+      {
+        "step": 21,
+        "train_reward": 0.0227
+      },
+      {
+        "step": 22,
+        "train_reward": 0.0244
+      },
+      {
+        "step": 23,
+        "train_reward": 0.0283
+      },
+      {
+        "step": 24,
+        "train_reward": 0.0257
+      },
+      {
+        "step": 25,
+        "train_reward": 0.027
+      },
+      {
+        "step": 26,
+        "train_reward": 0.03
+      },
+      {
+        "step": 27,
+        "train_reward": 0.0233
+      },
+      {
+        "step": 28,
+        "train_reward": 0.0242
+      },
+      {
+        "step": 29,
+        "train_reward": 0.024
+      },
+      {
+        "step": 30,
+        "train_reward": 0.0271
+      },
+      {
+        "step": 31,
+        "train_reward": 0.0241
+      },
+      {
+        "step": 32,
+        "train_reward": 0.0292
+      },
+      {
+        "step": 33,
+        "train_reward": 0.0215
+      },
+      {
+        "step": 34,
+        "train_reward": 0.0221
+      },
+      {
+        "step": 35,
+        "train_reward": 0.0238
+      },
+      {
+        "step": 36,
+        "train_reward": 0.0291
+      },
+      {
+        "step": 37,
+        "train_reward": 0.0228
+      },
+      {
+        "step": 38,
+        "train_reward": 0.0254
+      },
+      {
+        "step": 39,
+        "train_reward": 0.0233
+      },
+      {
+        "step": 40,
+        "train_reward": 0.0223
+      },
+      {
+        "step": 41,
+        "train_reward": 0.0268
+      },
+      {
+        "step": 42,
+        "train_reward": 0.0246
+      },
+      {
+        "step": 43,
+        "train_reward": 0.0224
+      },
+      {
+        "step": 44,
+        "train_reward": 0.0228
+      },
+      {
+        "step": 45,
+        "train_reward": 0.0235
+      },
+      {
+        "step": 46,
+        "train_reward": 0.0278
+      },
+      {
+        "step": 47,
+        "train_reward": 0.0201
+      },
+      {
+        "step": 48,
+        "train_reward": 0.0247
+      },
+      {
+        "step": 49,
+        "train_reward": 0.0294
+      },
+      {
+        "step": 50,
+        "train_reward": 0.0311
+      },
+      {
+        "step": 51,
+        "train_reward": 0.0271
+      },
+      {
+        "step": 52,
+        "train_reward": 0.0279
+      },
+      {
+        "step": 53,
+        "train_reward": 0.0246
+      },
+      {
+        "step": 54,
+        "train_reward": 0.0268
+      },
+      {
+        "step": 55,
+        "train_reward": 0.0311
+      },
+      {
+        "step": 56,
+        "train_reward": 0.0276
+      },
+      {
+        "step": 57,
+        "train_reward": 0.0219
+      },
+      {
+        "step": 58,
+        "train_reward": 0.0276
+      },
+      {
+        "step": 59,
+        "train_reward": 0.0222
+      },
+      {
+        "step": 60,
+        "train_reward": 0.0312
+      },
+      {
+        "step": 61,
+        "train_reward": 0.0313
+      },
+      {
+        "step": 62,
+        "train_reward": 0.0278
+      },
+      {
+        "step": 63,
+        "train_reward": 0.0269
+      },
+      {
+        "step": 64,
+        "train_reward": 0.0246
+      },
+      {
+        "step": 65,
+        "train_reward": 0.0296
+      },
+      {
+        "step": 66,
+        "train_reward": 0.0293
+      },
+      {
+        "step": 67,
+        "train_reward": 0.0262
+      },
+      {
+        "step": 68,
+        "train_reward": 0.0303
+      },
+      {
+        "step": 69,
+        "train_reward": 0.0275
+      },
+      {
+        "step": 70,
+        "train_reward": 0.023
+      },
+      {
+        "step": 71,
+        "train_reward": 0.0282
+      },
+      {
+        "step": 72,
+        "train_reward": 0.0296
+      },
+      {
+        "step": 73,
+        "train_reward": 0.0159
+      },
+      {
+        "step": 74,
+        "train_reward": 0.02
+      },
+      {
+        "step": 75,
+        "train_reward": 0.021
+      },
+      {
+        "step": 76,
+        "train_reward": 0.0247
+      },
+      {
+        "step": 77,
+        "train_reward": 0.0225
+      },
+      {
+        "step": 78,
+        "train_reward": 0.0248
+      },
+      {
+        "step": 79,
+        "train_reward": 0.0184
+      },
+      {
+        "step": 80,
+        "train_reward": 0.0168
+      },
+      {
+        "step": 81,
+        "train_reward": 0.022
+      },
+      {
+        "step": 82,
+        "train_reward": 0.0244
+      },
+      {
+        "step": 83,
+        "train_reward": 0.0178
+      },
+      {
+        "step": 84,
+        "train_reward": 0.0219
+      },
+      {
+        "step": 85,
+        "train_reward": 0.0193
+      },
+      {
+        "step": 86,
+        "train_reward": 0.0196
+      },
+      {
+        "step": 87,
+        "train_reward": 0.0188
+      },
+      {
+        "step": 88,
+        "train_reward": 0.0222
+      },
+      {
+        "step": 89,
+        "train_reward": 0.0144
+      },
+      {
+        "step": 90,
+        "train_reward": 0.0199
+      },
+      {
+        "step": 91,
+        "train_reward": 0.0189
+      },
+      {
+        "step": 92,
+        "train_reward": 0.0204
+      },
+      {
+        "step": 93,
+        "train_reward": 0.0191
+      },
+      {
+        "step": 94,
+        "train_reward": 0.0273
+      },
+      {
+        "step": 95,
+        "train_reward": 0.018
+      },
+      {
+        "step": 96,
+        "train_reward": 0.0235
+      },
+      {
+        "step": 97,
+        "train_reward": 0.0193
+      },
+      {
+        "step": 98,
+        "train_reward": 0.0217
+      },
+      {
+        "step": 99,
+        "train_reward": 0.0197
+      },
+      {
+        "step": 100,
+        "train_reward": 0.024
+      },
+      {
+        "step": 101,
+        "train_reward": 0.0181
+      },
+      {
+        "step": 102,
+        "train_reward": 0.0229
+      },
+      {
+        "step": 103,
+        "train_reward": 0.0227
+      },
+      {
+        "step": 104,
+        "train_reward": 0.0181
+      },
+      {
+        "step": 105,
+        "train_reward": 0.0233
+      },
+      {
+        "step": 106,
+        "train_reward": 0.0254
+      },
+      {
+        "step": 107,
+        "train_reward": 0.0233
+      },
+      {
+        "step": 108,
+        "train_reward": 0.0213
+      },
+      {
+        "step": 109,
+        "train_reward": 0.0229
+      },
+      {
+        "step": 110,
+        "train_reward": 0.0242
+      },
+      {
+        "step": 111,
+        "train_reward": 0.0194
+      },
+      {
+        "step": 112,
+        "train_reward": 0.0265
+      },
+      {
+        "step": 113,
+        "train_reward": 0.0276
+      },
+      {
+        "step": 114,
+        "train_reward": 0.0252
+      },
+      {
+        "step": 115,
+        "train_reward": 0.0156
+      },
+      {
+        "step": 116,
+        "train_reward": 0.0205
+      },
+      {
+        "step": 117,
+        "train_reward": 0.0205
+      },
+      {
+        "step": 118,
+        "train_reward": 0.0179
+      },
+      {
+        "step": 119,
+        "train_reward": 0.0249
+      },
+      {
+        "step": 120,
+        "train_reward": 0.0214
+      },
+      {
+        "step": 121,
+        "train_reward": 0.0208
+      },
+      {
+        "step": 122,
+        "train_reward": 0.021
+      },
+      {
+        "step": 123,
+        "train_reward": 0.024
+      },
+      {
+        "step": 124,
+        "train_reward": 0.021
+      },
+      {
+        "step": 125,
+        "train_reward": 0.0196
+      },
+      {
+        "step": 126,
+        "train_reward": 0.0208
+      },
+      {
+        "step": 127,
+        "train_reward": 0.0221
+      },
+      {
+        "step": 128,
+        "train_reward": 0.0243
+      },
+      {
+        "step": 129,
+        "train_reward": 0.018
+      },
+      {
+        "step": 130,
+        "train_reward": 0.0247
+      },
+      {
+        "step": 131,
+        "train_reward": 0.0233
+      },
+      {
+        "step": 132,
+        "train_reward": 0.0211
+      },
+      {
+        "step": 133,
+        "train_reward": 0.0204
+      },
+      {
+        "step": 134,
+        "train_reward": 0.0214
+      },
+      {
+        "step": 135,
+        "train_reward": 0.0225
+      },
+      {
+        "step": 136,
+        "train_reward": 0.0209
+      },
+      {
+        "step": 137,
+        "train_reward": 0.0214
+      },
+      {
+        "step": 138,
+        "train_reward": 0.0202
+      },
+      {
+        "step": 139,
+        "train_reward": 0.0171
+      },
+      {
+        "step": 140,
+        "train_reward": 0.0235
+      },
+      {
+        "step": 141,
+        "train_reward": 0.0226
+      },
+      {
+        "step": 142,
+        "train_reward": 0.0182
+      },
+      {
+        "step": 143,
+        "train_reward": 0.0213
+      },
+      {
+        "step": 144,
+        "train_reward": 0.016
+      },
+      {
+        "step": 145,
+        "train_reward": 0.0223
+      },
+      {
+        "step": 146,
+        "train_reward": 0.0235
+      },
+      {
+        "step": 147,
+        "train_reward": 0.0267
+      },
+      {
+        "step": 148,
+        "train_reward": 0.0237
+      },
+      {
+        "step": 149,
+        "train_reward": 0.0251
+      },
+      {
+        "step": 150,
+        "train_reward": 0.0243
+      },
+      {
+        "step": 151,
+        "train_reward": 0.0237
+      },
+      {
+        "step": 152,
+        "train_reward": 0.0206
+      },
+      {
+        "step": 153,
+        "train_reward": 0.0214
+      },
+      {
+        "step": 154,
+        "train_reward": 0.018
+      },
+      {
+        "step": 155,
+        "train_reward": 0.0208
+      },
+      {
+        "step": 156,
+        "train_reward": 0.0224
+      },
+      {
+        "step": 157,
+        "train_reward": 0.0186
+      },
+      {
+        "step": 158,
+        "train_reward": 0.0204
+      },
+      {
+        "step": 159,
+        "train_reward": 0.0185
+      },
+      {
+        "step": 160,
+        "train_reward": 0.0258
+      },
+      {
+        "step": 161,
+        "train_reward": 0.0184
+      },
+      {
+        "step": 162,
+        "train_reward": 0.0217
+      },
+      {
+        "step": 163,
+        "train_reward": 0.0277
+      },
+      {
+        "step": 164,
+        "train_reward": 0.0211
+      },
+      {
+        "step": 165,
+        "train_reward": 0.0239
+      },
+      {
+        "step": 166,
+        "train_reward": 0.0247
+      },
+      {
+        "step": 167,
+        "train_reward": 0.0205
+      },
+      {
+        "step": 168,
+        "train_reward": 0.0206
+      },
+      {
+        "step": 169,
+        "train_reward": 0.0259
+      },
+      {
+        "step": 170,
+        "train_reward": 0.0212
+      },
+      {
+        "step": 171,
+        "train_reward": 0.0226
+      },
+      {
+        "step": 172,
+        "train_reward": 0.0208
+      },
+      {
+        "step": 173,
+        "train_reward": 0.0216
+      },
+      {
+        "step": 174,
+        "train_reward": 0.0253
+      },
+      {
+        "step": 175,
+        "train_reward": 0.0248
+      },
+      {
+        "step": 176,
+        "train_reward": 0.0234
+      },
+      {
+        "step": 177,
+        "train_reward": 0.0216
+      },
+      {
+        "step": 178,
+        "train_reward": 0.0232
+      },
+      {
+        "step": 179,
+        "train_reward": 0.0269
+      },
+      {
+        "step": 180,
+        "train_reward": 0.0202
+      },
+      {
+        "step": 181,
+        "train_reward": 0.0182
+      },
+      {
+        "step": 182,
+        "train_reward": 0.0243
+      },
+      {
+        "step": 183,
+        "train_reward": 0.0207
+      },
+      {
+        "step": 184,
+        "train_reward": 0.0175
+      },
+      {
+        "step": 185,
+        "train_reward": 0.0249
+      },
+      {
+        "step": 186,
+        "train_reward": 0.0204
+      },
+      {
+        "step": 187,
+        "train_reward": 0.0189
+      },
+      {
+        "step": 188,
+        "train_reward": 0.0233
+      },
+      {
+        "step": 189,
+        "train_reward": 0.0229
+      },
+      {
+        "step": 190,
+        "train_reward": 0.0198
+      },
+      {
+        "step": 191,
+        "train_reward": 0.0208
+      },
+      {
+        "step": 192,
+        "train_reward": 0.0185
+      },
+      {
+        "step": 193,
+        "train_reward": 0.0193
+      },
+      {
+        "step": 194,
+        "train_reward": 0.0235
+      },
+      {
+        "step": 195,
+        "train_reward": 0.0185
+      },
+      {
+        "step": 196,
+        "train_reward": 0.0253
+      },
+      {
+        "step": 197,
+        "train_reward": 0.0254
+      },
+      {
+        "step": 198,
+        "train_reward": 0.0223
+      },
+      {
+        "step": 199,
+        "train_reward": 0.0183
+      },
+      {
+        "step": 200,
+        "train_reward": 0.0214,
+        "eval_em": 0.0,
+        "eval_contains_em": 0.414,
+        "eval_f1": 0.08099456557359079,
+        "eval_avg_tool_calls": 4.994
+      },
+      {
+        "step": 201,
+        "train_reward": 0.024
+      },
+      {
+        "step": 202,
+        "train_reward": 0.0224
+      },
+      {
+        "step": 203,
+        "train_reward": 0.0216
+      },
+      {
+        "step": 204,
+        "train_reward": 0.0223
+      },
+      {
+        "step": 205,
+        "train_reward": 0.0198
+      },
+      {
+        "step": 206,
+        "train_reward": 0.0216
+      },
+      {
+        "step": 207,
+        "train_reward": 0.0233
+      },
+      {
+        "step": 208,
+        "train_reward": 0.0261
+      },
+      {
+        "step": 209,
+        "train_reward": 0.0298
+      },
+      {
+        "step": 210,
+        "train_reward": 0.0227
+      },
+      {
+        "step": 211,
+        "train_reward": 0.0203
+      },
+      {
+        "step": 212,
+        "train_reward": 0.0226
+      },
+      {
+        "step": 213,
+        "train_reward": 0.0252
+      },
+      {
+        "step": 214,
+        "train_reward": 0.0245
+      },
+      {
+        "step": 215,
+        "train_reward": 0.0253
+      },
+      {
+        "step": 216,
+        "train_reward": 0.0267
+      },
+      {
+        "step": 217,
+        "train_reward": 0.0208
+      },
+      {
+        "step": 218,
+        "train_reward": 0.0296
+      },
+      {
+        "step": 219,
+        "train_reward": 0.0276
+      },
+      {
+        "step": 220,
+        "train_reward": 0.0207
+      },
+      {
+        "step": 221,
+        "train_reward": 0.0237
+      },
+      {
+        "step": 222,
+        "train_reward": 0.0243
+      },
+      {
+        "step": 223,
+        "train_reward": 0.0252
+      },
+      {
+        "step": 224,
+        "train_reward": 0.0181
+      },
+      {
+        "step": 225,
+        "train_reward": 0.0216
+      },
+      {
+        "step": 226,
+        "train_reward": 0.0229
+      },
+      {
+        "step": 227,
+        "train_reward": 0.0309
+      },
+      {
+        "step": 228,
+        "train_reward": 0.0268
+      },
+      {
+        "step": 229,
+        "train_reward": 0.0243
+      },
+      {
+        "step": 230,
+        "train_reward": 0.0254
+      },
+      {
+        "step": 231,
+        "train_reward": 0.0243
+      },
+      {
+        "step": 232,
+        "train_reward": 0.02
+      },
+      {
+        "step": 233,
+        "train_reward": 0.0239
+      },
+      {
+        "step": 234,
+        "train_reward": 0.0305
+      },
+      {
+        "step": 235,
+        "train_reward": 0.0251
+      },
+      {
+        "step": 236,
+        "train_reward": 0.0213
+      },
+      {
+        "step": 237,
+        "train_reward": 0.0256
+      },
+      {
+        "step": 238,
+        "train_reward": 0.0245
+      },
+      {
+        "step": 239,
+        "train_reward": 0.0295
+      },
+      {
+        "step": 240,
+        "train_reward": 0.02
+      },
+      {
+        "step": 241,
+        "train_reward": 0.0244
+      },
+      {
+        "step": 242,
+        "train_reward": 0.0217
+      },
+      {
+        "step": 243,
+        "train_reward": 0.0219
+      },
+      {
+        "step": 244,
+        "train_reward": 0.0259
+      },
+      {
+        "step": 245,
+        "train_reward": 0.0224
+      },
+      {
+        "step": 246,
+        "train_reward": 0.0223
+      },
+      {
+        "step": 247,
+        "train_reward": 0.0235
+      },
+      {
+        "step": 248,
+        "train_reward": 0.0299
+      },
+      {
+        "step": 249,
+        "train_reward": 0.0205
+      },
+      {
+        "step": 250,
+        "train_reward": 0.0233
+      },
+      {
+        "step": 251,
+        "train_reward": 0.0292
+      },
+      {
+        "step": 252,
+        "train_reward": 0.0305
+      },
+      {
+        "step": 253,
+        "train_reward": 0.0281
+      },
+      {
+        "step": 254,
+        "train_reward": 0.025
+      },
+      {
+        "step": 255,
+        "train_reward": 0.0247
+      },
+      {
+        "step": 256,
+        "train_reward": 0.0221
+      },
+      {
+        "step": 257,
+        "train_reward": 0.0267
+      },
+      {
+        "step": 258,
+        "train_reward": 0.0262
+      },
+      {
+        "step": 259,
+        "train_reward": 0.0208
+      },
+      {
+        "step": 260,
+        "train_reward": 0.0278
+      },
+      {
+        "step": 261,
+        "train_reward": 0.0272
+      },
+      {
+        "step": 262,
+        "train_reward": 0.0228
+      },
+      {
+        "step": 263,
+        "train_reward": 0.0306
+      },
+      {
+        "step": 264,
+        "train_reward": 0.0214
+      },
+      {
+        "step": 265,
+        "train_reward": 0.0239
+      },
+      {
+        "step": 266,
+        "train_reward": 0.0239
+      },
+      {
+        "step": 267,
+        "train_reward": 0.0215
+      },
+      {
+        "step": 268,
+        "train_reward": 0.0224
+      },
+      {
+        "step": 269,
+        "train_reward": 0.0261
+      },
+      {
+        "step": 270,
+        "train_reward": 0.0238
+      },
+      {
+        "step": 271,
+        "train_reward": 0.0244
+      },
+      {
+        "step": 272,
+        "train_reward": 0.0211
+      },
+      {
+        "step": 273,
+        "train_reward": 0.0287
+      },
+      {
+        "step": 274,
+        "train_reward": 0.0256
+      },
+      {
+        "step": 275,
+        "train_reward": 0.0275
+      },
+      {
+        "step": 276,
+        "train_reward": 0.0186
+      },
+      {
+        "step": 277,
+        "train_reward": 0.0196
+      },
+      {
+        "step": 278,
+        "train_reward": 0.0224
+      },
+      {
+        "step": 279,
+        "train_reward": 0.0204
+      },
+      {
+        "step": 280,
+        "train_reward": 0.0257
+      },
+      {
+        "step": 281,
+        "train_reward": 0.0221
+      },
+      {
+        "step": 282,
+        "train_reward": 0.0265
+      },
+      {
+        "step": 283,
+        "train_reward": 0.0254
+      },
+      {
+        "step": 284,
+        "train_reward": 0.0234
+      },
+      {
+        "step": 285,
+        "train_reward": 0.0204
+      },
+      {
+        "step": 286,
+        "train_reward": 0.026
+      },
+      {
+        "step": 287,
+        "train_reward": 0.0237
+      },
+      {
+        "step": 288,
+        "train_reward": 0.0274
+      },
+      {
+        "step": 289,
+        "train_reward": 0.0279
+      },
+      {
+        "step": 290,
+        "train_reward": 0.0195
+      },
+      {
+        "step": 291,
+        "train_reward": 0.0235
+      },
+      {
+        "step": 292,
+        "train_reward": 0.0277
+      },
+      {
+        "step": 293,
+        "train_reward": 0.0239
+      },
+      {
+        "step": 294,
+        "train_reward": 0.0274
+      },
+      {
+        "step": 295,
+        "train_reward": 0.0268
+      },
+      {
+        "step": 296,
+        "train_reward": 0.0283
+      },
+      {
+        "step": 297,
+        "train_reward": 0.0233
+      },
+      {
+        "step": 298,
+        "train_reward": 0.0214
+      },
+      {
+        "step": 299,
+        "train_reward": 0.0269
+      },
+      {
+        "step": 300,
+        "train_reward": 0.024
+      },
+      {
+        "step": 301,
+        "train_reward": 0.018
+      },
+      {
+        "step": 302,
+        "train_reward": 0.0249
+      },
+      {
+        "step": 303,
+        "train_reward": 0.0249
+      },
+      {
+        "step": 304,
+        "train_reward": 0.0222
+      },
+      {
+        "step": 305,
+        "train_reward": 0.0211
+      },
+      {
+        "step": 306,
+        "train_reward": 0.0212
+      },
+      {
+        "step": 307,
+        "train_reward": 0.0202
+      },
+      {
+        "step": 308,
+        "train_reward": 0.0231
+      },
+      {
+        "step": 309,
+        "train_reward": 0.0266
+      },
+      {
+        "step": 310,
+        "train_reward": 0.024
+      },
+      {
+        "step": 311,
+        "train_reward": 0.0253
+      },
+      {
+        "step": 312,
+        "train_reward": 0.0257
+      },
+      {
+        "step": 313,
+        "train_reward": 0.0245
+      },
+      {
+        "step": 314,
+        "train_reward": 0.0305
+      },
+      {
+        "step": 315,
+        "train_reward": 0.025
+      },
+      {
+        "step": 316,
+        "train_reward": 0.0245
+      },
+      {
+        "step": 317,
+        "train_reward": 0.0233
+      },
+      {
+        "step": 318,
+        "train_reward": 0.0262
+      },
+      {
+        "step": 319,
+        "train_reward": 0.029
+      },
+      {
+        "step": 320,
+        "train_reward": 0.0274
+      },
+      {
+        "step": 321,
+        "train_reward": 0.0254
+      },
+      {
+        "step": 322,
+        "train_reward": 0.0174
+      },
+      {
+        "step": 323,
+        "train_reward": 0.0208
+      },
+      {
+        "step": 324,
+        "train_reward": 0.0221
+      },
+      {
+        "step": 325,
+        "train_reward": 0.0247
+      },
+      {
+        "step": 326,
+        "train_reward": 0.0255
+      },
+      {
+        "step": 327,
+        "train_reward": 0.0241
+      },
+      {
+        "step": 328,
+        "train_reward": 0.0201
+      },
+      {
+        "step": 329,
+        "train_reward": 0.0281
+      },
+      {
+        "step": 330,
+        "train_reward": 0.0216
+      },
+      {
+        "step": 331,
+        "train_reward": 0.0259
+      },
+      {
+        "step": 332,
+        "train_reward": 0.0279
+      },
+      {
+        "step": 333,
+        "train_reward": 0.0218
+      },
+      {
+        "step": 334,
+        "train_reward": 0.0227
+      },
+      {
+        "step": 335,
+        "train_reward": 0.0293
+      },
+      {
+        "step": 336,
+        "train_reward": 0.0198
+      },
+      {
+        "step": 337,
+        "train_reward": 0.0232
+      },
+      {
+        "step": 338,
+        "train_reward": 0.0247
+      },
+      {
+        "step": 339,
+        "train_reward": 0.0329
+      },
+      {
+        "step": 340,
+        "train_reward": 0.0225
+      },
+      {
+        "step": 341,
+        "train_reward": 0.0197
+      },
+      {
+        "step": 342,
+        "train_reward": 0.0302
+      },
+      {
+        "step": 343,
+        "train_reward": 0.0273
+      },
+      {
+        "step": 344,
+        "train_reward": 0.023
+      },
+      {
+        "step": 345,
+        "train_reward": 0.028
+      },
+      {
+        "step": 346,
+        "train_reward": 0.031
+      },
+      {
+        "step": 347,
+        "train_reward": 0.0319
+      },
+      {
+        "step": 348,
+        "train_reward": 0.0325
+      },
+      {
+        "step": 349,
+        "train_reward": 0.0325
+      },
+      {
+        "step": 350,
+        "train_reward": 0.0285
+      },
+      {
+        "step": 351,
+        "train_reward": 0.0327
+      },
+      {
+        "step": 352,
+        "train_reward": 0.0282
+      },
+      {
+        "step": 353,
+        "train_reward": 0.0272
+      },
+      {
+        "step": 354,
+        "train_reward": 0.0353
+      },
+      {
+        "step": 355,
+        "train_reward": 0.0283
+      },
+      {
+        "step": 356,
+        "train_reward": 0.023
+      },
+      {
+        "step": 357,
+        "train_reward": 0.0257
+      },
+      {
+        "step": 358,
+        "train_reward": 0.0211
+      },
+      {
+        "step": 359,
+        "train_reward": 0.0225
+      },
+      {
+        "step": 360,
+        "train_reward": 0.0261
+      },
+      {
+        "step": 361,
+        "train_reward": 0.0235
+      },
+      {
+        "step": 362,
+        "train_reward": 0.0184
+      },
+      {
+        "step": 363,
+        "train_reward": 0.0277
+      },
+      {
+        "step": 364,
+        "train_reward": 0.0259
+      },
+      {
+        "step": 365,
+        "train_reward": 0.027
+      },
+      {
+        "step": 366,
+        "train_reward": 0.0289
+      },
+      {
+        "step": 367,
+        "train_reward": 0.0259
+      },
+      {
+        "step": 368,
+        "train_reward": 0.0253
+      },
+      {
+        "step": 369,
+        "train_reward": 0.0269
+      },
+      {
+        "step": 370,
+        "train_reward": 0.0264
+      },
+      {
+        "step": 371,
+        "train_reward": 0.0224
+      },
+      {
+        "step": 372,
+        "train_reward": 0.0193
+      },
+      {
+        "step": 373,
+        "train_reward": 0.0206
+      },
+      {
+        "step": 374,
+        "train_reward": 0.0228
+      },
+      {
+        "step": 375,
+        "train_reward": 0.0223
+      },
+      {
+        "step": 376,
+        "train_reward": 0.0247
+      },
+      {
+        "step": 377,
+        "train_reward": 0.0282
+      },
+      {
+        "step": 378,
+        "train_reward": 0.0256
+      },
+      {
+        "step": 379,
+        "train_reward": 0.0343
+      },
+      {
+        "step": 380,
+        "train_reward": 0.0308
+      },
+      {
+        "step": 381,
+        "train_reward": 0.0352
+      },
+      {
+        "step": 382,
+        "train_reward": 0.0303
+      },
+      {
+        "step": 383,
+        "train_reward": 0.035
+      },
+      {
+        "step": 384,
+        "train_reward": 0.0314
+      },
+      {
+        "step": 385,
+        "train_reward": 0.0366
+      },
+      {
+        "step": 386,
+        "train_reward": 0.0457
+      },
+      {
+        "step": 387,
+        "train_reward": 0.026
+      },
+      {
+        "step": 388,
+        "train_reward": 0.039
+      },
+      {
+        "step": 389,
+        "train_reward": 0.0409
+      },
+      {
+        "step": 390,
+        "train_reward": 0.0433
+      },
+      {
+        "step": 391,
+        "train_reward": 0.0526
+      },
+      {
+        "step": 392,
+        "train_reward": 0.0503
+      },
+      {
+        "step": 393,
+        "train_reward": 0.0515
+      },
+      {
+        "step": 394,
+        "train_reward": 0.0456
+      },
+      {
+        "step": 395,
+        "train_reward": 0.0571
+      },
+      {
+        "step": 396,
+        "train_reward": 0.0503
+      },
+      {
+        "step": 397,
+        "train_reward": 0.042
+      },
+      {
+        "step": 398,
+        "train_reward": 0.0482
+      },
+      {
+        "step": 399,
+        "train_reward": 0.039
+      },
+      {
+        "step": 400,
+        "train_reward": 0.0379,
+        "eval_em": 0.0,
+        "eval_contains_em": 0.482,
+        "eval_f1": 0.0978432089690755,
+        "eval_avg_tool_calls": 4.988
+      },
+      {
+        "step": 401,
+        "train_reward": 0.0379
+      },
+      {
+        "step": 402,
+        "train_reward": 0.0324
+      },
+      {
+        "step": 403,
+        "train_reward": 0.0405
+      },
+      {
+        "step": 404,
+        "train_reward": 0.0378
+      },
+      {
+        "step": 405,
+        "train_reward": 0.0336
+      },
+      {
+        "step": 406,
+        "train_reward": 0.0414
+      },
+      {
+        "step": 407,
+        "train_reward": 0.0366
+      },
+      {
+        "step": 408,
+        "train_reward": 0.0396
+      },
+      {
+        "step": 409,
+        "train_reward": 0.0401
+      },
+      {
+        "step": 410,
+        "train_reward": 0.0457
+      },
+      {
+        "step": 411,
+        "train_reward": 0.0385
+      },
+      {
+        "step": 412,
+        "train_reward": 0.0423
+      },
+      {
+        "step": 413,
+        "train_reward": 0.0418
+      },
+      {
+        "step": 414,
+        "train_reward": 0.0257
+      },
+      {
+        "step": 415,
+        "train_reward": 0.0381
+      },
+      {
+        "step": 416,
+        "train_reward": 0.0402
+      },
+      {
+        "step": 417,
+        "train_reward": 0.0356
+      },
+      {
+        "step": 418,
+        "train_reward": 0.0413
+      },
+      {
+        "step": 419,
+        "train_reward": 0.0393
+      },
+      {
+        "step": 420,
+        "train_reward": 0.0296
+      },
+      {
+        "step": 421,
+        "train_reward": 0.0388
+      },
+      {
+        "step": 422,
+        "train_reward": 0.047
+      },
+      {
+        "step": 423,
+        "train_reward": 0.0356
+      },
+      {
+        "step": 424,
+        "train_reward": 0.04
+      },
+      {
+        "step": 425,
+        "train_reward": 0.0448
+      },
+      {
+        "step": 426,
+        "train_reward": 0.0526
+      },
+      {
+        "step": 427,
+        "train_reward": 0.0393
+      },
+      {
+        "step": 428,
+        "train_reward": 0.0398
+      },
+      {
+        "step": 429,
+        "train_reward": 0.0381
+      },
+      {
+        "step": 430,
+        "train_reward": 0.048
+      },
+      {
+        "step": 431,
+        "train_reward": 0.0495
+      },
+      {
+        "step": 432,
+        "train_reward": 0.0564
+      },
+      {
+        "step": 433,
+        "train_reward": 0.0512
+      },
+      {
+        "step": 434,
+        "train_reward": 0.061
+      },
+      {
+        "step": 435,
+        "train_reward": 0.0566
+      },
+      {
+        "step": 436,
+        "train_reward": 0.0577
+      },
+      {
+        "step": 437,
+        "train_reward": 0.0563
+      },
+      {
+        "step": 438,
+        "train_reward": 0.0604
+      },
+      {
+        "step": 439,
+        "train_reward": 0.0517
+      },
+      {
+        "step": 440,
+        "train_reward": 0.0564
+      },
+      {
+        "step": 441,
+        "train_reward": 0.0517
+      },
+      {
+        "step": 442,
+        "train_reward": 0.0611
+      },
+      {
+        "step": 443,
+        "train_reward": 0.0539
+      },
+      {
+        "step": 444,
+        "train_reward": 0.0521
+      },
+      {
+        "step": 445,
+        "train_reward": 0.0468
+      },
+      {
+        "step": 446,
+        "train_reward": 0.0543
+      },
+      {
+        "step": 447,
+        "train_reward": 0.0563
+      },
+      {
+        "step": 448,
+        "train_reward": 0.0503
+      },
+      {
+        "step": 449,
+        "train_reward": 0.0626
+      },
+      {
+        "step": 450,
+        "train_reward": 0.0633
+      },
+      {
+        "step": 451,
+        "train_reward": 0.0561
+      },
+      {
+        "step": 452,
+        "train_reward": 0.0613
+      },
+      {
+        "step": 453,
+        "train_reward": 0.0577
+      },
+      {
+        "step": 454,
+        "train_reward": 0.0652
+      },
+      {
+        "step": 455,
+        "train_reward": 0.0541
+      },
+      {
+        "step": 456,
+        "train_reward": 0.0587
+      },
+      {
+        "step": 457,
+        "train_reward": 0.0675
+      },
+      {
+        "step": 458,
+        "train_reward": 0.0561
+      },
+      {
+        "step": 459,
+        "train_reward": 0.0595
+      },
+      {
+        "step": 460,
+        "train_reward": 0.0663
+      },
+      {
+        "step": 461,
+        "train_reward": 0.0639
+      },
+      {
+        "step": 462,
+        "train_reward": 0.0556
+      },
+      {
+        "step": 463,
+        "train_reward": 0.0574
+      },
+      {
+        "step": 464,
+        "train_reward": 0.0515
+      },
+      {
+        "step": 465,
+        "train_reward": 0.0496
+      },
+      {
+        "step": 466,
+        "train_reward": 0.0551
+      },
+      {
+        "step": 467,
+        "train_reward": 0.064
+      },
+      {
+        "step": 468,
+        "train_reward": 0.0539
+      },
+      {
+        "step": 469,
+        "train_reward": 0.0573
+      },
+      {
+        "step": 470,
+        "train_reward": 0.0582
+      },
+      {
+        "step": 471,
+        "train_reward": 0.0552
+      },
+      {
+        "step": 472,
+        "train_reward": 0.06
+      },
+      {
+        "step": 473,
+        "train_reward": 0.0605
+      },
+      {
+        "step": 474,
+        "train_reward": 0.0473
+      },
+      {
+        "step": 475,
+        "train_reward": 0.0493
+      },
+      {
+        "step": 476,
+        "train_reward": 0.0491
+      },
+      {
+        "step": 477,
+        "train_reward": 0.0604
+      },
+      {
+        "step": 478,
+        "train_reward": 0.0558
+      },
+      {
+        "step": 479,
+        "train_reward": 0.0532
+      },
+      {
+        "step": 480,
+        "train_reward": 0.064
+      },
+      {
+        "step": 481,
+        "train_reward": 0.0641
+      },
+      {
+        "step": 482,
+        "train_reward": 0.0599
+      },
+      {
+        "step": 483,
+        "train_reward": 0.0555
+      },
+      {
+        "step": 484,
+        "train_reward": 0.0491
+      },
+      {
+        "step": 485,
+        "train_reward": 0.0566
+      },
+      {
+        "step": 486,
+        "train_reward": 0.0619
+      },
+      {
+        "step": 487,
+        "train_reward": 0.0596
+      },
+      {
+        "step": 488,
+        "train_reward": 0.047
+      },
+      {
+        "step": 489,
+        "train_reward": 0.0554
+      },
+      {
+        "step": 490,
+        "train_reward": 0.0556
+      },
+      {
+        "step": 491,
+        "train_reward": 0.0588
+      },
+      {
+        "step": 492,
+        "train_reward": 0.0624
+      },
+      {
+        "step": 493,
+        "train_reward": 0.0619
+      },
+      {
+        "step": 494,
+        "train_reward": 0.0598
+      },
+      {
+        "step": 495,
+        "train_reward": 0.0501
+      },
+      {
+        "step": 496,
+        "train_reward": 0.0627
+      },
+      {
+        "step": 497,
+        "train_reward": 0.0631
+      },
+      {
+        "step": 498,
+        "train_reward": 0.0564
+      },
+      {
+        "step": 499,
+        "train_reward": 0.0587
+      },
+      {
+        "step": 500,
+        "train_reward": 0.0618
+      },
+      {
+        "step": 501,
+        "train_reward": 0.0513
+      },
+      {
+        "step": 502,
+        "train_reward": 0.0594
+      },
+      {
+        "step": 503,
+        "train_reward": 0.0611
+      },
+      {
+        "step": 504,
+        "train_reward": 0.0375
+      },
+      {
+        "step": 505,
+        "train_reward": 0.0476
+      },
+      {
+        "step": 506,
+        "train_reward": 0.0481
+      },
+      {
+        "step": 507,
+        "train_reward": 0.0511
+      },
+      {
+        "step": 508,
+        "train_reward": 0.0511
+      },
+      {
+        "step": 509,
+        "train_reward": 0.0473
+      },
+      {
+        "step": 510,
+        "train_reward": 0.0478
+      },
+      {
+        "step": 511,
+        "train_reward": 0.0375
+      },
+      {
+        "step": 512,
+        "train_reward": 0.0428
+      },
+      {
+        "step": 513,
+        "train_reward": 0.0501
+      },
+      {
+        "step": 514,
+        "train_reward": 0.0384
+      },
+      {
+        "step": 515,
+        "train_reward": 0.0588
+      },
+      {
+        "step": 516,
+        "train_reward": 0.0433
+      },
+      {
+        "step": 517,
+        "train_reward": 0.0427
+      },
+      {
+        "step": 518,
+        "train_reward": 0.0459
+      },
+      {
+        "step": 519,
+        "train_reward": 0.043
+      },
+      {
+        "step": 520,
+        "train_reward": 0.0344
+      },
+      {
+        "step": 521,
+        "train_reward": 0.0428
+      },
+      {
+        "step": 522,
+        "train_reward": 0.0403
+      },
+      {
+        "step": 523,
+        "train_reward": 0.0398
+      },
+      {
+        "step": 524,
+        "train_reward": 0.048
+      },
+      {
+        "step": 525,
+        "train_reward": 0.0573
+      },
+      {
+        "step": 526,
+        "train_reward": 0.0404
+      },
+      {
+        "step": 527,
+        "train_reward": 0.0524
+      },
+      {
+        "step": 528,
+        "train_reward": 0.0437
+      },
+      {
+        "step": 529,
+        "train_reward": 0.048
+      },
+      {
+        "step": 530,
+        "train_reward": 0.0466
+      },
+      {
+        "step": 531,
+        "train_reward": 0.0512
+      },
+      {
+        "step": 532,
+        "train_reward": 0.0385
+      },
+      {
+        "step": 533,
+        "train_reward": 0.0441
+      },
+      {
+        "step": 534,
+        "train_reward": 0.0472
+      },
+      {
+        "step": 535,
+        "train_reward": 0.0452
+      },
+      {
+        "step": 536,
+        "train_reward": 0.0523
+      },
+      {
+        "step": 537,
+        "train_reward": 0.0519
+      },
+      {
+        "step": 538,
+        "train_reward": 0.0501
+      },
+      {
+        "step": 539,
+        "train_reward": 0.0485
+      },
+      {
+        "step": 540,
+        "train_reward": 0.0445
+      },
+      {
+        "step": 541,
+        "train_reward": 0.0528
+      },
+      {
+        "step": 542,
+        "train_reward": 0.0449
+      },
+      {
+        "step": 543,
+        "train_reward": 0.0566
+      },
+      {
+        "step": 544,
+        "train_reward": 0.0549
+      },
+      {
+        "step": 545,
+        "train_reward": 0.0486
+      },
+      {
+        "step": 546,
+        "train_reward": 0.039
+      },
+      {
+        "step": 547,
+        "train_reward": 0.0458
+      },
+      {
+        "step": 548,
+        "train_reward": 0.0462
+      },
+      {
+        "step": 549,
+        "train_reward": 0.0394
+      },
+      {
+        "step": 550,
+        "train_reward": 0.0497
+      },
+      {
+        "step": 551,
+        "train_reward": 0.0463
+      },
+      {
+        "step": 552,
+        "train_reward": 0.0497
+      },
+      {
+        "step": 553,
+        "train_reward": 0.042
+      },
+      {
+        "step": 554,
+        "train_reward": 0.0536
+      },
+      {
+        "step": 555,
+        "train_reward": 0.0476
+      },
+      {
+        "step": 556,
+        "train_reward": 0.0428
+      },
+      {
+        "step": 557,
+        "train_reward": 0.0472
+      },
+      {
+        "step": 558,
+        "train_reward": 0.0462
+      },
+      {
+        "step": 559,
+        "train_reward": 0.0448
+      },
+      {
+        "step": 560,
+        "train_reward": 0.0375
+      },
+      {
+        "step": 561,
+        "train_reward": 0.0525
+      },
+      {
+        "step": 562,
+        "train_reward": 0.0446
+      },
+      {
+        "step": 563,
+        "train_reward": 0.0438
+      },
+      {
+        "step": 564,
+        "train_reward": 0.0424
+      },
+      {
+        "step": 565,
+        "train_reward": 0.0396
+      },
+      {
+        "step": 566,
+        "train_reward": 0.0454
+      },
+      {
+        "step": 567,
+        "train_reward": 0.0465
+      },
+      {
+        "step": 568,
+        "train_reward": 0.0415
+      },
+      {
+        "step": 569,
+        "train_reward": 0.043
+      },
+      {
+        "step": 570,
+        "train_reward": 0.0456
+      },
+      {
+        "step": 571,
+        "train_reward": 0.049
+      },
+      {
+        "step": 572,
+        "train_reward": 0.0458
+      },
+      {
+        "step": 573,
+        "train_reward": 0.0406
+      },
+      {
+        "step": 574,
+        "train_reward": 0.038
+      },
+      {
+        "step": 575,
+        "train_reward": 0.0426
+      },
+      {
+        "step": 576,
+        "train_reward": 0.0495
+      },
+      {
+        "step": 577,
+        "train_reward": 0.0448
+      },
+      {
+        "step": 578,
+        "train_reward": 0.0522
+      },
+      {
+        "step": 579,
+        "train_reward": 0.0462
+      },
+      {
+        "step": 580,
+        "train_reward": 0.0528
+      },
+      {
+        "step": 581,
+        "train_reward": 0.052
+      },
+      {
+        "step": 582,
+        "train_reward": 0.0466
+      },
+      {
+        "step": 583,
+        "train_reward": 0.0454
+      },
+      {
+        "step": 584,
+        "train_reward": 0.047
+      },
+      {
+        "step": 585,
+        "train_reward": 0.0404
+      },
+      {
+        "step": 586,
+        "train_reward": 0.0456
+      },
+      {
+        "step": 587,
+        "train_reward": 0.0456
+      },
+      {
+        "step": 588,
+        "train_reward": 0.042
+      },
+      {
+        "step": 589,
+        "train_reward": 0.0457
+      },
+      {
+        "step": 590,
+        "train_reward": 0.0409
+      },
+      {
+        "step": 591,
+        "train_reward": 0.0487
+      },
+      {
+        "step": 592,
+        "train_reward": 0.0425
+      },
+      {
+        "step": 593,
+        "train_reward": 0.0432
+      },
+      {
+        "step": 594,
+        "train_reward": 0.0543
+      },
+      {
+        "step": 595,
+        "train_reward": 0.0442
+      },
+      {
+        "step": 596,
+        "train_reward": 0.049
+      },
+      {
+        "step": 597,
+        "train_reward": 0.042
+      },
+      {
+        "step": 598,
+        "train_reward": 0.0445
+      },
+      {
+        "step": 599,
+        "train_reward": 0.0407
+      },
+      {
+        "step": 600,
+        "train_reward": 0.0498,
+        "eval_em": 0.004,
+        "eval_contains_em": 0.484,
+        "eval_f1": 0.11603060374647334,
+        "eval_avg_tool_calls": 4.914
+      },
+      {
+        "step": 601,
+        "train_reward": 0.0467
+      },
+      {
+        "step": 602,
+        "train_reward": 0.0497
+      },
+      {
+        "step": 603,
+        "train_reward": 0.041
+      },
+      {
+        "step": 604,
+        "train_reward": 0.0445
+      },
+      {
+        "step": 605,
+        "train_reward": 0.0492
+      },
+      {
+        "step": 606,
+        "train_reward": 0.047
+      },
+      {
+        "step": 607,
+        "train_reward": 0.0494
+      },
+      {
+        "step": 608,
+        "train_reward": 0.0486
+      },
+      {
+        "step": 609,
+        "train_reward": 0.044
+      },
+      {
+        "step": 610,
+        "train_reward": 0.0517
+      },
+      {
+        "step": 611,
+        "train_reward": 0.0466
+      },
+      {
+        "step": 612,
+        "train_reward": 0.0436
+      },
+      {
+        "step": 613,
+        "train_reward": 0.0466
+      },
+      {
+        "step": 614,
+        "train_reward": 0.0469
+      },
+      {
+        "step": 615,
+        "train_reward": 0.0368
+      },
+      {
+        "step": 616,
+        "train_reward": 0.0467
+      },
+      {
+        "step": 617,
+        "train_reward": 0.0443
+      },
+      {
+        "step": 618,
+        "train_reward": 0.0344
+      },
+      {
+        "step": 619,
+        "train_reward": 0.0456
+      },
+      {
+        "step": 620,
+        "train_reward": 0.0441
+      },
+      {
+        "step": 621,
+        "train_reward": 0.0431
+      },
+      {
+        "step": 622,
+        "train_reward": 0.0476
+      },
+      {
+        "step": 623,
+        "train_reward": 0.0414
+      },
+      {
+        "step": 624,
+        "train_reward": 0.0391
+      },
+      {
+        "step": 625,
+        "train_reward": 0.0473
+      },
+      {
+        "step": 626,
+        "train_reward": 0.0391
+      },
+      {
+        "step": 627,
+        "train_reward": 0.0539
+      },
+      {
+        "step": 628,
+        "train_reward": 0.0506
+      },
+      {
+        "step": 629,
+        "train_reward": 0.0525
+      },
+      {
+        "step": 630,
+        "train_reward": 0.0427
+      },
+      {
+        "step": 631,
+        "train_reward": 0.0438
+      },
+      {
+        "step": 632,
+        "train_reward": 0.0533
+      },
+      {
+        "step": 633,
+        "train_reward": 0.0429
+      },
+      {
+        "step": 634,
+        "train_reward": 0.0455
+      },
+      {
+        "step": 635,
+        "train_reward": 0.0462
+      },
+      {
+        "step": 636,
+        "train_reward": 0.0409
+      },
+      {
+        "step": 637,
+        "train_reward": 0.0418
+      },
+      {
+        "step": 638,
+        "train_reward": 0.0463
+      },
+      {
+        "step": 639,
+        "train_reward": 0.0515
+      },
+      {
+        "step": 640,
+        "train_reward": 0.059
+      },
+      {
+        "step": 641,
+        "train_reward": 0.0388
+      },
+      {
+        "step": 642,
+        "train_reward": 0.0433
+      },
+      {
+        "step": 643,
+        "train_reward": 0.0492
+      },
+      {
+        "step": 644,
+        "train_reward": 0.054
+      },
+      {
+        "step": 645,
+        "train_reward": 0.0479
+      },
+      {
+        "step": 646,
+        "train_reward": 0.0549
+      },
+      {
+        "step": 647,
+        "train_reward": 0.0545
+      },
+      {
+        "step": 648,
+        "train_reward": 0.0499
+      },
+      {
+        "step": 649,
+        "train_reward": 0.0532
+      },
+      {
+        "step": 650,
+        "train_reward": 0.0565
+      },
+      {
+        "step": 651,
+        "train_reward": 0.0428
+      },
+      {
+        "step": 652,
+        "train_reward": 0.0504
+      },
+      {
+        "step": 653,
+        "train_reward": 0.0512
+      },
+      {
+        "step": 654,
+        "train_reward": 0.0456
+      },
+      {
+        "step": 655,
+        "train_reward": 0.0405
+      },
+      {
+        "step": 656,
+        "train_reward": 0.0442
+      },
+      {
+        "step": 657,
+        "train_reward": 0.043
+      },
+      {
+        "step": 658,
+        "train_reward": 0.055
+      },
+      {
+        "step": 659,
+        "train_reward": 0.0547
+      },
+      {
+        "step": 660,
+        "train_reward": 0.0454
+      },
+      {
+        "step": 661,
+        "train_reward": 0.0473
+      },
+      {
+        "step": 662,
+        "train_reward": 0.0489
+      },
+      {
+        "step": 663,
+        "train_reward": 0.0398
+      },
+      {
+        "step": 664,
+        "train_reward": 0.0447
+      },
+      {
+        "step": 665,
+        "train_reward": 0.0549
+      },
+      {
+        "step": 666,
+        "train_reward": 0.0474
+      },
+      {
+        "step": 667,
+        "train_reward": 0.0495
+      },
+      {
+        "step": 668,
+        "train_reward": 0.0517
+      },
+      {
+        "step": 669,
+        "train_reward": 0.0481
+      },
+      {
+        "step": 670,
+        "train_reward": 0.0535
+      },
+      {
+        "step": 671,
+        "train_reward": 0.0547
+      },
+      {
+        "step": 672,
+        "train_reward": 0.0556
+      },
+      {
+        "step": 673,
+        "train_reward": 0.045
+      },
+      {
+        "step": 674,
+        "train_reward": 0.0445
+      },
+      {
+        "step": 675,
+        "train_reward": 0.0548
+      },
+      {
+        "step": 676,
+        "train_reward": 0.0475
+      },
+      {
+        "step": 677,
+        "train_reward": 0.0437
+      },
+      {
+        "step": 678,
+        "train_reward": 0.0473
+      },
+      {
+        "step": 679,
+        "train_reward": 0.0611
+      },
+      {
+        "step": 680,
+        "train_reward": 0.0423
+      },
+      {
+        "step": 681,
+        "train_reward": 0.0506
+      },
+      {
+        "step": 682,
+        "train_reward": 0.0623
+      },
+      {
+        "step": 683,
+        "train_reward": 0.0583
+      },
+      {
+        "step": 684,
+        "train_reward": 0.0541
+      },
+      {
+        "step": 685,
+        "train_reward": 0.0501
+      },
+      {
+        "step": 686,
+        "train_reward": 0.0489
+      },
+      {
+        "step": 687,
+        "train_reward": 0.0462
+      },
+      {
+        "step": 688,
+        "train_reward": 0.0547
+      },
+      {
+        "step": 689,
+        "train_reward": 0.0523
+      },
+      {
+        "step": 690,
+        "train_reward": 0.0462
+      },
+      {
+        "step": 691,
+        "train_reward": 0.0599
+      },
+      {
+        "step": 692,
+        "train_reward": 0.0492
+      },
+      {
+        "step": 693,
+        "train_reward": 0.047
+      },
+      {
+        "step": 694,
+        "train_reward": 0.0597
+      },
+      {
+        "step": 695,
+        "train_reward": 0.0467
+      },
+      {
+        "step": 696,
+        "train_reward": 0.047
+      },
+      {
+        "step": 697,
+        "train_reward": 0.0498
+      },
+      {
+        "step": 698,
+        "train_reward": 0.0445
+      },
+      {
+        "step": 699,
+        "train_reward": 0.0401
+      },
+      {
+        "step": 700,
+        "train_reward": 0.0531
+      },
+      {
+        "step": 701,
+        "train_reward": 0.0486
+      },
+      {
+        "step": 702,
+        "train_reward": 0.0465
+      },
+      {
+        "step": 703,
+        "train_reward": 0.0459
+      },
+      {
+        "step": 704,
+        "train_reward": 0.0545
+      },
+      {
+        "step": 705,
+        "train_reward": 0.0482
+      },
+      {
+        "step": 706,
+        "train_reward": 0.0519
+      },
+      {
+        "step": 707,
+        "train_reward": 0.0389
+      },
+      {
+        "step": 708,
+        "train_reward": 0.0435
+      },
+      {
+        "step": 709,
+        "train_reward": 0.0435
+      },
+      {
+        "step": 710,
+        "train_reward": 0.0447
+      },
+      {
+        "step": 711,
+        "train_reward": 0.058
+      },
+      {
+        "step": 712,
+        "train_reward": 0.0511
+      },
+      {
+        "step": 713,
+        "train_reward": 0.0499
+      },
+      {
+        "step": 714,
+        "train_reward": 0.0479
+      },
+      {
+        "step": 715,
+        "train_reward": 0.0471
+      },
+      {
+        "step": 716,
+        "train_reward": 0.0467
+      },
+      {
+        "step": 717,
+        "train_reward": 0.0539
+      },
+      {
+        "step": 718,
+        "train_reward": 0.0469
+      },
+      {
+        "step": 719,
+        "train_reward": 0.0552
+      },
+      {
+        "step": 720,
+        "train_reward": 0.0559
+      },
+      {
+        "step": 721,
+        "train_reward": 0.0408
+      },
+      {
+        "step": 722,
+        "train_reward": 0.0492
+      },
+      {
+        "step": 723,
+        "train_reward": 0.0531
+      },
+      {
+        "step": 724,
+        "train_reward": 0.0471
+      },
+      {
+        "step": 725,
+        "train_reward": 0.056
+      },
+      {
+        "step": 726,
+        "train_reward": 0.0559
+      },
+      {
+        "step": 727,
+        "train_reward": 0.058
+      },
+      {
+        "step": 728,
+        "train_reward": 0.0462
+      },
+      {
+        "step": 729,
+        "train_reward": 0.0485
+      },
+      {
+        "step": 730,
+        "train_reward": 0.0495
+      },
+      {
+        "step": 731,
+        "train_reward": 0.0495
+      },
+      {
+        "step": 732,
+        "train_reward": 0.0425
+      },
+      {
+        "step": 733,
+        "train_reward": 0.0496
+      },
+      {
+        "step": 734,
+        "train_reward": 0.0495
+      },
+      {
+        "step": 735,
+        "train_reward": 0.0473
+      },
+      {
+        "step": 736,
+        "train_reward": 0.046
+      },
+      {
+        "step": 737,
+        "train_reward": 0.0441
+      },
+      {
+        "step": 738,
+        "train_reward": 0.0457
+      },
+      {
+        "step": 739,
+        "train_reward": 0.0502
+      },
+      {
+        "step": 740,
+        "train_reward": 0.0495
+      },
+      {
+        "step": 741,
+        "train_reward": 0.0527
+      },
+      {
+        "step": 742,
+        "train_reward": 0.0491
+      },
+      {
+        "step": 743,
+        "train_reward": 0.0546
+      },
+      {
+        "step": 744,
+        "train_reward": 0.0467
+      },
+      {
+        "step": 745,
+        "train_reward": 0.0596
+      },
+      {
+        "step": 746,
+        "train_reward": 0.05
+      },
+      {
+        "step": 747,
+        "train_reward": 0.0468
+      },
+      {
+        "step": 748,
+        "train_reward": 0.0449
+      },
+      {
+        "step": 749,
+        "train_reward": 0.0531
+      },
+      {
+        "step": 750,
+        "train_reward": 0.0544
+      },
+      {
+        "step": 751,
+        "train_reward": 0.0509
+      },
+      {
+        "step": 752,
+        "train_reward": 0.0519
+      },
+      {
+        "step": 753,
+        "train_reward": 0.036
+      },
+      {
+        "step": 754,
+        "train_reward": 0.0422
+      },
+      {
+        "step": 755,
+        "train_reward": 0.0439
+      },
+      {
+        "step": 756,
+        "train_reward": 0.0486
+      },
+      {
+        "step": 757,
+        "train_reward": 0.0483
+      },
+      {
+        "step": 758,
+        "train_reward": 0.0527
+      },
+      {
+        "step": 759,
+        "train_reward": 0.0397
+      },
+      {
+        "step": 760,
+        "train_reward": 0.0515
+      },
+      {
+        "step": 761,
+        "train_reward": 0.0476
+      },
+      {
+        "step": 762,
+        "train_reward": 0.0466
+      },
+      {
+        "step": 763,
+        "train_reward": 0.0517
+      },
+      {
+        "step": 764,
+        "train_reward": 0.045
+      },
+      {
+        "step": 765,
+        "train_reward": 0.0466
+      },
+      {
+        "step": 766,
+        "train_reward": 0.0513
+      },
+      {
+        "step": 767,
+        "train_reward": 0.0412
+      },
+      {
+        "step": 768,
+        "train_reward": 0.0459
+      },
+      {
+        "step": 769,
+        "train_reward": 0.0489
+      },
+      {
+        "step": 770,
+        "train_reward": 0.0542
+      },
+      {
+        "step": 771,
+        "train_reward": 0.045
+      },
+      {
+        "step": 772,
+        "train_reward": 0.0402
+      },
+      {
+        "step": 773,
+        "train_reward": 0.0571
+      },
+      {
+        "step": 774,
+        "train_reward": 0.0528
+      },
+      {
+        "step": 775,
+        "train_reward": 0.0444
+      },
+      {
+        "step": 776,
+        "train_reward": 0.0497
+      },
+      {
+        "step": 777,
+        "train_reward": 0.0579
+      },
+      {
+        "step": 778,
+        "train_reward": 0.063
+      },
+      {
+        "step": 779,
+        "train_reward": 0.0591
+      },
+      {
+        "step": 780,
+        "train_reward": 0.0676
+      },
+      {
+        "step": 781,
+        "train_reward": 0.056
+      },
+      {
+        "step": 782,
+        "train_reward": 0.0605
+      },
+      {
+        "step": 783,
+        "train_reward": 0.0554
+      },
+      {
+        "step": 784,
+        "train_reward": 0.0609
+      },
+      {
+        "step": 785,
+        "train_reward": 0.0711
+      },
+      {
+        "step": 786,
+        "train_reward": 0.0555
+      },
+      {
+        "step": 787,
+        "train_reward": 0.0481
+      },
+      {
+        "step": 788,
+        "train_reward": 0.0499
+      },
+      {
+        "step": 789,
+        "train_reward": 0.0403
+      },
+      {
+        "step": 790,
+        "train_reward": 0.0462
+      },
+      {
+        "step": 791,
+        "train_reward": 0.0521
+      },
+      {
+        "step": 792,
+        "train_reward": 0.0516
+      },
+      {
+        "step": 793,
+        "train_reward": 0.0362
+      },
+      {
+        "step": 794,
+        "train_reward": 0.0522
+      },
+      {
+        "step": 795,
+        "train_reward": 0.047
+      },
+      {
+        "step": 796,
+        "train_reward": 0.0527
+      },
+      {
+        "step": 797,
+        "train_reward": 0.0568
+      },
+      {
+        "step": 798,
+        "train_reward": 0.0508
+      },
+      {
+        "step": 799,
+        "train_reward": 0.0472
+      },
+      {
+        "step": 800,
+        "train_reward": 0.0517,
+        "eval_em": 0.0,
+        "eval_contains_em": 0.496,
+        "eval_f1": 0.10565558838102516,
+        "eval_avg_tool_calls": 4.946
+      },
+      {
+        "step": 801,
+        "train_reward": 0.0519
+      },
+      {
+        "step": 802,
+        "train_reward": 0.0437
+      },
+      {
+        "step": 803,
+        "train_reward": 0.0415
+      },
+      {
+        "step": 804,
+        "train_reward": 0.047
+      },
+      {
+        "step": 805,
+        "train_reward": 0.0422
+      },
+      {
+        "step": 806,
+        "train_reward": 0.0421
+      },
+      {
+        "step": 807,
+        "train_reward": 0.0436
+      },
+      {
+        "step": 808,
+        "train_reward": 0.0553
+      },
+      {
+        "step": 809,
+        "train_reward": 0.0458
+      },
+      {
+        "step": 810,
+        "train_reward": 0.0536
+      },
+      {
+        "step": 811,
+        "train_reward": 0.0497
+      },
+      {
+        "step": 812,
+        "train_reward": 0.0473
+      },
+      {
+        "step": 813,
+        "train_reward": 0.0436
+      },
+      {
+        "step": 814,
+        "train_reward": 0.0473
+      },
+      {
+        "step": 815,
+        "train_reward": 0.0419
+      },
+      {
+        "step": 816,
+        "train_reward": 0.0474
+      },
+      {
+        "step": 817,
+        "train_reward": 0.0541
+      },
+      {
+        "step": 818,
+        "train_reward": 0.0361
+      },
+      {
+        "step": 819,
+        "train_reward": 0.0478
+      },
+      {
+        "step": 820,
+        "train_reward": 0.0576
+      },
+      {
+        "step": 821,
+        "train_reward": 0.0535
+      },
+      {
+        "step": 822,
+        "train_reward": 0.0636
+      },
+      {
+        "step": 823,
+        "train_reward": 0.0639
+      },
+      {
+        "step": 824,
+        "train_reward": 0.0637
+      },
+      {
+        "step": 825,
+        "train_reward": 0.0575
+      },
+      {
+        "step": 826,
+        "train_reward": 0.0721
+      },
+      {
+        "step": 827,
+        "train_reward": 0.0645
+      },
+      {
+        "step": 828,
+        "train_reward": 0.0516
+      },
+      {
+        "step": 829,
+        "train_reward": 0.0594
+      },
+      {
+        "step": 830,
+        "train_reward": 0.0541
+      },
+      {
+        "step": 831,
+        "train_reward": 0.0518
+      },
+      {
+        "step": 832,
+        "train_reward": 0.0512
+      },
+      {
+        "step": 833,
+        "train_reward": 0.0485
+      },
+      {
+        "step": 834,
+        "train_reward": 0.0516
+      },
+      {
+        "step": 835,
+        "train_reward": 0.0499
+      },
+      {
+        "step": 836,
+        "train_reward": 0.0439
+      },
+      {
+        "step": 837,
+        "train_reward": 0.0526
+      },
+      {
+        "step": 838,
+        "train_reward": 0.045
+      },
+      {
+        "step": 839,
+        "train_reward": 0.0514
+      },
+      {
+        "step": 840,
+        "train_reward": 0.0457
+      },
+      {
+        "step": 841,
+        "train_reward": 0.0573
+      },
+      {
+        "step": 842,
+        "train_reward": 0.0461
+      },
+      {
+        "step": 843,
+        "train_reward": 0.0515
+      },
+      {
+        "step": 844,
+        "train_reward": 0.0551
+      },
+      {
+        "step": 845,
+        "train_reward": 0.0317
+      },
+      {
+        "step": 846,
+        "train_reward": 0.0514
+      },
+      {
+        "step": 847,
+        "train_reward": 0.0504
+      },
+      {
+        "step": 848,
+        "train_reward": 0.0563
+      },
+      {
+        "step": 849,
+        "train_reward": 0.0649
+      },
+      {
+        "step": 850,
+        "train_reward": 0.0665
+      },
+      {
+        "step": 851,
+        "train_reward": 0.0511
+      },
+      {
+        "step": 852,
+        "train_reward": 0.0581
+      },
+      {
+        "step": 853,
+        "train_reward": 0.059
+      },
+      {
+        "step": 854,
+        "train_reward": 0.0536
+      },
+      {
+        "step": 855,
+        "train_reward": 0.0523
+      },
+      {
+        "step": 856,
+        "train_reward": 0.0563
+      },
+      {
+        "step": 857,
+        "train_reward": 0.0693
+      },
+      {
+        "step": 858,
+        "train_reward": 0.0538
+      },
+      {
+        "step": 859,
+        "train_reward": 0.0491
+      },
+      {
+        "step": 860,
+        "train_reward": 0.0562
+      },
+      {
+        "step": 861,
+        "train_reward": 0.0674
+      },
+      {
+        "step": 862,
+        "train_reward": 0.0668
+      },
+      {
+        "step": 863,
+        "train_reward": 0.0731
+      },
+      {
+        "step": 864,
+        "train_reward": 0.0635
+      },
+      {
+        "step": 865,
+        "train_reward": 0.0765
+      },
+      {
+        "step": 866,
+        "train_reward": 0.0726
+      },
+      {
+        "step": 867,
+        "train_reward": 0.0771
+      },
+      {
+        "step": 868,
+        "train_reward": 0.0709
+      },
+      {
+        "step": 869,
+        "train_reward": 0.079
+      },
+      {
+        "step": 870,
+        "train_reward": 0.0687
+      },
+      {
+        "step": 871,
+        "train_reward": 0.0744
+      },
+      {
+        "step": 872,
+        "train_reward": 0.0661
+      },
+      {
+        "step": 873,
+        "train_reward": 0.0814
+      },
+      {
+        "step": 874,
+        "train_reward": 0.0734
+      },
+      {
+        "step": 875,
+        "train_reward": 0.0638
+      },
+      {
+        "step": 876,
+        "train_reward": 0.0582
+      },
+      {
+        "step": 877,
+        "train_reward": 0.0735
+      },
+      {
+        "step": 878,
+        "train_reward": 0.0695
+      },
+      {
+        "step": 879,
+        "train_reward": 0.0626
+      },
+      {
+        "step": 880,
+        "train_reward": 0.0796
+      },
+      {
+        "step": 881,
+        "train_reward": 0.0771
+      },
+      {
+        "step": 882,
+        "train_reward": 0.0727
+      },
+      {
+        "step": 883,
+        "train_reward": 0.0774
+      },
+      {
+        "step": 884,
+        "train_reward": 0.0744
+      },
+      {
+        "step": 885,
+        "train_reward": 0.0862
+      },
+      {
+        "step": 886,
+        "train_reward": 0.0715
+      },
+      {
+        "step": 887,
+        "train_reward": 0.0747
+      },
+      {
+        "step": 888,
+        "train_reward": 0.0816
+      },
+      {
+        "step": 889,
+        "train_reward": 0.0741
+      },
+      {
+        "step": 890,
+        "train_reward": 0.0795
+      },
+      {
+        "step": 891,
+        "train_reward": 0.0818
+      },
+      {
+        "step": 892,
+        "train_reward": 0.0799
+      },
+      {
+        "step": 893,
+        "train_reward": 0.076
+      },
+      {
+        "step": 894,
+        "train_reward": 0.0743
+      },
+      {
+        "step": 895,
+        "train_reward": 0.0607
+      },
+      {
+        "step": 896,
+        "train_reward": 0.064
+      },
+      {
+        "step": 897,
+        "train_reward": 0.0746
+      },
+      {
+        "step": 898,
+        "train_reward": 0.0831
+      },
+      {
+        "step": 899,
+        "train_reward": 0.0674
+      },
+      {
+        "step": 900,
+        "train_reward": 0.0666
+      },
+      {
+        "step": 901,
+        "train_reward": 0.0751
+      },
+      {
+        "step": 902,
+        "train_reward": 0.0711
+      },
+      {
+        "step": 903,
+        "train_reward": 0.0756
+      },
+      {
+        "step": 904,
+        "train_reward": 0.0753
+      },
+      {
+        "step": 905,
+        "train_reward": 0.0595
+      },
+      {
+        "step": 906,
+        "train_reward": 0.0633
+      },
+      {
+        "step": 907,
+        "train_reward": 0.0691
+      },
+      {
+        "step": 908,
+        "train_reward": 0.0795
+      },
+      {
+        "step": 909,
+        "train_reward": 0.0739
+      },
+      {
+        "step": 910,
+        "train_reward": 0.0672
+      },
+      {
+        "step": 911,
+        "train_reward": 0.0801
+      },
+      {
+        "step": 912,
+        "train_reward": 0.0813
+      },
+      {
+        "step": 913,
+        "train_reward": 0.0813
+      },
+      {
+        "step": 914,
+        "train_reward": 0.0751
+      },
+      {
+        "step": 915,
+        "train_reward": 0.0665
+      },
+      {
+        "step": 916,
+        "train_reward": 0.0739
+      },
+      {
+        "step": 917,
+        "train_reward": 0.0796
+      },
+      {
+        "step": 918,
+        "train_reward": 0.0764
+      },
+      {
+        "step": 919,
+        "train_reward": 0.0596
+      },
+      {
+        "step": 920,
+        "train_reward": 0.0738
+      },
+      {
+        "step": 921,
+        "train_reward": 0.0719
+      },
+      {
+        "step": 922,
+        "train_reward": 0.0747
+      },
+      {
+        "step": 923,
+        "train_reward": 0.0783
+      },
+      {
+        "step": 924,
+        "train_reward": 0.0844
+      },
+      {
+        "step": 925,
+        "train_reward": 0.0743
+      },
+      {
+        "step": 926,
+        "train_reward": 0.0643
+      },
+      {
+        "step": 927,
+        "train_reward": 0.0806
+      },
+      {
+        "step": 928,
+        "train_reward": 0.0784
+      },
+      {
+        "step": 929,
+        "train_reward": 0.0725
+      },
+      {
+        "step": 930,
+        "train_reward": 0.078
+      },
+      {
+        "step": 931,
+        "train_reward": 0.0747
+      },
+      {
+        "step": 932,
+        "train_reward": 0.0684
+      },
+      {
+        "step": 933,
+        "train_reward": 0.0774
+      },
+      {
+        "step": 934,
+        "train_reward": 0.0791
+      },
+      {
+        "step": 935,
+        "train_reward": 0.0561
+      },
+      {
+        "step": 936,
+        "train_reward": 0.0641
+      },
+      {
+        "step": 937,
+        "train_reward": 0.0686
+      },
+      {
+        "step": 938,
+        "train_reward": 0.0619
+      },
+      {
+        "step": 939,
+        "train_reward": 0.0681
+      },
+      {
+        "step": 940,
+        "train_reward": 0.061
+      },
+      {
+        "step": 941,
+        "train_reward": 0.0569
+      },
+      {
+        "step": 942,
+        "train_reward": 0.0518
+      },
+      {
+        "step": 943,
+        "train_reward": 0.0563
+      },
+      {
+        "step": 944,
+        "train_reward": 0.0657
+      },
+      {
+        "step": 945,
+        "train_reward": 0.0551
+      },
+      {
+        "step": 946,
+        "train_reward": 0.0718
+      },
+      {
+        "step": 947,
+        "train_reward": 0.054
+      },
+      {
+        "step": 948,
+        "train_reward": 0.0556
+      },
+      {
+        "step": 949,
+        "train_reward": 0.0604
+      },
+      {
+        "step": 950,
+        "train_reward": 0.0569
+      },
+      {
+        "step": 951,
+        "train_reward": 0.0443
+      },
+      {
+        "step": 952,
+        "train_reward": 0.055
+      },
+      {
+        "step": 953,
+        "train_reward": 0.0517
+      },
+      {
+        "step": 954,
+        "train_reward": 0.0524
+      },
+      {
+        "step": 955,
+        "train_reward": 0.0632
+      },
+      {
+        "step": 956,
+        "train_reward": 0.0733
+      },
+      {
+        "step": 957,
+        "train_reward": 0.055
+      },
+      {
+        "step": 958,
+        "train_reward": 0.0644
+      },
+      {
+        "step": 959,
+        "train_reward": 0.0492
+      },
+      {
+        "step": 960,
+        "train_reward": 0.0607
+      },
+      {
+        "step": 961,
+        "train_reward": 0.0566
+      },
+      {
+        "step": 962,
+        "train_reward": 0.06
+      },
+      {
+        "step": 963,
+        "train_reward": 0.0521
+      },
+      {
+        "step": 964,
+        "train_reward": 0.0613
+      },
+      {
+        "step": 965,
+        "train_reward": 0.0659
+      },
+      {
+        "step": 966,
+        "train_reward": 0.0576
+      },
+      {
+        "step": 967,
+        "train_reward": 0.0699
+      },
+      {
+        "step": 968,
+        "train_reward": 0.0617
+      },
+      {
+        "step": 969,
+        "train_reward": 0.0631
+      },
+      {
+        "step": 970,
+        "train_reward": 0.0639
+      },
+      {
+        "step": 971,
+        "train_reward": 0.0552
+      },
+      {
+        "step": 972,
+        "train_reward": 0.0665
+      },
+      {
+        "step": 973,
+        "train_reward": 0.0581
+      },
+      {
+        "step": 974,
+        "train_reward": 0.0704
+      },
+      {
+        "step": 975,
+        "train_reward": 0.0715
+      },
+      {
+        "step": 976,
+        "train_reward": 0.0654
+      },
+      {
+        "step": 977,
+        "train_reward": 0.0558
+      },
+      {
+        "step": 978,
+        "train_reward": 0.0554
+      },
+      {
+        "step": 979,
+        "train_reward": 0.0645
+      },
+      {
+        "step": 980,
+        "train_reward": 0.055
+      },
+      {
+        "step": 981,
+        "train_reward": 0.0638
+      },
+      {
+        "step": 982,
+        "train_reward": 0.0655
+      },
+      {
+        "step": 983,
+        "train_reward": 0.0714
+      },
+      {
+        "step": 984,
+        "train_reward": 0.0578
+      },
+      {
+        "step": 985,
+        "train_reward": 0.0695
+      },
+      {
+        "step": 986,
+        "train_reward": 0.0618
+      },
+      {
+        "step": 987,
+        "train_reward": 0.0577
+      },
+      {
+        "step": 988,
+        "train_reward": 0.058
+      },
+      {
+        "step": 989,
+        "train_reward": 0.0616
+      },
+      {
+        "step": 990,
+        "train_reward": 0.0602
+      },
+      {
+        "step": 991,
+        "train_reward": 0.0534
+      },
+      {
+        "step": 992,
+        "train_reward": 0.0655
+      },
+      {
+        "step": 993,
+        "train_reward": 0.0607
+      },
+      {
+        "step": 994,
+        "train_reward": 0.0583
+      },
+      {
+        "step": 995,
+        "train_reward": 0.0535
+      },
+      {
+        "step": 996,
+        "train_reward": 0.062
+      },
+      {
+        "step": 997,
+        "train_reward": 0.06
+      },
+      {
+        "step": 998,
+        "train_reward": 0.0612
+      },
+      {
+        "step": 999,
+        "train_reward": 0.0566
+      },
+      {
+        "step": 1000,
+        "train_reward": 0.0557,
+        "eval_em": 0.012,
+        "eval_contains_em": 0.478,
+        "eval_f1": 0.29618921662707237,
+        "eval_avg_tool_calls": 0.07
+      },
+      {
+        "step": 1001,
+        "train_reward": 0.0608
+      },
+      {
+        "step": 1002,
+        "train_reward": 0.0633
+      },
+      {
+        "step": 1003,
+        "train_reward": 0.062
+      },
+      {
+        "step": 1004,
+        "train_reward": 0.0528
+      },
+      {
+        "step": 1005,
+        "train_reward": 0.051
+      },
+      {
+        "step": 1006,
+        "train_reward": 0.0519
+      },
+      {
+        "step": 1007,
+        "train_reward": 0.0624
+      },
+      {
+        "step": 1008,
+        "train_reward": 0.0579
+      },
+      {
+        "step": 1009,
+        "train_reward": 0.0653
+      },
+      {
+        "step": 1010,
+        "train_reward": 0.0517
+      },
+      {
+        "step": 1011,
+        "train_reward": 0.068
+      },
+      {
+        "step": 1012,
+        "train_reward": 0.0637
+      },
+      {
+        "step": 1013,
+        "train_reward": 0.0586
+      },
+      {
+        "step": 1014,
+        "train_reward": 0.0643
+      },
+      {
+        "step": 1015,
+        "train_reward": 0.0549
+      },
+      {
+        "step": 1016,
+        "train_reward": 0.058
+      },
+      {
+        "step": 1017,
+        "train_reward": 0.0574
+      },
+      {
+        "step": 1018,
+        "train_reward": 0.0601
+      },
+      {
+        "step": 1019,
+        "train_reward": 0.054
+      },
+      {
+        "step": 1020,
+        "train_reward": 0.0579
+      },
+      {
+        "step": 1021,
+        "train_reward": 0.0533
+      },
+      {
+        "step": 1022,
+        "train_reward": 0.0644
+      },
+      {
+        "step": 1023,
+        "train_reward": 0.0565
+      },
+      {
+        "step": 1024,
+        "train_reward": 0.061
+      },
+      {
+        "step": 1025,
+        "train_reward": 0.0678
+      },
+      {
+        "step": 1026,
+        "train_reward": 0.0581
+      },
+      {
+        "step": 1027,
+        "train_reward": 0.0671
+      },
+      {
+        "step": 1028,
+        "train_reward": 0.0582
+      },
+      {
+        "step": 1029,
+        "train_reward": 0.057
+      },
+      {
+        "step": 1030,
+        "train_reward": 0.0503
+      },
+      {
+        "step": 1031,
+        "train_reward": 0.0615
+      },
+      {
+        "step": 1032,
+        "train_reward": 0.0639
+      },
+      {
+        "step": 1033,
+        "train_reward": 0.0628
+      },
+      {
+        "step": 1034,
+        "train_reward": 0.0574
+      },
+      {
+        "step": 1035,
+        "train_reward": 0.0556
+      },
+      {
+        "step": 1036,
+        "train_reward": 0.0637
+      },
+      {
+        "step": 1037,
+        "train_reward": 0.0593
+      },
+      {
+        "step": 1038,
+        "train_reward": 0.061
+      },
+      {
+        "step": 1039,
+        "train_reward": 0.0598
+      },
+      {
+        "step": 1040,
+        "train_reward": 0.0555
+      },
+      {
+        "step": 1041,
+        "train_reward": 0.0692
+      },
+      {
+        "step": 1042,
+        "train_reward": 0.0595
+      },
+      {
+        "step": 1043,
+        "train_reward": 0.0521
+      },
+      {
+        "step": 1044,
+        "train_reward": 0.0568
+      },
+      {
+        "step": 1045,
+        "train_reward": 0.0597
+      },
+      {
+        "step": 1046,
+        "train_reward": 0.0469
+      },
+      {
+        "step": 1047,
+        "train_reward": 0.059
+      },
+      {
+        "step": 1048,
+        "train_reward": 0.0607
+      },
+      {
+        "step": 1049,
+        "train_reward": 0.0469
+      },
+      {
+        "step": 1050,
+        "train_reward": 0.06
+      },
+      {
+        "step": 1051,
+        "train_reward": 0.0559
+      },
+      {
+        "step": 1052,
+        "train_reward": 0.0586
+      },
+      {
+        "step": 1053,
+        "train_reward": 0.057
+      },
+      {
+        "step": 1054,
+        "train_reward": 0.0541
+      },
+      {
+        "step": 1055,
+        "train_reward": 0.0542
+      },
+      {
+        "step": 1056,
+        "train_reward": 0.0671
+      },
+      {
+        "step": 1057,
+        "train_reward": 0.0499
+      },
+      {
+        "step": 1058,
+        "train_reward": 0.0662
+      },
+      {
+        "step": 1059,
+        "train_reward": 0.0612
+      },
+      {
+        "step": 1060,
+        "train_reward": 0.0661
+      },
+      {
+        "step": 1061,
+        "train_reward": 0.0522
+      },
+      {
+        "step": 1062,
+        "train_reward": 0.0603
+      },
+      {
+        "step": 1063,
+        "train_reward": 0.071
+      },
+      {
+        "step": 1064,
+        "train_reward": 0.0543
+      },
+      {
+        "step": 1065,
+        "train_reward": 0.0549
+      },
+      {
+        "step": 1066,
+        "train_reward": 0.0633
+      },
+      {
+        "step": 1067,
+        "train_reward": 0.0536
+      },
+      {
+        "step": 1068,
+        "train_reward": 0.0515
+      },
+      {
+        "step": 1069,
+        "train_reward": 0.0618
+      },
+      {
+        "step": 1070,
+        "train_reward": 0.0615
+      },
+      {
+        "step": 1071,
+        "train_reward": 0.0775
+      },
+      {
+        "step": 1072,
+        "train_reward": 0.0521
+      },
+      {
+        "step": 1073,
+        "train_reward": 0.0517
+      },
+      {
+        "step": 1074,
+        "train_reward": 0.064
+      },
+      {
+        "step": 1075,
+        "train_reward": 0.0679
+      },
+      {
+        "step": 1076,
+        "train_reward": 0.0607
+      },
+      {
+        "step": 1077,
+        "train_reward": 0.0643
+      },
+      {
+        "step": 1078,
+        "train_reward": 0.064
+      },
+      {
+        "step": 1079,
+        "train_reward": 0.0604
+      },
+      {
+        "step": 1080,
+        "train_reward": 0.0678
+      },
+      {
+        "step": 1081,
+        "train_reward": 0.0659
+      },
+      {
+        "step": 1082,
+        "train_reward": 0.0521
+      },
+      {
+        "step": 1083,
+        "train_reward": 0.0596
+      },
+      {
+        "step": 1084,
+        "train_reward": 0.0639
+      },
+      {
+        "step": 1085,
+        "train_reward": 0.0596
+      },
+      {
+        "step": 1086,
+        "train_reward": 0.0568
+      },
+      {
+        "step": 1087,
+        "train_reward": 0.0577
+      },
+      {
+        "step": 1088,
+        "train_reward": 0.0511
+      },
+      {
+        "step": 1089,
+        "train_reward": 0.0667
+      },
+      {
+        "step": 1090,
+        "train_reward": 0.0686
+      },
+      {
+        "step": 1091,
+        "train_reward": 0.0535
+      },
+      {
+        "step": 1092,
+        "train_reward": 0.0624
+      },
+      {
+        "step": 1093,
+        "train_reward": 0.0662
+      },
+      {
+        "step": 1094,
+        "train_reward": 0.0591
+      },
+      {
+        "step": 1095,
+        "train_reward": 0.0523
+      },
+      {
+        "step": 1096,
+        "train_reward": 0.0666
+      },
+      {
+        "step": 1097,
+        "train_reward": 0.0602
+      },
+      {
+        "step": 1098,
+        "train_reward": 0.0626
+      },
+      {
+        "step": 1099,
+        "train_reward": 0.0646
+      },
+      {
+        "step": 1100,
+        "train_reward": 0.0635
+      },
+      {
+        "step": 1101,
+        "train_reward": 0.0693
+      },
+      {
+        "step": 1102,
+        "train_reward": 0.0679
+      },
+      {
+        "step": 1103,
+        "train_reward": 0.0685
+      },
+      {
+        "step": 1104,
+        "train_reward": 0.0544
+      },
+      {
+        "step": 1105,
+        "train_reward": 0.0546
+      },
+      {
+        "step": 1106,
+        "train_reward": 0.0651
+      },
+      {
+        "step": 1107,
+        "train_reward": 0.0613
+      },
+      {
+        "step": 1108,
+        "train_reward": 0.0607
+      },
+      {
+        "step": 1109,
+        "train_reward": 0.06
+      },
+      {
+        "step": 1110,
+        "train_reward": 0.0768
+      },
+      {
+        "step": 1111,
+        "train_reward": 0.0582
+      },
+      {
+        "step": 1112,
+        "train_reward": 0.0623
+      },
+      {
+        "step": 1113,
+        "train_reward": 0.0772
+      },
+      {
+        "step": 1114,
+        "train_reward": 0.0758
+      },
+      {
+        "step": 1115,
+        "train_reward": 0.0661
+      },
+      {
+        "step": 1116,
+        "train_reward": 0.0606
+      },
+      {
+        "step": 1117,
+        "train_reward": 0.0643
+      },
+      {
+        "step": 1118,
+        "train_reward": 0.0615
+      },
+      {
+        "step": 1119,
+        "train_reward": 0.0691
+      },
+      {
+        "step": 1120,
+        "train_reward": 0.0696
+      },
+      {
+        "step": 1121,
+        "train_reward": 0.0588
+      },
+      {
+        "step": 1122,
+        "train_reward": 0.0729
+      },
+      {
+        "step": 1123,
+        "train_reward": 0.0643
+      },
+      {
+        "step": 1124,
+        "train_reward": 0.0646
+      },
+      {
+        "step": 1125,
+        "train_reward": 0.074
+      },
+      {
+        "step": 1126,
+        "train_reward": 0.0597
+      },
+      {
+        "step": 1127,
+        "train_reward": 0.0549
+      },
+      {
+        "step": 1128,
+        "train_reward": 0.0604
+      },
+      {
+        "step": 1129,
+        "train_reward": 0.0562
+      },
+      {
+        "step": 1130,
+        "train_reward": 0.057
+      },
+      {
+        "step": 1131,
+        "train_reward": 0.0695
+      },
+      {
+        "step": 1132,
+        "train_reward": 0.0573
+      },
+      {
+        "step": 1133,
+        "train_reward": 0.0597
+      },
+      {
+        "step": 1134,
+        "train_reward": 0.0583
+      },
+      {
+        "step": 1135,
+        "train_reward": 0.0641
+      },
+      {
+        "step": 1136,
+        "train_reward": 0.0638
+      },
+      {
+        "step": 1137,
+        "train_reward": 0.069
+      },
+      {
+        "step": 1138,
+        "train_reward": 0.0432
+      },
+      {
+        "step": 1139,
+        "train_reward": 0.0558
+      },
+      {
+        "step": 1140,
+        "train_reward": 0.0588
+      },
+      {
+        "step": 1141,
+        "train_reward": 0.058
+      },
+      {
+        "step": 1142,
+        "train_reward": 0.0732
+      },
+      {
+        "step": 1143,
+        "train_reward": 0.0588
+      },
+      {
+        "step": 1144,
+        "train_reward": 0.0621
+      },
+      {
+        "step": 1145,
+        "train_reward": 0.0646
+      },
+      {
+        "step": 1146,
+        "train_reward": 0.0601
+      },
+      {
+        "step": 1147,
+        "train_reward": 0.0621
+      },
+      {
+        "step": 1148,
+        "train_reward": 0.063
+      },
+      {
+        "step": 1149,
+        "train_reward": 0.0591
+      },
+      {
+        "step": 1150,
+        "train_reward": 0.0681
+      },
+      {
+        "step": 1151,
+        "train_reward": 0.0628
+      },
+      {
+        "step": 1152,
+        "train_reward": 0.0548
+      },
+      {
+        "step": 1153,
+        "train_reward": 0.0597
+      },
+      {
+        "step": 1154,
+        "train_reward": 0.0722
+      },
+      {
+        "step": 1155,
+        "train_reward": 0.0598
+      },
+      {
+        "step": 1156,
+        "train_reward": 0.072
+      },
+      {
+        "step": 1157,
+        "train_reward": 0.072
+      },
+      {
+        "step": 1158,
+        "train_reward": 0.0738
+      },
+      {
+        "step": 1159,
+        "train_reward": 0.056
+      },
+      {
+        "step": 1160,
+        "train_reward": 0.0584
+      },
+      {
+        "step": 1161,
+        "train_reward": 0.0622
+      },
+      {
+        "step": 1162,
+        "train_reward": 0.0596
+      },
+      {
+        "step": 1163,
+        "train_reward": 0.0491
+      },
+      {
+        "step": 1164,
+        "train_reward": 0.0586
+      },
+      {
+        "step": 1165,
+        "train_reward": 0.0625
+      },
+      {
+        "step": 1166,
+        "train_reward": 0.0671
+      },
+      {
+        "step": 1167,
+        "train_reward": 0.0612
+      },
+      {
+        "step": 1168,
+        "train_reward": 0.0563
+      },
+      {
+        "step": 1169,
+        "train_reward": 0.0501
+      },
+      {
+        "step": 1170,
+        "train_reward": 0.063
+      },
+      {
+        "step": 1171,
+        "train_reward": 0.0625
+      },
+      {
+        "step": 1172,
+        "train_reward": 0.0667
+      },
+      {
+        "step": 1173,
+        "train_reward": 0.0621
+      },
+      {
+        "step": 1174,
+        "train_reward": 0.0653
+      },
+      {
+        "step": 1175,
+        "train_reward": 0.0562
+      },
+      {
+        "step": 1176,
+        "train_reward": 0.0692
+      },
+      {
+        "step": 1177,
+        "train_reward": 0.0647
+      },
+      {
+        "step": 1178,
+        "train_reward": 0.0575
+      },
+      {
+        "step": 1179,
+        "train_reward": 0.0242
+      },
+      {
+        "step": 1180,
+        "train_reward": 0.0639
+      },
+      {
+        "step": 1181,
+        "train_reward": 0.0672
+      },
+      {
+        "step": 1182,
+        "train_reward": 0.0674
+      },
+      {
+        "step": 1183,
+        "train_reward": 0.0629
+      },
+      {
+        "step": 1184,
+        "train_reward": 0.0473
+      },
+      {
+        "step": 1185,
+        "train_reward": 0.0557
+      },
+      {
+        "step": 1186,
+        "train_reward": 0.0588
+      },
+      {
+        "step": 1187,
+        "train_reward": 0.0658
+      },
+      {
+        "step": 1188,
+        "train_reward": 0.0647
+      },
+      {
+        "step": 1189,
+        "train_reward": 0.0668
+      },
+      {
+        "step": 1190,
+        "train_reward": 0.053
+      },
+      {
+        "step": 1191,
+        "train_reward": 0.0639
+      },
+      {
+        "step": 1192,
+        "train_reward": 0.0611
+      },
+      {
+        "step": 1193,
+        "train_reward": 0.0648
+      },
+      {
+        "step": 1194,
+        "train_reward": 0.0688
+      },
+      {
+        "step": 1195,
+        "train_reward": 0.0604
+      },
+      {
+        "step": 1196,
+        "train_reward": 0.0659
+      },
+      {
+        "step": 1197,
+        "train_reward": 0.0642
+      },
+      {
+        "step": 1198,
+        "train_reward": 0.0555
+      },
+      {
+        "step": 1199,
+        "train_reward": 0.0544
+      },
+      {
+        "step": 1200,
+        "train_reward": 0.0628,
+        "eval_em": 0.336,
+        "eval_contains_em": 0.58,
+        "eval_f1": 0.4487620304656297,
+        "eval_avg_tool_calls": 0.136
+      },
+      {
+        "step": 1201,
+        "train_reward": 0.0685
+      },
+      {
+        "step": 1202,
+        "train_reward": 0.0572
+      },
+      {
+        "step": 1203,
+        "train_reward": 0.0529
+      },
+      {
+        "step": 1204,
+        "train_reward": 0.075
+      },
+      {
+        "step": 1205,
+        "train_reward": 0.0637
+      },
+      {
+        "step": 1206,
+        "train_reward": 0.0612
+      },
+      {
+        "step": 1207,
+        "train_reward": 0.0648
+      },
+      {
+        "step": 1208,
+        "train_reward": 0.0691
+      },
+      {
+        "step": 1209,
+        "train_reward": 0.0788
+      },
+      {
+        "step": 1210,
+        "train_reward": 0.0764
+      },
+      {
+        "step": 1211,
+        "train_reward": 0.0827
+      },
+      {
+        "step": 1212,
+        "train_reward": 0.0682
+      },
+      {
+        "step": 1213,
+        "train_reward": 0.077
+      },
+      {
+        "step": 1214,
+        "train_reward": 0.0691
+      },
+      {
+        "step": 1215,
+        "train_reward": 0.0751
+      },
+      {
+        "step": 1216,
+        "train_reward": 0.0874
+      },
+      {
+        "step": 1217,
+        "train_reward": 0.0669
+      },
+      {
+        "step": 1218,
+        "train_reward": 0.0612
+      },
+      {
+        "step": 1219,
+        "train_reward": 0.0665
+      },
+      {
+        "step": 1220,
+        "train_reward": 0.0522
+      },
+      {
+        "step": 1221,
+        "train_reward": 0.0608
+      },
+      {
+        "step": 1222,
+        "train_reward": 0.0661
+      },
+      {
+        "step": 1223,
+        "train_reward": 0.0647
+      },
+      {
+        "step": 1224,
+        "train_reward": 0.0464
+      },
+      {
+        "step": 1225,
+        "train_reward": 0.0674
+      },
+      {
+        "step": 1226,
+        "train_reward": 0.061
+      },
+      {
+        "step": 1227,
+        "train_reward": 0.0658
+      },
+      {
+        "step": 1228,
+        "train_reward": 0.0742
+      },
+      {
+        "step": 1229,
+        "train_reward": 0.0666
+      },
+      {
+        "step": 1230,
+        "train_reward": 0.0622
+      },
+      {
+        "step": 1231,
+        "train_reward": 0.0693
+      },
+      {
+        "step": 1232,
+        "train_reward": 0.0649
+      },
+      {
+        "step": 1233,
+        "train_reward": 0.0574
+      },
+      {
+        "step": 1234,
+        "train_reward": 0.055
+      },
+      {
+        "step": 1235,
+        "train_reward": 0.0577
+      },
+      {
+        "step": 1236,
+        "train_reward": 0.0587
+      },
+      {
+        "step": 1237,
+        "train_reward": 0.0597
+      },
+      {
+        "step": 1238,
+        "train_reward": 0.0586
+      },
+      {
+        "step": 1239,
+        "train_reward": 0.0636
+      },
+      {
+        "step": 1240,
+        "train_reward": 0.0627
+      },
+      {
+        "step": 1241,
+        "train_reward": 0.0728
+      },
+      {
+        "step": 1242,
+        "train_reward": 0.0727
+      },
+      {
+        "step": 1243,
+        "train_reward": 0.0598
+      },
+      {
+        "step": 1244,
+        "train_reward": 0.0567
+      },
+      {
+        "step": 1245,
+        "train_reward": 0.0593
+      },
+      {
+        "step": 1246,
+        "train_reward": 0.0569
+      },
+      {
+        "step": 1247,
+        "train_reward": 0.0632
+      },
+      {
+        "step": 1248,
+        "train_reward": 0.0667
+      },
+      {
+        "step": 1249,
+        "train_reward": 0.0383
+      },
+      {
+        "step": 1250,
+        "train_reward": 0.0633
+      },
+      {
+        "step": 1251,
+        "train_reward": 0.0713
+      },
+      {
+        "step": 1252,
+        "train_reward": 0.069
+      },
+      {
+        "step": 1253,
+        "train_reward": 0.0805
+      },
+      {
+        "step": 1254,
+        "train_reward": 0.0844
+      },
+      {
+        "step": 1255,
+        "train_reward": 0.0783
+      },
+      {
+        "step": 1256,
+        "train_reward": 0.0695
+      },
+      {
+        "step": 1257,
+        "train_reward": 0.0979
+      },
+      {
+        "step": 1258,
+        "train_reward": 0.0797
+      },
+      {
+        "step": 1259,
+        "train_reward": 0.0681
+      }
+    ]
+  },
+  "E3_verifiable": {
+    "reward_key": "critic/score/mean",
+    "n_reward_points": 1259,
+    "n_eval_points": 8,
+    "merged": [
+      {
+        "step": 1,
+        "train_reward": 0.0037
+      },
+      {
+        "step": 2,
+        "train_reward": 0.0048
+      },
+      {
+        "step": 3,
+        "train_reward": 0.0064
+      },
+      {
+        "step": 4,
+        "train_reward": 0.0065
+      },
+      {
+        "step": 5,
+        "train_reward": 0.0047
+      },
+      {
+        "step": 6,
+        "train_reward": 0.0087
+      },
+      {
+        "step": 7,
+        "train_reward": 0.006
+      },
+      {
+        "step": 8,
+        "train_reward": 0.013
+      },
+      {
+        "step": 9,
+        "train_reward": 0.0376
+      },
+      {
+        "step": 10,
+        "train_reward": 0.1613
+      },
+      {
+        "step": 11,
+        "train_reward": 0.173
+      },
+      {
+        "step": 12,
+        "train_reward": 0.1818
+      },
+      {
+        "step": 13,
+        "train_reward": 0.1669
+      },
+      {
+        "step": 14,
+        "train_reward": 0.1754
+      },
+      {
+        "step": 15,
+        "train_reward": 0.1734
+      },
+      {
+        "step": 16,
+        "train_reward": 0.1881
+      },
+      {
+        "step": 17,
+        "train_reward": 0.1745
+      },
+      {
+        "step": 18,
+        "train_reward": 0.2
+      },
+      {
+        "step": 19,
+        "train_reward": 0.1994
+      },
+      {
+        "step": 20,
+        "train_reward": 0.1941
+      },
+      {
+        "step": 21,
+        "train_reward": 0.1829
+      },
+      {
+        "step": 22,
+        "train_reward": 0.1983
+      },
+      {
+        "step": 23,
+        "train_reward": 0.1992
+      },
+      {
+        "step": 24,
+        "train_reward": 0.1909
+      },
+      {
+        "step": 25,
+        "train_reward": 0.1849
+      },
+      {
+        "step": 26,
+        "train_reward": 0.1849
+      },
+      {
+        "step": 27,
+        "train_reward": 0.1828
+      },
+      {
+        "step": 28,
+        "train_reward": 0.2
+      },
+      {
+        "step": 29,
+        "train_reward": 0.2038
+      },
+      {
+        "step": 30,
+        "train_reward": 0.2082
+      },
+      {
+        "step": 31,
+        "train_reward": 0.1957
+      },
+      {
+        "step": 32,
+        "train_reward": 0.2009
+      },
+      {
+        "step": 33,
+        "train_reward": 0.197
+      },
+      {
+        "step": 34,
+        "train_reward": 0.1829
+      },
+      {
+        "step": 35,
+        "train_reward": 0.1952
+      },
+      {
+        "step": 36,
+        "train_reward": 0.2074
+      },
+      {
+        "step": 37,
+        "train_reward": 0.2003
+      },
+      {
+        "step": 38,
+        "train_reward": 0.1971
+      },
+      {
+        "step": 39,
+        "train_reward": 0.1813
+      },
+      {
+        "step": 40,
+        "train_reward": 0.1937
+      },
+      {
+        "step": 41,
+        "train_reward": 0.1953
+      },
+      {
+        "step": 42,
+        "train_reward": 0.1999
+      },
+      {
+        "step": 43,
+        "train_reward": 0.1885
+      },
+      {
+        "step": 44,
+        "train_reward": 0.2035
+      },
+      {
+        "step": 45,
+        "train_reward": 0.2002
+      },
+      {
+        "step": 46,
+        "train_reward": 0.2075
+      },
+      {
+        "step": 47,
+        "train_reward": 0.2083
+      },
+      {
+        "step": 48,
+        "train_reward": 0.2043
+      },
+      {
+        "step": 49,
+        "train_reward": 0.2603
+      },
+      {
+        "step": 50,
+        "train_reward": 0.2479
+      },
+      {
+        "step": 51,
+        "train_reward": 0.2911
+      },
+      {
+        "step": 52,
+        "train_reward": 0.2952
+      },
+      {
+        "step": 53,
+        "train_reward": 0.2815
+      },
+      {
+        "step": 54,
+        "train_reward": 0.2974
+      },
+      {
+        "step": 55,
+        "train_reward": 0.3198
+      },
+      {
+        "step": 56,
+        "train_reward": 0.313
+      },
+      {
+        "step": 57,
+        "train_reward": 0.263
+      },
+      {
+        "step": 58,
+        "train_reward": 0.2754
+      },
+      {
+        "step": 59,
+        "train_reward": 0.2075
+      },
+      {
+        "step": 60,
+        "train_reward": 0.2218
+      },
+      {
+        "step": 61,
+        "train_reward": 0.2112
+      },
+      {
+        "step": 62,
+        "train_reward": 0.207
+      },
+      {
+        "step": 63,
+        "train_reward": 0.1948
+      },
+      {
+        "step": 64,
+        "train_reward": 0.2132
+      },
+      {
+        "step": 65,
+        "train_reward": 0.1849
+      },
+      {
+        "step": 66,
+        "train_reward": 0.2124
+      },
+      {
+        "step": 67,
+        "train_reward": 0.1982
+      },
+      {
+        "step": 68,
+        "train_reward": 0.2118
+      },
+      {
+        "step": 69,
+        "train_reward": 0.2033
+      },
+      {
+        "step": 70,
+        "train_reward": 0.2088
+      },
+      {
+        "step": 71,
+        "train_reward": 0.2219
+      },
+      {
+        "step": 72,
+        "train_reward": 0.2362
+      },
+      {
+        "step": 73,
+        "train_reward": 0.1976
+      },
+      {
+        "step": 74,
+        "train_reward": 0.1757
+      },
+      {
+        "step": 75,
+        "train_reward": 0.1875
+      },
+      {
+        "step": 76,
+        "train_reward": 0.1984
+      },
+      {
+        "step": 77,
+        "train_reward": 0.2106
+      },
+      {
+        "step": 78,
+        "train_reward": 0.1859
+      },
+      {
+        "step": 79,
+        "train_reward": 0.2015
+      },
+      {
+        "step": 80,
+        "train_reward": 0.1841
+      },
+      {
+        "step": 81,
+        "train_reward": 0.2211
+      },
+      {
+        "step": 82,
+        "train_reward": 0.2637
+      },
+      {
+        "step": 83,
+        "train_reward": 0.2365
+      },
+      {
+        "step": 84,
+        "train_reward": 0.2877
+      },
+      {
+        "step": 85,
+        "train_reward": 0.2505
+      },
+      {
+        "step": 86,
+        "train_reward": 0.2567
+      },
+      {
+        "step": 87,
+        "train_reward": 0.2872
+      },
+      {
+        "step": 88,
+        "train_reward": 0.2609
+      },
+      {
+        "step": 89,
+        "train_reward": 0.2356
+      },
+      {
+        "step": 90,
+        "train_reward": 0.2543
+      },
+      {
+        "step": 91,
+        "train_reward": 0.2736
+      },
+      {
+        "step": 92,
+        "train_reward": 0.2777
+      },
+      {
+        "step": 93,
+        "train_reward": 0.2692
+      },
+      {
+        "step": 94,
+        "train_reward": 0.3043
+      },
+      {
+        "step": 95,
+        "train_reward": 0.2477
+      },
+      {
+        "step": 96,
+        "train_reward": 0.2917
+      },
+      {
+        "step": 97,
+        "train_reward": 0.2631
+      },
+      {
+        "step": 98,
+        "train_reward": 0.2556
+      },
+      {
+        "step": 99,
+        "train_reward": 0.2749
+      },
+      {
+        "step": 100,
+        "train_reward": 0.2642,
+        "eval_em": 0.466,
+        "eval_contains_em": 0.492,
+        "eval_f1": 0.5194396825396825,
+        "eval_avg_tool_calls": 1.04
+      },
+      {
+        "step": 101,
+        "train_reward": 0.2528
+      },
+      {
+        "step": 102,
+        "train_reward": 0.2678
+      },
+      {
+        "step": 103,
+        "train_reward": 0.2962
+      },
+      {
+        "step": 104,
+        "train_reward": 0.2488
+      },
+      {
+        "step": 105,
+        "train_reward": 0.291
+      },
+      {
+        "step": 106,
+        "train_reward": 0.2857
+      },
+      {
+        "step": 107,
+        "train_reward": 0.2749
+      },
+      {
+        "step": 108,
+        "train_reward": 0.2977
+      },
+      {
+        "step": 109,
+        "train_reward": 0.2804
+      },
+      {
+        "step": 110,
+        "train_reward": 0.2859
+      },
+      {
+        "step": 111,
+        "train_reward": 0.2592
+      },
+      {
+        "step": 112,
+        "train_reward": 0.2912
+      },
+      {
+        "step": 113,
+        "train_reward": 0.282
+      },
+      {
+        "step": 114,
+        "train_reward": 0.2932
+      },
+      {
+        "step": 115,
+        "train_reward": 0.2612
+      },
+      {
+        "step": 116,
+        "train_reward": 0.2661
+      },
+      {
+        "step": 117,
+        "train_reward": 0.2881
+      },
+      {
+        "step": 118,
+        "train_reward": 0.2701
+      },
+      {
+        "step": 119,
+        "train_reward": 0.3045
+      },
+      {
+        "step": 120,
+        "train_reward": 0.2843
+      },
+      {
+        "step": 121,
+        "train_reward": 0.2966
+      },
+      {
+        "step": 122,
+        "train_reward": 0.269
+      },
+      {
+        "step": 123,
+        "train_reward": 0.2935
+      },
+      {
+        "step": 124,
+        "train_reward": 0.2937
+      },
+      {
+        "step": 125,
+        "train_reward": 0.2519
+      },
+      {
+        "step": 126,
+        "train_reward": 0.31
+      },
+      {
+        "step": 127,
+        "train_reward": 0.3066
+      },
+      {
+        "step": 128,
+        "train_reward": 0.2945
+      },
+      {
+        "step": 129,
+        "train_reward": 0.2719
+      },
+      {
+        "step": 130,
+        "train_reward": 0.2953
+      },
+      {
+        "step": 131,
+        "train_reward": 0.2804
+      },
+      {
+        "step": 132,
+        "train_reward": 0.2815
+      },
+      {
+        "step": 133,
+        "train_reward": 0.2905
+      },
+      {
+        "step": 134,
+        "train_reward": 0.2961
+      },
+      {
+        "step": 135,
+        "train_reward": 0.2788
+      },
+      {
+        "step": 136,
+        "train_reward": 0.3016
+      },
+      {
+        "step": 137,
+        "train_reward": 0.2753
+      },
+      {
+        "step": 138,
+        "train_reward": 0.291
+      },
+      {
+        "step": 139,
+        "train_reward": 0.2617
+      },
+      {
+        "step": 140,
+        "train_reward": 0.2908
+      },
+      {
+        "step": 141,
+        "train_reward": 0.2788
+      },
+      {
+        "step": 142,
+        "train_reward": 0.2643
+      },
+      {
+        "step": 143,
+        "train_reward": 0.2782
+      },
+      {
+        "step": 144,
+        "train_reward": 0.2669
+      },
+      {
+        "step": 145,
+        "train_reward": 0.28
+      },
+      {
+        "step": 146,
+        "train_reward": 0.2845
+      },
+      {
+        "step": 147,
+        "train_reward": 0.2922
+      },
+      {
+        "step": 148,
+        "train_reward": 0.2885
+      },
+      {
+        "step": 149,
+        "train_reward": 0.2973
+      },
+      {
+        "step": 150,
+        "train_reward": 0.2866
+      },
+      {
+        "step": 151,
+        "train_reward": 0.2046
+      },
+      {
+        "step": 152,
+        "train_reward": 0.1715
+      },
+      {
+        "step": 153,
+        "train_reward": 0.178
+      },
+      {
+        "step": 154,
+        "train_reward": 0.1859
+      },
+      {
+        "step": 155,
+        "train_reward": 0.1797
+      },
+      {
+        "step": 156,
+        "train_reward": 0.1836
+      },
+      {
+        "step": 157,
+        "train_reward": 0.1787
+      },
+      {
+        "step": 158,
+        "train_reward": 0.2538
+      },
+      {
+        "step": 159,
+        "train_reward": 0.2833
+      },
+      {
+        "step": 160,
+        "train_reward": 0.2875
+      },
+      {
+        "step": 161,
+        "train_reward": 0.2559
+      },
+      {
+        "step": 162,
+        "train_reward": 0.2914
+      },
+      {
+        "step": 163,
+        "train_reward": 0.2956
+      },
+      {
+        "step": 164,
+        "train_reward": 0.2927
+      },
+      {
+        "step": 165,
+        "train_reward": 0.2914
+      },
+      {
+        "step": 166,
+        "train_reward": 0.27
+      },
+      {
+        "step": 167,
+        "train_reward": 0.282
+      },
+      {
+        "step": 168,
+        "train_reward": 0.2677
+      },
+      {
+        "step": 169,
+        "train_reward": 0.3027
+      },
+      {
+        "step": 170,
+        "train_reward": 0.2961
+      },
+      {
+        "step": 171,
+        "train_reward": 0.2963
+      },
+      {
+        "step": 172,
+        "train_reward": 0.2818
+      },
+      {
+        "step": 173,
+        "train_reward": 0.2706
+      },
+      {
+        "step": 174,
+        "train_reward": 0.3043
+      },
+      {
+        "step": 175,
+        "train_reward": 0.295
+      },
+      {
+        "step": 176,
+        "train_reward": 0.2767
+      },
+      {
+        "step": 177,
+        "train_reward": 0.2795
+      },
+      {
+        "step": 178,
+        "train_reward": 0.3033
+      },
+      {
+        "step": 179,
+        "train_reward": 0.2968
+      },
+      {
+        "step": 180,
+        "train_reward": 0.2817
+      },
+      {
+        "step": 181,
+        "train_reward": 0.2851
+      },
+      {
+        "step": 182,
+        "train_reward": 0.3153
+      },
+      {
+        "step": 183,
+        "train_reward": 0.2658
+      },
+      {
+        "step": 184,
+        "train_reward": 0.271
+      },
+      {
+        "step": 185,
+        "train_reward": 0.2936
+      },
+      {
+        "step": 186,
+        "train_reward": 0.2741
+      },
+      {
+        "step": 187,
+        "train_reward": 0.2699
+      },
+      {
+        "step": 188,
+        "train_reward": 0.2929
+      },
+      {
+        "step": 189,
+        "train_reward": 0.2858
+      },
+      {
+        "step": 190,
+        "train_reward": 0.3023
+      },
+      {
+        "step": 191,
+        "train_reward": 0.3107
+      },
+      {
+        "step": 192,
+        "train_reward": 0.3009
+      },
+      {
+        "step": 193,
+        "train_reward": 0.2896
+      },
+      {
+        "step": 194,
+        "train_reward": 0.3052
+      },
+      {
+        "step": 195,
+        "train_reward": 0.2827
+      },
+      {
+        "step": 196,
+        "train_reward": 0.2864
+      },
+      {
+        "step": 197,
+        "train_reward": 0.2745
+      },
+      {
+        "step": 198,
+        "train_reward": 0.2791
+      },
+      {
+        "step": 199,
+        "train_reward": 0.2529
+      },
+      {
+        "step": 200,
+        "train_reward": 0.3015
+      },
+      {
+        "step": 201,
+        "train_reward": 0.3135
+      },
+      {
+        "step": 202,
+        "train_reward": 0.2751
+      },
+      {
+        "step": 203,
+        "train_reward": 0.2739
+      },
+      {
+        "step": 204,
+        "train_reward": 0.2764
+      },
+      {
+        "step": 205,
+        "train_reward": 0.2835
+      },
+      {
+        "step": 206,
+        "train_reward": 0.2886
+      },
+      {
+        "step": 207,
+        "train_reward": 0.2995
+      },
+      {
+        "step": 208,
+        "train_reward": 0.2865
+      },
+      {
+        "step": 209,
+        "train_reward": 0.3121
+      },
+      {
+        "step": 210,
+        "train_reward": 0.2632
+      },
+      {
+        "step": 211,
+        "train_reward": 0.2804
+      },
+      {
+        "step": 212,
+        "train_reward": 0.3184
+      },
+      {
+        "step": 213,
+        "train_reward": 0.2827
+      },
+      {
+        "step": 214,
+        "train_reward": 0.3106
+      },
+      {
+        "step": 215,
+        "train_reward": 0.2976
+      },
+      {
+        "step": 216,
+        "train_reward": 0.3237
+      },
+      {
+        "step": 217,
+        "train_reward": 0.2956
+      },
+      {
+        "step": 218,
+        "train_reward": 0.3387
+      },
+      {
+        "step": 219,
+        "train_reward": 0.3226
+      },
+      {
+        "step": 220,
+        "train_reward": 0.2654
+      },
+      {
+        "step": 221,
+        "train_reward": 0.2957
+      },
+      {
+        "step": 222,
+        "train_reward": 0.3016
+      },
+      {
+        "step": 223,
+        "train_reward": 0.3151
+      },
+      {
+        "step": 224,
+        "train_reward": 0.3161
+      },
+      {
+        "step": 225,
+        "train_reward": 0.3235
+      },
+      {
+        "step": 226,
+        "train_reward": 0.2596
+      },
+      {
+        "step": 227,
+        "train_reward": 0.3292
+      },
+      {
+        "step": 228,
+        "train_reward": 0.3124
+      },
+      {
+        "step": 229,
+        "train_reward": 0.302
+      },
+      {
+        "step": 230,
+        "train_reward": 0.3142
+      },
+      {
+        "step": 231,
+        "train_reward": 0.3327
+      },
+      {
+        "step": 232,
+        "train_reward": 0.2592
+      },
+      {
+        "step": 233,
+        "train_reward": 0.2642
+      },
+      {
+        "step": 234,
+        "train_reward": 0.3187
+      },
+      {
+        "step": 235,
+        "train_reward": 0.2596
+      },
+      {
+        "step": 236,
+        "train_reward": 0.2888
+      },
+      {
+        "step": 237,
+        "train_reward": 0.3062
+      },
+      {
+        "step": 238,
+        "train_reward": 0.2838
+      },
+      {
+        "step": 239,
+        "train_reward": 0.3052
+      },
+      {
+        "step": 240,
+        "train_reward": 0.2854
+      },
+      {
+        "step": 241,
+        "train_reward": 0.298
+      },
+      {
+        "step": 242,
+        "train_reward": 0.2694
+      },
+      {
+        "step": 243,
+        "train_reward": 0.3196
+      },
+      {
+        "step": 244,
+        "train_reward": 0.3146
+      },
+      {
+        "step": 245,
+        "train_reward": 0.2874
+      },
+      {
+        "step": 246,
+        "train_reward": 0.269
+      },
+      {
+        "step": 247,
+        "train_reward": 0.2796
+      },
+      {
+        "step": 248,
+        "train_reward": 0.3144
+      },
+      {
+        "step": 249,
+        "train_reward": 0.2669
+      },
+      {
+        "step": 250,
+        "train_reward": 0.2752,
+        "eval_em": 0.492,
+        "eval_contains_em": 0.51,
+        "eval_f1": 0.5152098124098122,
+        "eval_avg_tool_calls": 1.0
+      },
+      {
+        "step": 251,
+        "train_reward": 0.3039
+      },
+      {
+        "step": 252,
+        "train_reward": 0.3122
+      },
+      {
+        "step": 253,
+        "train_reward": 0.278
+      },
+      {
+        "step": 254,
+        "train_reward": 0.2785
+      },
+      {
+        "step": 255,
+        "train_reward": 0.3199
+      },
+      {
+        "step": 256,
+        "train_reward": 0.2844
+      },
+      {
+        "step": 257,
+        "train_reward": 0.3011
+      },
+      {
+        "step": 258,
+        "train_reward": 0.3156
+      },
+      {
+        "step": 259,
+        "train_reward": 0.2886
+      },
+      {
+        "step": 260,
+        "train_reward": 0.3134
+      },
+      {
+        "step": 261,
+        "train_reward": 0.3078
+      },
+      {
+        "step": 262,
+        "train_reward": 0.2849
+      },
+      {
+        "step": 263,
+        "train_reward": 0.3214
+      },
+      {
+        "step": 264,
+        "train_reward": 0.2837
+      },
+      {
+        "step": 265,
+        "train_reward": 0.2995
+      },
+      {
+        "step": 266,
+        "train_reward": 0.3099
+      },
+      {
+        "step": 267,
+        "train_reward": 0.2713
+      },
+      {
+        "step": 268,
+        "train_reward": 0.2733
+      },
+      {
+        "step": 269,
+        "train_reward": 0.3197
+      },
+      {
+        "step": 270,
+        "train_reward": 0.2828
+      },
+      {
+        "step": 271,
+        "train_reward": 0.2978
+      },
+      {
+        "step": 272,
+        "train_reward": 0.265
+      },
+      {
+        "step": 273,
+        "train_reward": 0.2709
+      },
+      {
+        "step": 274,
+        "train_reward": 0.2867
+      },
+      {
+        "step": 275,
+        "train_reward": 0.3296
+      },
+      {
+        "step": 276,
+        "train_reward": 0.2984
+      },
+      {
+        "step": 277,
+        "train_reward": 0.2842
+      },
+      {
+        "step": 278,
+        "train_reward": 0.309
+      },
+      {
+        "step": 279,
+        "train_reward": 0.2683
+      },
+      {
+        "step": 280,
+        "train_reward": 0.3155
+      },
+      {
+        "step": 281,
+        "train_reward": 0.2704
+      },
+      {
+        "step": 282,
+        "train_reward": 0.2925
+      },
+      {
+        "step": 283,
+        "train_reward": 0.3065
+      },
+      {
+        "step": 284,
+        "train_reward": 0.3097
+      },
+      {
+        "step": 285,
+        "train_reward": 0.3006
+      },
+      {
+        "step": 286,
+        "train_reward": 0.3165
+      },
+      {
+        "step": 287,
+        "train_reward": 0.3137
+      },
+      {
+        "step": 288,
+        "train_reward": 0.3252
+      },
+      {
+        "step": 289,
+        "train_reward": 0.3207
+      },
+      {
+        "step": 290,
+        "train_reward": 0.2522
+      },
+      {
+        "step": 291,
+        "train_reward": 0.2925
+      },
+      {
+        "step": 292,
+        "train_reward": 0.2893
+      },
+      {
+        "step": 293,
+        "train_reward": 0.2884
+      },
+      {
+        "step": 294,
+        "train_reward": 0.331
+      },
+      {
+        "step": 295,
+        "train_reward": 0.323
+      },
+      {
+        "step": 296,
+        "train_reward": 0.3202
+      },
+      {
+        "step": 297,
+        "train_reward": 0.3252
+      },
+      {
+        "step": 298,
+        "train_reward": 0.2865
+      },
+      {
+        "step": 299,
+        "train_reward": 0.2886
+      },
+      {
+        "step": 300,
+        "train_reward": 0.2984
+      },
+      {
+        "step": 301,
+        "train_reward": 0.2649
+      },
+      {
+        "step": 302,
+        "train_reward": 0.3007
+      },
+      {
+        "step": 303,
+        "train_reward": 0.2972
+      },
+      {
+        "step": 304,
+        "train_reward": 0.3436
+      },
+      {
+        "step": 305,
+        "train_reward": 0.2857
+      },
+      {
+        "step": 306,
+        "train_reward": 0.2948
+      },
+      {
+        "step": 307,
+        "train_reward": 0.2798
+      },
+      {
+        "step": 308,
+        "train_reward": 0.3358
+      },
+      {
+        "step": 309,
+        "train_reward": 0.3051
+      },
+      {
+        "step": 310,
+        "train_reward": 0.3126
+      },
+      {
+        "step": 311,
+        "train_reward": 0.3184
+      },
+      {
+        "step": 312,
+        "train_reward": 0.3149
+      },
+      {
+        "step": 313,
+        "train_reward": 0.3321
+      },
+      {
+        "step": 314,
+        "train_reward": 0.3563
+      },
+      {
+        "step": 315,
+        "train_reward": 0.3378
+      },
+      {
+        "step": 316,
+        "train_reward": 0.2831
+      },
+      {
+        "step": 317,
+        "train_reward": 0.3037
+      },
+      {
+        "step": 318,
+        "train_reward": 0.2989
+      },
+      {
+        "step": 319,
+        "train_reward": 0.3123
+      },
+      {
+        "step": 320,
+        "train_reward": 0.3214
+      },
+      {
+        "step": 321,
+        "train_reward": 0.3351
+      },
+      {
+        "step": 322,
+        "train_reward": 0.2842
+      },
+      {
+        "step": 323,
+        "train_reward": 0.2739
+      },
+      {
+        "step": 324,
+        "train_reward": 0.3123
+      },
+      {
+        "step": 325,
+        "train_reward": 0.2968
+      },
+      {
+        "step": 326,
+        "train_reward": 0.3454
+      },
+      {
+        "step": 327,
+        "train_reward": 0.2994
+      },
+      {
+        "step": 328,
+        "train_reward": 0.283
+      },
+      {
+        "step": 329,
+        "train_reward": 0.3084
+      },
+      {
+        "step": 330,
+        "train_reward": 0.3104
+      },
+      {
+        "step": 331,
+        "train_reward": 0.3096
+      },
+      {
+        "step": 332,
+        "train_reward": 0.3431
+      },
+      {
+        "step": 333,
+        "train_reward": 0.2696
+      },
+      {
+        "step": 334,
+        "train_reward": 0.299
+      },
+      {
+        "step": 335,
+        "train_reward": 0.3153
+      },
+      {
+        "step": 336,
+        "train_reward": 0.2805
+      },
+      {
+        "step": 337,
+        "train_reward": 0.2717
+      },
+      {
+        "step": 338,
+        "train_reward": 0.2847
+      },
+      {
+        "step": 339,
+        "train_reward": 0.3064
+      },
+      {
+        "step": 340,
+        "train_reward": 0.3041
+      },
+      {
+        "step": 341,
+        "train_reward": 0.3087
+      },
+      {
+        "step": 342,
+        "train_reward": 0.3382
+      },
+      {
+        "step": 343,
+        "train_reward": 0.3384
+      },
+      {
+        "step": 344,
+        "train_reward": 0.3262
+      },
+      {
+        "step": 345,
+        "train_reward": 0.3032
+      },
+      {
+        "step": 346,
+        "train_reward": 0.3609
+      },
+      {
+        "step": 347,
+        "train_reward": 0.3678
+      },
+      {
+        "step": 348,
+        "train_reward": 0.3672
+      },
+      {
+        "step": 349,
+        "train_reward": 0.3904
+      },
+      {
+        "step": 350,
+        "train_reward": 0.3644,
+        "eval_em": 0.5,
+        "eval_contains_em": 0.542,
+        "eval_f1": 0.5342272727272728,
+        "eval_avg_tool_calls": 1.0
+      },
+      {
+        "step": 351,
+        "train_reward": 0.3764
+      },
+      {
+        "step": 352,
+        "train_reward": 0.3907
+      },
+      {
+        "step": 353,
+        "train_reward": 0.3963
+      },
+      {
+        "step": 354,
+        "train_reward": 0.4056
+      },
+      {
+        "step": 355,
+        "train_reward": 0.3118
+      },
+      {
+        "step": 356,
+        "train_reward": 0.3126
+      },
+      {
+        "step": 357,
+        "train_reward": 0.3466
+      },
+      {
+        "step": 358,
+        "train_reward": 0.2993
+      },
+      {
+        "step": 359,
+        "train_reward": 0.2819
+      },
+      {
+        "step": 360,
+        "train_reward": 0.3271
+      },
+      {
+        "step": 361,
+        "train_reward": 0.3131
+      },
+      {
+        "step": 362,
+        "train_reward": 0.2609
+      },
+      {
+        "step": 363,
+        "train_reward": 0.317
+      },
+      {
+        "step": 364,
+        "train_reward": 0.2805
+      },
+      {
+        "step": 365,
+        "train_reward": 0.3123
+      },
+      {
+        "step": 366,
+        "train_reward": 0.3076
+      },
+      {
+        "step": 367,
+        "train_reward": 0.314
+      },
+      {
+        "step": 368,
+        "train_reward": 0.3292
+      },
+      {
+        "step": 369,
+        "train_reward": 0.3134
+      },
+      {
+        "step": 370,
+        "train_reward": 0.3365
+      },
+      {
+        "step": 371,
+        "train_reward": 0.2836
+      },
+      {
+        "step": 372,
+        "train_reward": 0.3151
+      },
+      {
+        "step": 373,
+        "train_reward": 0.3152
+      },
+      {
+        "step": 374,
+        "train_reward": 0.3318
+      },
+      {
+        "step": 375,
+        "train_reward": 0.3153
+      },
+      {
+        "step": 376,
+        "train_reward": 0.3221
+      },
+      {
+        "step": 377,
+        "train_reward": 0.3574
+      },
+      {
+        "step": 378,
+        "train_reward": 0.2863
+      },
+      {
+        "step": 379,
+        "train_reward": 0.3305
+      },
+      {
+        "step": 380,
+        "train_reward": 0.3016
+      },
+      {
+        "step": 381,
+        "train_reward": 0.3066
+      },
+      {
+        "step": 382,
+        "train_reward": 0.2853
+      },
+      {
+        "step": 383,
+        "train_reward": 0.2994
+      },
+      {
+        "step": 384,
+        "train_reward": 0.287
+      },
+      {
+        "step": 385,
+        "train_reward": 0.3268
+      },
+      {
+        "step": 386,
+        "train_reward": 0.3289
+      },
+      {
+        "step": 387,
+        "train_reward": 0.2574
+      },
+      {
+        "step": 388,
+        "train_reward": 0.3356
+      },
+      {
+        "step": 389,
+        "train_reward": 0.3312
+      },
+      {
+        "step": 390,
+        "train_reward": 0.3659
+      },
+      {
+        "step": 391,
+        "train_reward": 0.3368
+      },
+      {
+        "step": 392,
+        "train_reward": 0.3726
+      },
+      {
+        "step": 393,
+        "train_reward": 0.3661
+      },
+      {
+        "step": 394,
+        "train_reward": 0.3763
+      },
+      {
+        "step": 395,
+        "train_reward": 0.4255
+      },
+      {
+        "step": 396,
+        "train_reward": 0.3723
+      },
+      {
+        "step": 397,
+        "train_reward": 0.3822
+      },
+      {
+        "step": 398,
+        "train_reward": 0.3489
+      },
+      {
+        "step": 399,
+        "train_reward": 0.3376
+      },
+      {
+        "step": 400,
+        "train_reward": 0.3459,
+        "eval_em": 0.51,
+        "eval_contains_em": 0.554,
+        "eval_f1": 0.5299705627705626,
+        "eval_avg_tool_calls": 0.998
+      },
+      {
+        "step": 401,
+        "train_reward": 0.3213
+      },
+      {
+        "step": 402,
+        "train_reward": 0.3155
+      },
+      {
+        "step": 403,
+        "train_reward": 0.3582
+      },
+      {
+        "step": 404,
+        "train_reward": 0.3057
+      },
+      {
+        "step": 405,
+        "train_reward": 0.3301
+      },
+      {
+        "step": 406,
+        "train_reward": 0.3962
+      },
+      {
+        "step": 407,
+        "train_reward": 0.2986
+      },
+      {
+        "step": 408,
+        "train_reward": 0.3124
+      },
+      {
+        "step": 409,
+        "train_reward": 0.3221
+      },
+      {
+        "step": 410,
+        "train_reward": 0.3452
+      },
+      {
+        "step": 411,
+        "train_reward": 0.2951
+      },
+      {
+        "step": 412,
+        "train_reward": 0.3411
+      },
+      {
+        "step": 413,
+        "train_reward": 0.3569
+      },
+      {
+        "step": 414,
+        "train_reward": 0.2941
+      },
+      {
+        "step": 415,
+        "train_reward": 0.3127
+      },
+      {
+        "step": 416,
+        "train_reward": 0.3313
+      },
+      {
+        "step": 417,
+        "train_reward": 0.3196
+      },
+      {
+        "step": 418,
+        "train_reward": 0.3444
+      },
+      {
+        "step": 419,
+        "train_reward": 0.3324
+      },
+      {
+        "step": 420,
+        "train_reward": 0.3057
+      },
+      {
+        "step": 421,
+        "train_reward": 0.3002
+      },
+      {
+        "step": 422,
+        "train_reward": 0.3573
+      },
+      {
+        "step": 423,
+        "train_reward": 0.3299
+      },
+      {
+        "step": 424,
+        "train_reward": 0.3072
+      },
+      {
+        "step": 425,
+        "train_reward": 0.3256
+      },
+      {
+        "step": 426,
+        "train_reward": 0.3263
+      },
+      {
+        "step": 427,
+        "train_reward": 0.2985
+      },
+      {
+        "step": 428,
+        "train_reward": 0.305
+      },
+      {
+        "step": 429,
+        "train_reward": 0.2938
+      },
+      {
+        "step": 430,
+        "train_reward": 0.3046
+      },
+      {
+        "step": 431,
+        "train_reward": 0.3074
+      },
+      {
+        "step": 432,
+        "train_reward": 0.3628
+      },
+      {
+        "step": 433,
+        "train_reward": 0.381
+      },
+      {
+        "step": 434,
+        "train_reward": 0.4156
+      },
+      {
+        "step": 435,
+        "train_reward": 0.3652
+      },
+      {
+        "step": 436,
+        "train_reward": 0.4124
+      },
+      {
+        "step": 437,
+        "train_reward": 0.3355
+      },
+      {
+        "step": 438,
+        "train_reward": 0.407
+      },
+      {
+        "step": 439,
+        "train_reward": 0.3581
+      },
+      {
+        "step": 440,
+        "train_reward": 0.3585
+      },
+      {
+        "step": 441,
+        "train_reward": 0.3542
+      },
+      {
+        "step": 442,
+        "train_reward": 0.4246
+      },
+      {
+        "step": 443,
+        "train_reward": 0.3802
+      },
+      {
+        "step": 444,
+        "train_reward": 0.3815
+      },
+      {
+        "step": 445,
+        "train_reward": 0.3583
+      },
+      {
+        "step": 446,
+        "train_reward": 0.4284
+      },
+      {
+        "step": 447,
+        "train_reward": 0.3794
+      },
+      {
+        "step": 448,
+        "train_reward": 0.3523
+      },
+      {
+        "step": 449,
+        "train_reward": 0.4002
+      },
+      {
+        "step": 450,
+        "train_reward": 0.4277,
+        "eval_em": 0.518,
+        "eval_contains_em": 0.532,
+        "eval_f1": 0.5319943722943724,
+        "eval_avg_tool_calls": 1.0
+      },
+      {
+        "step": 451,
+        "train_reward": 0.3836
+      },
+      {
+        "step": 452,
+        "train_reward": 0.3734
+      },
+      {
+        "step": 453,
+        "train_reward": 0.3954
+      },
+      {
+        "step": 454,
+        "train_reward": 0.3739
+      },
+      {
+        "step": 455,
+        "train_reward": 0.4072
+      },
+      {
+        "step": 456,
+        "train_reward": 0.3559
+      },
+      {
+        "step": 457,
+        "train_reward": 0.3731
+      },
+      {
+        "step": 458,
+        "train_reward": 0.3874
+      },
+      {
+        "step": 459,
+        "train_reward": 0.4253
+      },
+      {
+        "step": 460,
+        "train_reward": 0.41
+      },
+      {
+        "step": 461,
+        "train_reward": 0.4091
+      },
+      {
+        "step": 462,
+        "train_reward": 0.3608
+      },
+      {
+        "step": 463,
+        "train_reward": 0.4399
+      },
+      {
+        "step": 464,
+        "train_reward": 0.3507
+      },
+      {
+        "step": 465,
+        "train_reward": 0.3705
+      },
+      {
+        "step": 466,
+        "train_reward": 0.3626
+      },
+      {
+        "step": 467,
+        "train_reward": 0.414
+      },
+      {
+        "step": 468,
+        "train_reward": 0.3561
+      },
+      {
+        "step": 469,
+        "train_reward": 0.3655
+      },
+      {
+        "step": 470,
+        "train_reward": 0.3872
+      },
+      {
+        "step": 471,
+        "train_reward": 0.3871
+      },
+      {
+        "step": 472,
+        "train_reward": 0.3593
+      },
+      {
+        "step": 473,
+        "train_reward": 0.3769
+      },
+      {
+        "step": 474,
+        "train_reward": 0.3547
+      },
+      {
+        "step": 475,
+        "train_reward": 0.3702
+      },
+      {
+        "step": 476,
+        "train_reward": 0.3285
+      },
+      {
+        "step": 477,
+        "train_reward": 0.435
+      },
+      {
+        "step": 478,
+        "train_reward": 0.444
+      },
+      {
+        "step": 479,
+        "train_reward": 0.3864
+      },
+      {
+        "step": 480,
+        "train_reward": 0.4517
+      },
+      {
+        "step": 481,
+        "train_reward": 0.4074
+      },
+      {
+        "step": 482,
+        "train_reward": 0.411
+      },
+      {
+        "step": 483,
+        "train_reward": 0.3902
+      },
+      {
+        "step": 484,
+        "train_reward": 0.3352
+      },
+      {
+        "step": 485,
+        "train_reward": 0.3783
+      },
+      {
+        "step": 486,
+        "train_reward": 0.4341
+      },
+      {
+        "step": 487,
+        "train_reward": 0.4352
+      },
+      {
+        "step": 488,
+        "train_reward": 0.3635
+      },
+      {
+        "step": 489,
+        "train_reward": 0.407
+      },
+      {
+        "step": 490,
+        "train_reward": 0.3507
+      },
+      {
+        "step": 491,
+        "train_reward": 0.405
+      },
+      {
+        "step": 492,
+        "train_reward": 0.3973
+      },
+      {
+        "step": 493,
+        "train_reward": 0.4384
+      },
+      {
+        "step": 494,
+        "train_reward": 0.3959
+      },
+      {
+        "step": 495,
+        "train_reward": 0.4034
+      },
+      {
+        "step": 496,
+        "train_reward": 0.3989
+      },
+      {
+        "step": 497,
+        "train_reward": 0.408
+      },
+      {
+        "step": 498,
+        "train_reward": 0.3699
+      },
+      {
+        "step": 499,
+        "train_reward": 0.4268
+      },
+      {
+        "step": 500,
+        "train_reward": 0.3558
+      },
+      {
+        "step": 501,
+        "train_reward": 0.3251
+      },
+      {
+        "step": 502,
+        "train_reward": 0.3985
+      },
+      {
+        "step": 503,
+        "train_reward": 0.4646
+      },
+      {
+        "step": 504,
+        "train_reward": 0.317
+      },
+      {
+        "step": 505,
+        "train_reward": 0.3186
+      },
+      {
+        "step": 506,
+        "train_reward": 0.3152
+      },
+      {
+        "step": 507,
+        "train_reward": 0.3448
+      },
+      {
+        "step": 508,
+        "train_reward": 0.3397
+      },
+      {
+        "step": 509,
+        "train_reward": 0.3288
+      },
+      {
+        "step": 510,
+        "train_reward": 0.3052
+      },
+      {
+        "step": 511,
+        "train_reward": 0.3027
+      },
+      {
+        "step": 512,
+        "train_reward": 0.308
+      },
+      {
+        "step": 513,
+        "train_reward": 0.3468
+      },
+      {
+        "step": 514,
+        "train_reward": 0.3028
+      },
+      {
+        "step": 515,
+        "train_reward": 0.3685
+      },
+      {
+        "step": 516,
+        "train_reward": 0.2836
+      },
+      {
+        "step": 517,
+        "train_reward": 0.306
+      },
+      {
+        "step": 518,
+        "train_reward": 0.355
+      },
+      {
+        "step": 519,
+        "train_reward": 0.3138
+      },
+      {
+        "step": 520,
+        "train_reward": 0.2888
+      },
+      {
+        "step": 521,
+        "train_reward": 0.2804
+      },
+      {
+        "step": 522,
+        "train_reward": 0.3313
+      },
+      {
+        "step": 523,
+        "train_reward": 0.3135
+      },
+      {
+        "step": 524,
+        "train_reward": 0.3265
+      },
+      {
+        "step": 525,
+        "train_reward": 0.3907
+      },
+      {
+        "step": 526,
+        "train_reward": 0.3205
+      },
+      {
+        "step": 527,
+        "train_reward": 0.3606
+      },
+      {
+        "step": 528,
+        "train_reward": 0.3218
+      },
+      {
+        "step": 529,
+        "train_reward": 0.3358
+      },
+      {
+        "step": 530,
+        "train_reward": 0.3282
+      },
+      {
+        "step": 531,
+        "train_reward": 0.3282
+      },
+      {
+        "step": 532,
+        "train_reward": 0.2947
+      },
+      {
+        "step": 533,
+        "train_reward": 0.3297
+      },
+      {
+        "step": 534,
+        "train_reward": 0.324
+      },
+      {
+        "step": 535,
+        "train_reward": 0.3269
+      },
+      {
+        "step": 536,
+        "train_reward": 0.3664
+      },
+      {
+        "step": 537,
+        "train_reward": 0.3482
+      },
+      {
+        "step": 538,
+        "train_reward": 0.3613
+      },
+      {
+        "step": 539,
+        "train_reward": 0.3432
+      },
+      {
+        "step": 540,
+        "train_reward": 0.3342
+      },
+      {
+        "step": 541,
+        "train_reward": 0.3635
+      },
+      {
+        "step": 542,
+        "train_reward": 0.2897
+      },
+      {
+        "step": 543,
+        "train_reward": 0.3367
+      },
+      {
+        "step": 544,
+        "train_reward": 0.3632
+      },
+      {
+        "step": 545,
+        "train_reward": 0.3208
+      },
+      {
+        "step": 546,
+        "train_reward": 0.307
+      },
+      {
+        "step": 547,
+        "train_reward": 0.3115
+      },
+      {
+        "step": 548,
+        "train_reward": 0.3554
+      },
+      {
+        "step": 549,
+        "train_reward": 0.3451
+      },
+      {
+        "step": 550,
+        "train_reward": 0.3763
+      },
+      {
+        "step": 551,
+        "train_reward": 0.3503
+      },
+      {
+        "step": 552,
+        "train_reward": 0.3675
+      },
+      {
+        "step": 553,
+        "train_reward": 0.3114
+      },
+      {
+        "step": 554,
+        "train_reward": 0.352
+      },
+      {
+        "step": 555,
+        "train_reward": 0.3702
+      },
+      {
+        "step": 556,
+        "train_reward": 0.2878
+      },
+      {
+        "step": 557,
+        "train_reward": 0.344
+      },
+      {
+        "step": 558,
+        "train_reward": 0.3757
+      },
+      {
+        "step": 559,
+        "train_reward": 0.335
+      },
+      {
+        "step": 560,
+        "train_reward": 0.3148
+      },
+      {
+        "step": 561,
+        "train_reward": 0.3652
+      },
+      {
+        "step": 562,
+        "train_reward": 0.3242
+      },
+      {
+        "step": 563,
+        "train_reward": 0.315
+      },
+      {
+        "step": 564,
+        "train_reward": 0.3154
+      },
+      {
+        "step": 565,
+        "train_reward": 0.3523
+      },
+      {
+        "step": 566,
+        "train_reward": 0.3229
+      },
+      {
+        "step": 567,
+        "train_reward": 0.3411
+      },
+      {
+        "step": 568,
+        "train_reward": 0.3176
+      },
+      {
+        "step": 569,
+        "train_reward": 0.3292
+      },
+      {
+        "step": 570,
+        "train_reward": 0.3176
+      },
+      {
+        "step": 571,
+        "train_reward": 0.341
+      },
+      {
+        "step": 572,
+        "train_reward": 0.3502
+      },
+      {
+        "step": 573,
+        "train_reward": 0.3162
+      },
+      {
+        "step": 574,
+        "train_reward": 0.3054
+      },
+      {
+        "step": 575,
+        "train_reward": 0.3086
+      },
+      {
+        "step": 576,
+        "train_reward": 0.3461
+      },
+      {
+        "step": 577,
+        "train_reward": 0.3474
+      },
+      {
+        "step": 578,
+        "train_reward": 0.3441
+      },
+      {
+        "step": 579,
+        "train_reward": 0.3498
+      },
+      {
+        "step": 580,
+        "train_reward": 0.353
+      },
+      {
+        "step": 581,
+        "train_reward": 0.3342
+      },
+      {
+        "step": 582,
+        "train_reward": 0.3287
+      },
+      {
+        "step": 583,
+        "train_reward": 0.3628
+      },
+      {
+        "step": 584,
+        "train_reward": 0.303
+      },
+      {
+        "step": 585,
+        "train_reward": 0.338
+      },
+      {
+        "step": 586,
+        "train_reward": 0.3101
+      },
+      {
+        "step": 587,
+        "train_reward": 0.3312
+      },
+      {
+        "step": 588,
+        "train_reward": 0.3109
+      },
+      {
+        "step": 589,
+        "train_reward": 0.3661
+      },
+      {
+        "step": 590,
+        "train_reward": 0.3644
+      },
+      {
+        "step": 591,
+        "train_reward": 0.3674
+      },
+      {
+        "step": 592,
+        "train_reward": 0.3157
+      },
+      {
+        "step": 593,
+        "train_reward": 0.3508
+      },
+      {
+        "step": 594,
+        "train_reward": 0.3612
+      },
+      {
+        "step": 595,
+        "train_reward": 0.3355
+      },
+      {
+        "step": 596,
+        "train_reward": 0.344
+      },
+      {
+        "step": 597,
+        "train_reward": 0.306
+      },
+      {
+        "step": 598,
+        "train_reward": 0.3281
+      },
+      {
+        "step": 599,
+        "train_reward": 0.3113
+      },
+      {
+        "step": 600,
+        "train_reward": 0.3763,
+        "eval_em": 0.528,
+        "eval_contains_em": 0.536,
+        "eval_f1": 0.538943722943723,
+        "eval_avg_tool_calls": 1.0
+      },
+      {
+        "step": 601,
+        "train_reward": 0.3582
+      },
+      {
+        "step": 602,
+        "train_reward": 0.3672
+      },
+      {
+        "step": 603,
+        "train_reward": 0.3427
+      },
+      {
+        "step": 604,
+        "train_reward": 0.3197
+      },
+      {
+        "step": 605,
+        "train_reward": 0.3468
+      },
+      {
+        "step": 606,
+        "train_reward": 0.368
+      },
+      {
+        "step": 607,
+        "train_reward": 0.3244
+      },
+      {
+        "step": 608,
+        "train_reward": 0.3412
+      },
+      {
+        "step": 609,
+        "train_reward": 0.3314
+      },
+      {
+        "step": 610,
+        "train_reward": 0.358
+      },
+      {
+        "step": 611,
+        "train_reward": 0.33
+      },
+      {
+        "step": 612,
+        "train_reward": 0.3634
+      },
+      {
+        "step": 613,
+        "train_reward": 0.3523
+      },
+      {
+        "step": 614,
+        "train_reward": 0.3326
+      },
+      {
+        "step": 615,
+        "train_reward": 0.3043
+      },
+      {
+        "step": 616,
+        "train_reward": 0.3193
+      },
+      {
+        "step": 617,
+        "train_reward": 0.336
+      },
+      {
+        "step": 618,
+        "train_reward": 0.2953
+      },
+      {
+        "step": 619,
+        "train_reward": 0.3266
+      },
+      {
+        "step": 620,
+        "train_reward": 0.3185
+      },
+      {
+        "step": 621,
+        "train_reward": 0.3682
+      },
+      {
+        "step": 622,
+        "train_reward": 0.3664
+      },
+      {
+        "step": 623,
+        "train_reward": 0.3224
+      },
+      {
+        "step": 624,
+        "train_reward": 0.3566
+      },
+      {
+        "step": 625,
+        "train_reward": 0.3522
+      },
+      {
+        "step": 626,
+        "train_reward": 0.3157
+      },
+      {
+        "step": 627,
+        "train_reward": 0.3471
+      },
+      {
+        "step": 628,
+        "train_reward": 0.3198
+      },
+      {
+        "step": 629,
+        "train_reward": 0.3163
+      },
+      {
+        "step": 630,
+        "train_reward": 0.3357
+      },
+      {
+        "step": 631,
+        "train_reward": 0.3613
+      },
+      {
+        "step": 632,
+        "train_reward": 0.352
+      },
+      {
+        "step": 633,
+        "train_reward": 0.3318
+      },
+      {
+        "step": 634,
+        "train_reward": 0.3504
+      },
+      {
+        "step": 635,
+        "train_reward": 0.312
+      },
+      {
+        "step": 636,
+        "train_reward": 0.3298
+      },
+      {
+        "step": 637,
+        "train_reward": 0.3088
+      },
+      {
+        "step": 638,
+        "train_reward": 0.3188
+      },
+      {
+        "step": 639,
+        "train_reward": 0.3471
+      },
+      {
+        "step": 640,
+        "train_reward": 0.3722
+      },
+      {
+        "step": 641,
+        "train_reward": 0.3052
+      },
+      {
+        "step": 642,
+        "train_reward": 0.3283
+      },
+      {
+        "step": 643,
+        "train_reward": 0.3627
+      },
+      {
+        "step": 644,
+        "train_reward": 0.3197
+      },
+      {
+        "step": 645,
+        "train_reward": 0.3596
+      },
+      {
+        "step": 646,
+        "train_reward": 0.3448
+      },
+      {
+        "step": 647,
+        "train_reward": 0.3471
+      },
+      {
+        "step": 648,
+        "train_reward": 0.3507
+      },
+      {
+        "step": 649,
+        "train_reward": 0.4115
+      },
+      {
+        "step": 650,
+        "train_reward": 0.3339
+      },
+      {
+        "step": 651,
+        "train_reward": 0.3042
+      },
+      {
+        "step": 652,
+        "train_reward": 0.3386
+      },
+      {
+        "step": 653,
+        "train_reward": 0.3368
+      },
+      {
+        "step": 654,
+        "train_reward": 0.3325
+      },
+      {
+        "step": 655,
+        "train_reward": 0.3518
+      },
+      {
+        "step": 656,
+        "train_reward": 0.3756
+      },
+      {
+        "step": 657,
+        "train_reward": 0.2901
+      },
+      {
+        "step": 658,
+        "train_reward": 0.3786
+      },
+      {
+        "step": 659,
+        "train_reward": 0.3604
+      },
+      {
+        "step": 660,
+        "train_reward": 0.3368
+      },
+      {
+        "step": 661,
+        "train_reward": 0.3351
+      },
+      {
+        "step": 662,
+        "train_reward": 0.3613
+      },
+      {
+        "step": 663,
+        "train_reward": 0.2837
+      },
+      {
+        "step": 664,
+        "train_reward": 0.2998
+      },
+      {
+        "step": 665,
+        "train_reward": 0.3513
+      },
+      {
+        "step": 666,
+        "train_reward": 0.3103
+      },
+      {
+        "step": 667,
+        "train_reward": 0.309
+      },
+      {
+        "step": 668,
+        "train_reward": 0.3647
+      },
+      {
+        "step": 669,
+        "train_reward": 0.3443
+      },
+      {
+        "step": 670,
+        "train_reward": 0.3386
+      },
+      {
+        "step": 671,
+        "train_reward": 0.346
+      },
+      {
+        "step": 672,
+        "train_reward": 0.3391
+      },
+      {
+        "step": 673,
+        "train_reward": 0.2964
+      },
+      {
+        "step": 674,
+        "train_reward": 0.3711
+      },
+      {
+        "step": 675,
+        "train_reward": 0.3876
+      },
+      {
+        "step": 676,
+        "train_reward": 0.3104
+      },
+      {
+        "step": 677,
+        "train_reward": 0.2926
+      },
+      {
+        "step": 678,
+        "train_reward": 0.3092
+      },
+      {
+        "step": 679,
+        "train_reward": 0.3619
+      },
+      {
+        "step": 680,
+        "train_reward": 0.291
+      },
+      {
+        "step": 681,
+        "train_reward": 0.3177
+      },
+      {
+        "step": 682,
+        "train_reward": 0.3501
+      },
+      {
+        "step": 683,
+        "train_reward": 0.3612
+      },
+      {
+        "step": 684,
+        "train_reward": 0.3463
+      },
+      {
+        "step": 685,
+        "train_reward": 0.3379
+      },
+      {
+        "step": 686,
+        "train_reward": 0.3469
+      },
+      {
+        "step": 687,
+        "train_reward": 0.3293
+      },
+      {
+        "step": 688,
+        "train_reward": 0.3649
+      },
+      {
+        "step": 689,
+        "train_reward": 0.3736
+      },
+      {
+        "step": 690,
+        "train_reward": 0.3338
+      },
+      {
+        "step": 691,
+        "train_reward": 0.3798
+      },
+      {
+        "step": 692,
+        "train_reward": 0.3564
+      },
+      {
+        "step": 693,
+        "train_reward": 0.3331
+      },
+      {
+        "step": 694,
+        "train_reward": 0.389
+      },
+      {
+        "step": 695,
+        "train_reward": 0.3265
+      },
+      {
+        "step": 696,
+        "train_reward": 0.3494
+      },
+      {
+        "step": 697,
+        "train_reward": 0.3767
+      },
+      {
+        "step": 698,
+        "train_reward": 0.3126
+      },
+      {
+        "step": 699,
+        "train_reward": 0.3289
+      },
+      {
+        "step": 700,
+        "train_reward": 0.3843
+      },
+      {
+        "step": 701,
+        "train_reward": 0.3113
+      },
+      {
+        "step": 702,
+        "train_reward": 0.3197
+      },
+      {
+        "step": 703,
+        "train_reward": 0.3313
+      },
+      {
+        "step": 704,
+        "train_reward": 0.3108
+      },
+      {
+        "step": 705,
+        "train_reward": 0.3159
+      },
+      {
+        "step": 706,
+        "train_reward": 0.3795
+      },
+      {
+        "step": 707,
+        "train_reward": 0.3349
+      },
+      {
+        "step": 708,
+        "train_reward": 0.3217
+      },
+      {
+        "step": 709,
+        "train_reward": 0.3642
+      },
+      {
+        "step": 710,
+        "train_reward": 0.3011
+      },
+      {
+        "step": 711,
+        "train_reward": 0.3804
+      },
+      {
+        "step": 712,
+        "train_reward": 0.3146
+      },
+      {
+        "step": 713,
+        "train_reward": 0.3253
+      },
+      {
+        "step": 714,
+        "train_reward": 0.3494
+      },
+      {
+        "step": 715,
+        "train_reward": 0.3432
+      },
+      {
+        "step": 716,
+        "train_reward": 0.3508
+      },
+      {
+        "step": 717,
+        "train_reward": 0.3711
+      },
+      {
+        "step": 718,
+        "train_reward": 0.38
+      },
+      {
+        "step": 719,
+        "train_reward": 0.3777
+      },
+      {
+        "step": 720,
+        "train_reward": 0.3648
+      },
+      {
+        "step": 721,
+        "train_reward": 0.2858
+      },
+      {
+        "step": 722,
+        "train_reward": 0.3317
+      },
+      {
+        "step": 723,
+        "train_reward": 0.3467
+      },
+      {
+        "step": 724,
+        "train_reward": 0.3374
+      },
+      {
+        "step": 725,
+        "train_reward": 0.3825
+      },
+      {
+        "step": 726,
+        "train_reward": 0.3699
+      },
+      {
+        "step": 727,
+        "train_reward": 0.4133
+      },
+      {
+        "step": 728,
+        "train_reward": 0.3964
+      },
+      {
+        "step": 729,
+        "train_reward": 0.345
+      },
+      {
+        "step": 730,
+        "train_reward": 0.3264
+      },
+      {
+        "step": 731,
+        "train_reward": 0.339
+      },
+      {
+        "step": 732,
+        "train_reward": 0.3035
+      },
+      {
+        "step": 733,
+        "train_reward": 0.3325
+      },
+      {
+        "step": 734,
+        "train_reward": 0.3413
+      },
+      {
+        "step": 735,
+        "train_reward": 0.3756
+      },
+      {
+        "step": 736,
+        "train_reward": 0.3238
+      },
+      {
+        "step": 737,
+        "train_reward": 0.3298
+      },
+      {
+        "step": 738,
+        "train_reward": 0.3281
+      },
+      {
+        "step": 739,
+        "train_reward": 0.3918
+      },
+      {
+        "step": 740,
+        "train_reward": 0.358
+      },
+      {
+        "step": 741,
+        "train_reward": 0.3815
+      },
+      {
+        "step": 742,
+        "train_reward": 0.3484
+      },
+      {
+        "step": 743,
+        "train_reward": 0.3618
+      },
+      {
+        "step": 744,
+        "train_reward": 0.3728
+      },
+      {
+        "step": 745,
+        "train_reward": 0.3696
+      },
+      {
+        "step": 746,
+        "train_reward": 0.3794
+      },
+      {
+        "step": 747,
+        "train_reward": 0.3349
+      },
+      {
+        "step": 748,
+        "train_reward": 0.3329
+      },
+      {
+        "step": 749,
+        "train_reward": 0.346
+      },
+      {
+        "step": 750,
+        "train_reward": 0.3337,
+        "eval_em": 0.538,
+        "eval_contains_em": 0.554,
+        "eval_f1": 0.555173593073593,
+        "eval_avg_tool_calls": 1.0
+      },
+      {
+        "step": 751,
+        "train_reward": 0.3601
+      },
+      {
+        "step": 752,
+        "train_reward": 0.3556
+      },
+      {
+        "step": 753,
+        "train_reward": 0.313
+      },
+      {
+        "step": 754,
+        "train_reward": 0.3157
+      },
+      {
+        "step": 755,
+        "train_reward": 0.3316
+      },
+      {
+        "step": 756,
+        "train_reward": 0.3369
+      },
+      {
+        "step": 757,
+        "train_reward": 0.3705
+      },
+      {
+        "step": 758,
+        "train_reward": 0.3345
+      },
+      {
+        "step": 759,
+        "train_reward": 0.2944
+      },
+      {
+        "step": 760,
+        "train_reward": 0.3345
+      },
+      {
+        "step": 761,
+        "train_reward": 0.3416
+      },
+      {
+        "step": 762,
+        "train_reward": 0.3501
+      },
+      {
+        "step": 763,
+        "train_reward": 0.3702
+      },
+      {
+        "step": 764,
+        "train_reward": 0.3151
+      },
+      {
+        "step": 765,
+        "train_reward": 0.3342
+      },
+      {
+        "step": 766,
+        "train_reward": 0.3344
+      },
+      {
+        "step": 767,
+        "train_reward": 0.3071
+      },
+      {
+        "step": 768,
+        "train_reward": 0.2878
+      },
+      {
+        "step": 769,
+        "train_reward": 0.3188
+      },
+      {
+        "step": 770,
+        "train_reward": 0.321
+      },
+      {
+        "step": 771,
+        "train_reward": 0.3429
+      },
+      {
+        "step": 772,
+        "train_reward": 0.3431
+      },
+      {
+        "step": 773,
+        "train_reward": 0.3666
+      },
+      {
+        "step": 774,
+        "train_reward": 0.3828
+      },
+      {
+        "step": 775,
+        "train_reward": 0.332
+      },
+      {
+        "step": 776,
+        "train_reward": 0.3278
+      },
+      {
+        "step": 777,
+        "train_reward": 0.4017
+      },
+      {
+        "step": 778,
+        "train_reward": 0.4375
+      },
+      {
+        "step": 779,
+        "train_reward": 0.4132
+      },
+      {
+        "step": 780,
+        "train_reward": 0.4201
+      },
+      {
+        "step": 781,
+        "train_reward": 0.4059
+      },
+      {
+        "step": 782,
+        "train_reward": 0.3982
+      },
+      {
+        "step": 783,
+        "train_reward": 0.4232
+      },
+      {
+        "step": 784,
+        "train_reward": 0.428
+      },
+      {
+        "step": 785,
+        "train_reward": 0.4486
+      },
+      {
+        "step": 786,
+        "train_reward": 0.3716
+      },
+      {
+        "step": 787,
+        "train_reward": 0.3399
+      },
+      {
+        "step": 788,
+        "train_reward": 0.3564
+      },
+      {
+        "step": 789,
+        "train_reward": 0.3253
+      },
+      {
+        "step": 790,
+        "train_reward": 0.3122
+      },
+      {
+        "step": 791,
+        "train_reward": 0.3385
+      },
+      {
+        "step": 792,
+        "train_reward": 0.3484
+      },
+      {
+        "step": 793,
+        "train_reward": 0.2967
+      },
+      {
+        "step": 794,
+        "train_reward": 0.3455
+      },
+      {
+        "step": 795,
+        "train_reward": 0.3143
+      },
+      {
+        "step": 796,
+        "train_reward": 0.3603
+      },
+      {
+        "step": 797,
+        "train_reward": 0.3387
+      },
+      {
+        "step": 798,
+        "train_reward": 0.359
+      },
+      {
+        "step": 799,
+        "train_reward": 0.3428
+      },
+      {
+        "step": 800,
+        "train_reward": 0.3381
+      },
+      {
+        "step": 801,
+        "train_reward": 0.3615
+      },
+      {
+        "step": 802,
+        "train_reward": 0.3121
+      },
+      {
+        "step": 803,
+        "train_reward": 0.3411
+      },
+      {
+        "step": 804,
+        "train_reward": 0.3421
+      },
+      {
+        "step": 805,
+        "train_reward": 0.332
+      },
+      {
+        "step": 806,
+        "train_reward": 0.3095
+      },
+      {
+        "step": 807,
+        "train_reward": 0.34
+      },
+      {
+        "step": 808,
+        "train_reward": 0.3861
+      },
+      {
+        "step": 809,
+        "train_reward": 0.3371
+      },
+      {
+        "step": 810,
+        "train_reward": 0.3324
+      },
+      {
+        "step": 811,
+        "train_reward": 0.3653
+      },
+      {
+        "step": 812,
+        "train_reward": 0.339
+      },
+      {
+        "step": 813,
+        "train_reward": 0.2991
+      },
+      {
+        "step": 814,
+        "train_reward": 0.3431
+      },
+      {
+        "step": 815,
+        "train_reward": 0.3421
+      },
+      {
+        "step": 816,
+        "train_reward": 0.3244
+      },
+      {
+        "step": 817,
+        "train_reward": 0.3759
+      },
+      {
+        "step": 818,
+        "train_reward": 0.2838
+      },
+      {
+        "step": 819,
+        "train_reward": 0.3336
+      },
+      {
+        "step": 820,
+        "train_reward": 0.3838
+      },
+      {
+        "step": 821,
+        "train_reward": 0.4053
+      },
+      {
+        "step": 822,
+        "train_reward": 0.3815
+      },
+      {
+        "step": 823,
+        "train_reward": 0.4366
+      },
+      {
+        "step": 824,
+        "train_reward": 0.4296
+      },
+      {
+        "step": 825,
+        "train_reward": 0.4131
+      },
+      {
+        "step": 826,
+        "train_reward": 0.4633
+      },
+      {
+        "step": 827,
+        "train_reward": 0.4057
+      },
+      {
+        "step": 828,
+        "train_reward": 0.4151
+      },
+      {
+        "step": 829,
+        "train_reward": 0.3807
+      },
+      {
+        "step": 830,
+        "train_reward": 0.3869
+      },
+      {
+        "step": 831,
+        "train_reward": 0.3804
+      },
+      {
+        "step": 832,
+        "train_reward": 0.3428
+      },
+      {
+        "step": 833,
+        "train_reward": 0.324
+      },
+      {
+        "step": 834,
+        "train_reward": 0.3804
+      },
+      {
+        "step": 835,
+        "train_reward": 0.3263
+      },
+      {
+        "step": 836,
+        "train_reward": 0.3318
+      },
+      {
+        "step": 837,
+        "train_reward": 0.4235
+      },
+      {
+        "step": 838,
+        "train_reward": 0.3255
+      },
+      {
+        "step": 839,
+        "train_reward": 0.3489
+      },
+      {
+        "step": 840,
+        "train_reward": 0.3407
+      },
+      {
+        "step": 841,
+        "train_reward": 0.3455
+      },
+      {
+        "step": 842,
+        "train_reward": 0.3271
+      },
+      {
+        "step": 843,
+        "train_reward": 0.3552
+      },
+      {
+        "step": 844,
+        "train_reward": 0.3912
+      },
+      {
+        "step": 845,
+        "train_reward": 0.3255
+      },
+      {
+        "step": 846,
+        "train_reward": 0.3086
+      },
+      {
+        "step": 847,
+        "train_reward": 0.3587
+      },
+      {
+        "step": 848,
+        "train_reward": 0.325
+      },
+      {
+        "step": 849,
+        "train_reward": 0.3859
+      },
+      {
+        "step": 850,
+        "train_reward": 0.3403
+      },
+      {
+        "step": 851,
+        "train_reward": 0.337
+      },
+      {
+        "step": 852,
+        "train_reward": 0.3466
+      },
+      {
+        "step": 853,
+        "train_reward": 0.3692
+      },
+      {
+        "step": 854,
+        "train_reward": 0.3354
+      },
+      {
+        "step": 855,
+        "train_reward": 0.3291
+      },
+      {
+        "step": 856,
+        "train_reward": 0.3452
+      },
+      {
+        "step": 857,
+        "train_reward": 0.3562
+      },
+      {
+        "step": 858,
+        "train_reward": 0.3225
+      },
+      {
+        "step": 859,
+        "train_reward": 0.3588
+      },
+      {
+        "step": 860,
+        "train_reward": 0.309
+      },
+      {
+        "step": 861,
+        "train_reward": 0.3263
+      },
+      {
+        "step": 862,
+        "train_reward": 0.3335
+      },
+      {
+        "step": 863,
+        "train_reward": 0.3965
+      },
+      {
+        "step": 864,
+        "train_reward": 0.412
+      },
+      {
+        "step": 865,
+        "train_reward": 0.4392
+      },
+      {
+        "step": 866,
+        "train_reward": 0.3852
+      },
+      {
+        "step": 867,
+        "train_reward": 0.4209
+      },
+      {
+        "step": 868,
+        "train_reward": 0.3646
+      },
+      {
+        "step": 869,
+        "train_reward": 0.4626
+      },
+      {
+        "step": 870,
+        "train_reward": 0.373
+      },
+      {
+        "step": 871,
+        "train_reward": 0.3836
+      },
+      {
+        "step": 872,
+        "train_reward": 0.3843
+      },
+      {
+        "step": 873,
+        "train_reward": 0.4705
+      },
+      {
+        "step": 874,
+        "train_reward": 0.4083
+      },
+      {
+        "step": 875,
+        "train_reward": 0.4171
+      },
+      {
+        "step": 876,
+        "train_reward": 0.3914
+      },
+      {
+        "step": 877,
+        "train_reward": 0.4313
+      },
+      {
+        "step": 878,
+        "train_reward": 0.4092
+      },
+      {
+        "step": 879,
+        "train_reward": 0.3991
+      },
+      {
+        "step": 880,
+        "train_reward": 0.4317
+      },
+      {
+        "step": 881,
+        "train_reward": 0.4401
+      },
+      {
+        "step": 882,
+        "train_reward": 0.4056
+      },
+      {
+        "step": 883,
+        "train_reward": 0.3864
+      },
+      {
+        "step": 884,
+        "train_reward": 0.4282
+      },
+      {
+        "step": 885,
+        "train_reward": 0.4084
+      },
+      {
+        "step": 886,
+        "train_reward": 0.3878
+      },
+      {
+        "step": 887,
+        "train_reward": 0.3929
+      },
+      {
+        "step": 888,
+        "train_reward": 0.3784
+      },
+      {
+        "step": 889,
+        "train_reward": 0.416
+      },
+      {
+        "step": 890,
+        "train_reward": 0.4464
+      },
+      {
+        "step": 891,
+        "train_reward": 0.418
+      },
+      {
+        "step": 892,
+        "train_reward": 0.413
+      },
+      {
+        "step": 893,
+        "train_reward": 0.3966
+      },
+      {
+        "step": 894,
+        "train_reward": 0.4578
+      },
+      {
+        "step": 895,
+        "train_reward": 0.3924
+      },
+      {
+        "step": 896,
+        "train_reward": 0.3763
+      },
+      {
+        "step": 897,
+        "train_reward": 0.3832
+      },
+      {
+        "step": 898,
+        "train_reward": 0.4313
+      },
+      {
+        "step": 899,
+        "train_reward": 0.3768
+      },
+      {
+        "step": 900,
+        "train_reward": 0.4094
+      },
+      {
+        "step": 901,
+        "train_reward": 0.4107
+      },
+      {
+        "step": 902,
+        "train_reward": 0.4158
+      },
+      {
+        "step": 903,
+        "train_reward": 0.3818
+      },
+      {
+        "step": 904,
+        "train_reward": 0.4098
+      },
+      {
+        "step": 905,
+        "train_reward": 0.3708
+      },
+      {
+        "step": 906,
+        "train_reward": 0.3828
+      },
+      {
+        "step": 907,
+        "train_reward": 0.347
+      },
+      {
+        "step": 908,
+        "train_reward": 0.4432
+      },
+      {
+        "step": 909,
+        "train_reward": 0.4406
+      },
+      {
+        "step": 910,
+        "train_reward": 0.3764
+      },
+      {
+        "step": 911,
+        "train_reward": 0.4262
+      },
+      {
+        "step": 912,
+        "train_reward": 0.3809
+      },
+      {
+        "step": 913,
+        "train_reward": 0.4224
+      },
+      {
+        "step": 914,
+        "train_reward": 0.366
+      },
+      {
+        "step": 915,
+        "train_reward": 0.3372
+      },
+      {
+        "step": 916,
+        "train_reward": 0.3648
+      },
+      {
+        "step": 917,
+        "train_reward": 0.3937
+      },
+      {
+        "step": 918,
+        "train_reward": 0.4269
+      },
+      {
+        "step": 919,
+        "train_reward": 0.3532
+      },
+      {
+        "step": 920,
+        "train_reward": 0.3865
+      },
+      {
+        "step": 921,
+        "train_reward": 0.3632
+      },
+      {
+        "step": 922,
+        "train_reward": 0.4297
+      },
+      {
+        "step": 923,
+        "train_reward": 0.3848
+      },
+      {
+        "step": 924,
+        "train_reward": 0.3903
+      },
+      {
+        "step": 925,
+        "train_reward": 0.3895
+      },
+      {
+        "step": 926,
+        "train_reward": 0.3807
+      },
+      {
+        "step": 927,
+        "train_reward": 0.4266
+      },
+      {
+        "step": 928,
+        "train_reward": 0.3891
+      },
+      {
+        "step": 929,
+        "train_reward": 0.3706
+      },
+      {
+        "step": 930,
+        "train_reward": 0.4187
+      },
+      {
+        "step": 931,
+        "train_reward": 0.3816
+      },
+      {
+        "step": 932,
+        "train_reward": 0.3587
+      },
+      {
+        "step": 933,
+        "train_reward": 0.3894
+      },
+      {
+        "step": 934,
+        "train_reward": 0.4491
+      },
+      {
+        "step": 935,
+        "train_reward": 0.3127
+      },
+      {
+        "step": 936,
+        "train_reward": 0.3183
+      },
+      {
+        "step": 937,
+        "train_reward": 0.3166
+      },
+      {
+        "step": 938,
+        "train_reward": 0.3429
+      },
+      {
+        "step": 939,
+        "train_reward": 0.3512
+      },
+      {
+        "step": 940,
+        "train_reward": 0.3189
+      },
+      {
+        "step": 941,
+        "train_reward": 0.3172
+      },
+      {
+        "step": 942,
+        "train_reward": 0.3065
+      },
+      {
+        "step": 943,
+        "train_reward": 0.3091
+      },
+      {
+        "step": 944,
+        "train_reward": 0.3359
+      },
+      {
+        "step": 945,
+        "train_reward": 0.3097
+      },
+      {
+        "step": 946,
+        "train_reward": 0.3735
+      },
+      {
+        "step": 947,
+        "train_reward": 0.2871
+      },
+      {
+        "step": 948,
+        "train_reward": 0.3364
+      },
+      {
+        "step": 949,
+        "train_reward": 0.3611
+      },
+      {
+        "step": 950,
+        "train_reward": 0.3026
+      },
+      {
+        "step": 951,
+        "train_reward": 0.2824
+      },
+      {
+        "step": 952,
+        "train_reward": 0.2754
+      },
+      {
+        "step": 953,
+        "train_reward": 0.3118
+      },
+      {
+        "step": 954,
+        "train_reward": 0.3077
+      },
+      {
+        "step": 955,
+        "train_reward": 0.3128
+      },
+      {
+        "step": 956,
+        "train_reward": 0.3784
+      },
+      {
+        "step": 957,
+        "train_reward": 0.3074
+      },
+      {
+        "step": 958,
+        "train_reward": 0.3192
+      },
+      {
+        "step": 959,
+        "train_reward": 0.2975
+      },
+      {
+        "step": 960,
+        "train_reward": 0.3244
+      },
+      {
+        "step": 961,
+        "train_reward": 0.3245
+      },
+      {
+        "step": 962,
+        "train_reward": 0.3072
+      },
+      {
+        "step": 963,
+        "train_reward": 0.3074
+      },
+      {
+        "step": 964,
+        "train_reward": 0.305
+      },
+      {
+        "step": 965,
+        "train_reward": 0.3058
+      },
+      {
+        "step": 966,
+        "train_reward": 0.3026
+      },
+      {
+        "step": 967,
+        "train_reward": 0.3161
+      },
+      {
+        "step": 968,
+        "train_reward": 0.3072
+      },
+      {
+        "step": 969,
+        "train_reward": 0.3132
+      },
+      {
+        "step": 970,
+        "train_reward": 0.3082
+      },
+      {
+        "step": 971,
+        "train_reward": 0.2859
+      },
+      {
+        "step": 972,
+        "train_reward": 0.3161
+      },
+      {
+        "step": 973,
+        "train_reward": 0.2588
+      },
+      {
+        "step": 974,
+        "train_reward": 0.3278
+      },
+      {
+        "step": 975,
+        "train_reward": 0.3111
+      },
+      {
+        "step": 976,
+        "train_reward": 0.2989
+      },
+      {
+        "step": 977,
+        "train_reward": 0.2699
+      },
+      {
+        "step": 978,
+        "train_reward": 0.3238
+      },
+      {
+        "step": 979,
+        "train_reward": 0.3286
+      },
+      {
+        "step": 980,
+        "train_reward": 0.3196
+      },
+      {
+        "step": 981,
+        "train_reward": 0.3382
+      },
+      {
+        "step": 982,
+        "train_reward": 0.3166
+      },
+      {
+        "step": 983,
+        "train_reward": 0.3344
+      },
+      {
+        "step": 984,
+        "train_reward": 0.2651
+      },
+      {
+        "step": 985,
+        "train_reward": 0.3184
+      },
+      {
+        "step": 986,
+        "train_reward": 0.309
+      },
+      {
+        "step": 987,
+        "train_reward": 0.3005
+      },
+      {
+        "step": 988,
+        "train_reward": 0.2811
+      },
+      {
+        "step": 989,
+        "train_reward": 0.3031
+      },
+      {
+        "step": 990,
+        "train_reward": 0.2896
+      },
+      {
+        "step": 991,
+        "train_reward": 0.2725
+      },
+      {
+        "step": 992,
+        "train_reward": 0.3257
+      },
+      {
+        "step": 993,
+        "train_reward": 0.3006
+      },
+      {
+        "step": 994,
+        "train_reward": 0.2836
+      },
+      {
+        "step": 995,
+        "train_reward": 0.2907
+      },
+      {
+        "step": 996,
+        "train_reward": 0.3304
+      },
+      {
+        "step": 997,
+        "train_reward": 0.3205
+      },
+      {
+        "step": 998,
+        "train_reward": 0.318
+      },
+      {
+        "step": 999,
+        "train_reward": 0.3001
+      },
+      {
+        "step": 1000,
+        "train_reward": 0.3036,
+        "eval_em": 0.42,
+        "eval_contains_em": 0.456,
+        "eval_f1": 0.4241939393939394,
+        "eval_avg_tool_calls": 1.0
+      },
+      {
+        "step": 1001,
+        "train_reward": 0.2972
+      },
+      {
+        "step": 1002,
+        "train_reward": 0.318
+      },
+      {
+        "step": 1003,
+        "train_reward": 0.329
+      },
+      {
+        "step": 1004,
+        "train_reward": 0.2931
+      },
+      {
+        "step": 1005,
+        "train_reward": 0.2721
+      },
+      {
+        "step": 1006,
+        "train_reward": 0.2917
+      },
+      {
+        "step": 1007,
+        "train_reward": 0.349
+      },
+      {
+        "step": 1008,
+        "train_reward": 0.3347
+      },
+      {
+        "step": 1009,
+        "train_reward": 0.3294
+      },
+      {
+        "step": 1010,
+        "train_reward": 0.3346
+      },
+      {
+        "step": 1011,
+        "train_reward": 0.32
+      },
+      {
+        "step": 1012,
+        "train_reward": 0.2968
+      },
+      {
+        "step": 1013,
+        "train_reward": 0.3112
+      },
+      {
+        "step": 1014,
+        "train_reward": 0.291
+      },
+      {
+        "step": 1015,
+        "train_reward": 0.2511
+      },
+      {
+        "step": 1016,
+        "train_reward": 0.2685
+      },
+      {
+        "step": 1017,
+        "train_reward": 0.2864
+      },
+      {
+        "step": 1018,
+        "train_reward": 0.2736
+      },
+      {
+        "step": 1019,
+        "train_reward": 0.2366
+      },
+      {
+        "step": 1020,
+        "train_reward": 0.2857
+      },
+      {
+        "step": 1021,
+        "train_reward": 0.2577
+      },
+      {
+        "step": 1022,
+        "train_reward": 0.2864
+      },
+      {
+        "step": 1023,
+        "train_reward": 0.2518
+      },
+      {
+        "step": 1024,
+        "train_reward": 0.2595
+      },
+      {
+        "step": 1025,
+        "train_reward": 0.2542
+      },
+      {
+        "step": 1026,
+        "train_reward": 0.2391
+      },
+      {
+        "step": 1027,
+        "train_reward": 0.2109
+      },
+      {
+        "step": 1028,
+        "train_reward": 0.1847
+      },
+      {
+        "step": 1029,
+        "train_reward": 0.168
+      },
+      {
+        "step": 1030,
+        "train_reward": 0.1621
+      },
+      {
+        "step": 1031,
+        "train_reward": 0.1791
+      },
+      {
+        "step": 1032,
+        "train_reward": 0.19
+      },
+      {
+        "step": 1033,
+        "train_reward": 0.1733
+      },
+      {
+        "step": 1034,
+        "train_reward": 0.1694
+      },
+      {
+        "step": 1035,
+        "train_reward": 0.1667
+      },
+      {
+        "step": 1036,
+        "train_reward": 0.1898
+      },
+      {
+        "step": 1037,
+        "train_reward": 0.1926
+      },
+      {
+        "step": 1038,
+        "train_reward": 0.1667
+      },
+      {
+        "step": 1039,
+        "train_reward": 0.1752
+      },
+      {
+        "step": 1040,
+        "train_reward": 0.1941
+      },
+      {
+        "step": 1041,
+        "train_reward": 0.1805
+      },
+      {
+        "step": 1042,
+        "train_reward": 0.1787
+      },
+      {
+        "step": 1043,
+        "train_reward": 0.1791
+      },
+      {
+        "step": 1044,
+        "train_reward": 0.1833
+      },
+      {
+        "step": 1045,
+        "train_reward": 0.17
+      },
+      {
+        "step": 1046,
+        "train_reward": 0.1842
+      },
+      {
+        "step": 1047,
+        "train_reward": 0.1777
+      },
+      {
+        "step": 1048,
+        "train_reward": 0.1827
+      },
+      {
+        "step": 1049,
+        "train_reward": 0.1829
+      },
+      {
+        "step": 1050,
+        "train_reward": 0.1865
+      },
+      {
+        "step": 1051,
+        "train_reward": 0.1792
+      },
+      {
+        "step": 1052,
+        "train_reward": 0.199
+      },
+      {
+        "step": 1053,
+        "train_reward": 0.2033
+      },
+      {
+        "step": 1054,
+        "train_reward": 0.1879
+      },
+      {
+        "step": 1055,
+        "train_reward": 0.1937
+      },
+      {
+        "step": 1056,
+        "train_reward": 0.1865
+      },
+      {
+        "step": 1057,
+        "train_reward": 0.1838
+      },
+      {
+        "step": 1058,
+        "train_reward": 0.1954
+      },
+      {
+        "step": 1059,
+        "train_reward": 0.1807
+      },
+      {
+        "step": 1060,
+        "train_reward": 0.1789
+      },
+      {
+        "step": 1061,
+        "train_reward": 0.1879
+      },
+      {
+        "step": 1062,
+        "train_reward": 0.1766
+      },
+      {
+        "step": 1063,
+        "train_reward": 0.1863
+      },
+      {
+        "step": 1064,
+        "train_reward": 0.1834
+      },
+      {
+        "step": 1065,
+        "train_reward": 0.185
+      },
+      {
+        "step": 1066,
+        "train_reward": 0.182
+      },
+      {
+        "step": 1067,
+        "train_reward": 0.1741
+      },
+      {
+        "step": 1068,
+        "train_reward": 0.1731
+      },
+      {
+        "step": 1069,
+        "train_reward": 0.1789
+      },
+      {
+        "step": 1070,
+        "train_reward": 0.1867
+      },
+      {
+        "step": 1071,
+        "train_reward": 0.2025
+      },
+      {
+        "step": 1072,
+        "train_reward": 0.184
+      },
+      {
+        "step": 1073,
+        "train_reward": 0.1824
+      },
+      {
+        "step": 1074,
+        "train_reward": 0.1899
+      },
+      {
+        "step": 1075,
+        "train_reward": 0.1807
+      },
+      {
+        "step": 1076,
+        "train_reward": 0.1868
+      },
+      {
+        "step": 1077,
+        "train_reward": 0.1914
+      },
+      {
+        "step": 1078,
+        "train_reward": 0.1959
+      },
+      {
+        "step": 1079,
+        "train_reward": 0.1924
+      },
+      {
+        "step": 1080,
+        "train_reward": 0.2078
+      },
+      {
+        "step": 1081,
+        "train_reward": 0.1752
+      },
+      {
+        "step": 1082,
+        "train_reward": 0.178
+      },
+      {
+        "step": 1083,
+        "train_reward": 0.1883
+      },
+      {
+        "step": 1084,
+        "train_reward": 0.2294
+      },
+      {
+        "step": 1085,
+        "train_reward": 0.3053
+      },
+      {
+        "step": 1086,
+        "train_reward": 0.2915
+      },
+      {
+        "step": 1087,
+        "train_reward": 0.3375
+      },
+      {
+        "step": 1088,
+        "train_reward": 0.2704
+      },
+      {
+        "step": 1089,
+        "train_reward": 0.3646
+      },
+      {
+        "step": 1090,
+        "train_reward": 0.3337
+      },
+      {
+        "step": 1091,
+        "train_reward": 0.3261
+      },
+      {
+        "step": 1092,
+        "train_reward": 0.3118
+      },
+      {
+        "step": 1093,
+        "train_reward": 0.3457
+      },
+      {
+        "step": 1094,
+        "train_reward": 0.2502
+      },
+      {
+        "step": 1095,
+        "train_reward": 0.2942
+      },
+      {
+        "step": 1096,
+        "train_reward": 0.3361
+      },
+      {
+        "step": 1097,
+        "train_reward": 0.2873
+      },
+      {
+        "step": 1098,
+        "train_reward": 0.2892
+      },
+      {
+        "step": 1099,
+        "train_reward": 0.3519
+      },
+      {
+        "step": 1100,
+        "train_reward": 0.2983
+      },
+      {
+        "step": 1101,
+        "train_reward": 0.3361
+      },
+      {
+        "step": 1102,
+        "train_reward": 0.3372
+      },
+      {
+        "step": 1103,
+        "train_reward": 0.3267
+      },
+      {
+        "step": 1104,
+        "train_reward": 0.2875
+      },
+      {
+        "step": 1105,
+        "train_reward": 0.3187
+      },
+      {
+        "step": 1106,
+        "train_reward": 0.3627
+      },
+      {
+        "step": 1107,
+        "train_reward": 0.2942
+      },
+      {
+        "step": 1108,
+        "train_reward": 0.2956
+      },
+      {
+        "step": 1109,
+        "train_reward": 0.311
+      },
+      {
+        "step": 1110,
+        "train_reward": 0.3704
+      },
+      {
+        "step": 1111,
+        "train_reward": 0.3092
+      },
+      {
+        "step": 1112,
+        "train_reward": 0.3163
+      },
+      {
+        "step": 1113,
+        "train_reward": 0.3566
+      },
+      {
+        "step": 1114,
+        "train_reward": 0.3474
+      },
+      {
+        "step": 1115,
+        "train_reward": 0.3045
+      },
+      {
+        "step": 1116,
+        "train_reward": 0.3201
+      },
+      {
+        "step": 1117,
+        "train_reward": 0.3206
+      },
+      {
+        "step": 1118,
+        "train_reward": 0.3263
+      },
+      {
+        "step": 1119,
+        "train_reward": 0.3073
+      },
+      {
+        "step": 1120,
+        "train_reward": 0.3273
+      },
+      {
+        "step": 1121,
+        "train_reward": 0.2563
+      },
+      {
+        "step": 1122,
+        "train_reward": 0.3166
+      },
+      {
+        "step": 1123,
+        "train_reward": 0.3192
+      },
+      {
+        "step": 1124,
+        "train_reward": 0.3379
+      },
+      {
+        "step": 1125,
+        "train_reward": 0.369
+      },
+      {
+        "step": 1126,
+        "train_reward": 0.3049
+      },
+      {
+        "step": 1127,
+        "train_reward": 0.3311
+      },
+      {
+        "step": 1128,
+        "train_reward": 0.332
+      },
+      {
+        "step": 1129,
+        "train_reward": 0.2921
+      },
+      {
+        "step": 1130,
+        "train_reward": 0.3041
+      },
+      {
+        "step": 1131,
+        "train_reward": 0.3373
+      },
+      {
+        "step": 1132,
+        "train_reward": 0.2896
+      },
+      {
+        "step": 1133,
+        "train_reward": 0.296
+      },
+      {
+        "step": 1134,
+        "train_reward": 0.3229
+      },
+      {
+        "step": 1135,
+        "train_reward": 0.3015
+      },
+      {
+        "step": 1136,
+        "train_reward": 0.3125
+      },
+      {
+        "step": 1137,
+        "train_reward": 0.3499
+      },
+      {
+        "step": 1138,
+        "train_reward": 0.3213
+      },
+      {
+        "step": 1139,
+        "train_reward": 0.3012
+      },
+      {
+        "step": 1140,
+        "train_reward": 0.3245
+      },
+      {
+        "step": 1141,
+        "train_reward": 0.3299
+      },
+      {
+        "step": 1142,
+        "train_reward": 0.3569
+      },
+      {
+        "step": 1143,
+        "train_reward": 0.3294
+      },
+      {
+        "step": 1144,
+        "train_reward": 0.3249
+      },
+      {
+        "step": 1145,
+        "train_reward": 0.3214
+      },
+      {
+        "step": 1146,
+        "train_reward": 0.304
+      },
+      {
+        "step": 1147,
+        "train_reward": 0.3009
+      },
+      {
+        "step": 1148,
+        "train_reward": 0.332
+      },
+      {
+        "step": 1149,
+        "train_reward": 0.3026
+      },
+      {
+        "step": 1150,
+        "train_reward": 0.3457
+      },
+      {
+        "step": 1151,
+        "train_reward": 0.3029
+      },
+      {
+        "step": 1152,
+        "train_reward": 0.2789
+      },
+      {
+        "step": 1153,
+        "train_reward": 0.2698
+      },
+      {
+        "step": 1154,
+        "train_reward": 0.3116
+      },
+      {
+        "step": 1155,
+        "train_reward": 0.2716
+      },
+      {
+        "step": 1156,
+        "train_reward": 0.3246
+      },
+      {
+        "step": 1157,
+        "train_reward": 0.315
+      },
+      {
+        "step": 1158,
+        "train_reward": 0.3335
+      },
+      {
+        "step": 1159,
+        "train_reward": 0.309
+      },
+      {
+        "step": 1160,
+        "train_reward": 0.2886
+      },
+      {
+        "step": 1161,
+        "train_reward": 0.2897
+      },
+      {
+        "step": 1162,
+        "train_reward": 0.3116
+      },
+      {
+        "step": 1163,
+        "train_reward": 0.2868
+      },
+      {
+        "step": 1164,
+        "train_reward": 0.3091
+      },
+      {
+        "step": 1165,
+        "train_reward": 0.2919
+      },
+      {
+        "step": 1166,
+        "train_reward": 0.2935
+      },
+      {
+        "step": 1167,
+        "train_reward": 0.2857
+      },
+      {
+        "step": 1168,
+        "train_reward": 0.2771
+      },
+      {
+        "step": 1169,
+        "train_reward": 0.2716
+      },
+      {
+        "step": 1170,
+        "train_reward": 0.2965
+      },
+      {
+        "step": 1171,
+        "train_reward": 0.2802
+      },
+      {
+        "step": 1172,
+        "train_reward": 0.3018
+      },
+      {
+        "step": 1173,
+        "train_reward": 0.2972
+      },
+      {
+        "step": 1174,
+        "train_reward": 0.2911
+      },
+      {
+        "step": 1175,
+        "train_reward": 0.2865
+      },
+      {
+        "step": 1176,
+        "train_reward": 0.3258
+      },
+      {
+        "step": 1177,
+        "train_reward": 0.2877
+      },
+      {
+        "step": 1178,
+        "train_reward": 0.2775
+      },
+      {
+        "step": 1179,
+        "train_reward": 0.2517
+      },
+      {
+        "step": 1180,
+        "train_reward": 0.3029
+      },
+      {
+        "step": 1181,
+        "train_reward": 0.2835
+      },
+      {
+        "step": 1182,
+        "train_reward": 0.2673
+      },
+      {
+        "step": 1183,
+        "train_reward": 0.2816
+      },
+      {
+        "step": 1184,
+        "train_reward": 0.2586
+      },
+      {
+        "step": 1185,
+        "train_reward": 0.2782
+      },
+      {
+        "step": 1186,
+        "train_reward": 0.2845
+      },
+      {
+        "step": 1187,
+        "train_reward": 0.2877
+      },
+      {
+        "step": 1188,
+        "train_reward": 0.2714
+      },
+      {
+        "step": 1189,
+        "train_reward": 0.2819
+      },
+      {
+        "step": 1190,
+        "train_reward": 0.247
+      },
+      {
+        "step": 1191,
+        "train_reward": 0.2824
+      },
+      {
+        "step": 1192,
+        "train_reward": 0.2867
+      },
+      {
+        "step": 1193,
+        "train_reward": 0.2827
+      },
+      {
+        "step": 1194,
+        "train_reward": 0.321
+      },
+      {
+        "step": 1195,
+        "train_reward": 0.2659
+      },
+      {
+        "step": 1196,
+        "train_reward": 0.2657
+      },
+      {
+        "step": 1197,
+        "train_reward": 0.2681
+      },
+      {
+        "step": 1198,
+        "train_reward": 0.2424
+      },
+      {
+        "step": 1199,
+        "train_reward": 0.245
+      },
+      {
+        "step": 1200,
+        "train_reward": 0.2397
+      },
+      {
+        "step": 1201,
+        "train_reward": 0.2678
+      },
+      {
+        "step": 1202,
+        "train_reward": 0.2857
+      },
+      {
+        "step": 1203,
+        "train_reward": 0.3158
+      },
+      {
+        "step": 1204,
+        "train_reward": 0.3393
+      },
+      {
+        "step": 1205,
+        "train_reward": 0.3362
+      },
+      {
+        "step": 1206,
+        "train_reward": 0.308
+      },
+      {
+        "step": 1207,
+        "train_reward": 0.2955
+      },
+      {
+        "step": 1208,
+        "train_reward": 0.366
+      },
+      {
+        "step": 1209,
+        "train_reward": 0.4152
+      },
+      {
+        "step": 1210,
+        "train_reward": 0.3812
+      },
+      {
+        "step": 1211,
+        "train_reward": 0.3834
+      },
+      {
+        "step": 1212,
+        "train_reward": 0.3846
+      },
+      {
+        "step": 1213,
+        "train_reward": 0.3862
+      },
+      {
+        "step": 1214,
+        "train_reward": 0.4208
+      },
+      {
+        "step": 1215,
+        "train_reward": 0.3854
+      },
+      {
+        "step": 1216,
+        "train_reward": 0.4168
+      },
+      {
+        "step": 1217,
+        "train_reward": 0.3672
+      },
+      {
+        "step": 1218,
+        "train_reward": 0.3259
+      },
+      {
+        "step": 1219,
+        "train_reward": 0.3631
+      },
+      {
+        "step": 1220,
+        "train_reward": 0.3142
+      },
+      {
+        "step": 1221,
+        "train_reward": 0.3047
+      },
+      {
+        "step": 1222,
+        "train_reward": 0.3169
+      },
+      {
+        "step": 1223,
+        "train_reward": 0.3078
+      },
+      {
+        "step": 1224,
+        "train_reward": 0.2682
+      },
+      {
+        "step": 1225,
+        "train_reward": 0.2936
+      },
+      {
+        "step": 1226,
+        "train_reward": 0.281
+      },
+      {
+        "step": 1227,
+        "train_reward": 0.3289
+      },
+      {
+        "step": 1228,
+        "train_reward": 0.2895
+      },
+      {
+        "step": 1229,
+        "train_reward": 0.3273
+      },
+      {
+        "step": 1230,
+        "train_reward": 0.3251
+      },
+      {
+        "step": 1231,
+        "train_reward": 0.3116
+      },
+      {
+        "step": 1232,
+        "train_reward": 0.319
+      },
+      {
+        "step": 1233,
+        "train_reward": 0.2652
+      },
+      {
+        "step": 1234,
+        "train_reward": 0.2885
+      },
+      {
+        "step": 1235,
+        "train_reward": 0.3074
+      },
+      {
+        "step": 1236,
+        "train_reward": 0.2866
+      },
+      {
+        "step": 1237,
+        "train_reward": 0.2895
+      },
+      {
+        "step": 1238,
+        "train_reward": 0.285
+      },
+      {
+        "step": 1239,
+        "train_reward": 0.3443
+      },
+      {
+        "step": 1240,
+        "train_reward": 0.3059
+      },
+      {
+        "step": 1241,
+        "train_reward": 0.2876
+      },
+      {
+        "step": 1242,
+        "train_reward": 0.3362
+      },
+      {
+        "step": 1243,
+        "train_reward": 0.3021
+      },
+      {
+        "step": 1244,
+        "train_reward": 0.2508
+      },
+      {
+        "step": 1245,
+        "train_reward": 0.2729
+      },
+      {
+        "step": 1246,
+        "train_reward": 0.287
+      },
+      {
+        "step": 1247,
+        "train_reward": 0.3138
+      },
+      {
+        "step": 1248,
+        "train_reward": 0.3332
+      },
+      {
+        "step": 1249,
+        "train_reward": 0.2493
+      },
+      {
+        "step": 1250,
+        "train_reward": 0.3119
+      },
+      {
+        "step": 1251,
+        "train_reward": 0.3298
+      },
+      {
+        "step": 1252,
+        "train_reward": 0.3749
+      },
+      {
+        "step": 1253,
+        "train_reward": 0.3616
+      },
+      {
+        "step": 1254,
+        "train_reward": 0.406
+      },
+      {
+        "step": 1255,
+        "train_reward": 0.3978
+      },
+      {
+        "step": 1256,
+        "train_reward": 0.3931
+      },
+      {
+        "step": 1257,
+        "train_reward": 0.4381
+      },
+      {
+        "step": 1258,
+        "train_reward": 0.3848
+      },
+      {
+        "step": 1259,
+        "train_reward": 0.3729
+      }
+    ]
+  }
+}

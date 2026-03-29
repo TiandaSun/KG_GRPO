@@ -1,0 +1,62 @@
+[
+  {
+    "experiment": "e1_outcome",
+    "reward_type": "outcome",
+    "step": "step_1250",
+    "pearson_r": 0.8253,
+    "p_value": 0.0,
+    "n_samples": 100,
+    "mean_reward": 0.0671,
+    "mean_em": 0.01
+  },
+  {
+    "experiment": "e2_heuristic",
+    "reward_type": "heuristic",
+    "step": "step_200",
+    "pearson_r": NaN,
+    "p_value": NaN,
+    "n_samples": 100,
+    "mean_reward": 0.0664,
+    "mean_em": 0.0
+  },
+  {
+    "experiment": "e2_heuristic",
+    "reward_type": "heuristic",
+    "step": "step_600",
+    "pearson_r": NaN,
+    "p_value": NaN,
+    "n_samples": 100,
+    "mean_reward": 0.0772,
+    "mean_em": 0.0
+  },
+  {
+    "experiment": "e2_heuristic",
+    "reward_type": "heuristic",
+    "step": "step_1200",
+    "pearson_r": 0.929,
+    "p_value": 0.0,
+    "n_samples": 100,
+    "mean_reward": 0.1202,
+    "mean_em": 0.33
+  },
+  {
+    "experiment": "e3_verifiable",
+    "reward_type": "verifiable",
+    "step": "step_500",
+    "pearson_r": 0.9455,
+    "p_value": 0.0,
+    "n_samples": 100,
+    "mean_reward": 0.251,
+    "mean_em": 0.62
+  },
+  {
+    "experiment": "e3_verifiable",
+    "reward_type": "verifiable",
+    "step": "step_1250",
+    "pearson_r": 0.9662,
+    "p_value": 0.0,
+    "n_samples": 50,
+    "mean_reward": 0.1092,
+    "mean_em": 0.36
+  }
+]

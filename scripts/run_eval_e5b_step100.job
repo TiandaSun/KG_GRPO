@@ -1,0 +1,146 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=eval_e5b100
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=04:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# E5b step 100 — full 500 sample eval + 100 trajectories for classification
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+CKPT_DIR="/projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/grpo-cwq-7b-tool-type-bonus-20260326"
+TRAJ_DIR="results/trajectories/e5b_tool_type_bonus"
+
+echo "=== E5b Step 100 Full Eval ==="
+echo "Date: $(date)"
+
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port 18901 --log-level warning &
+KG_PID=$!
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:18901/health 2>/dev/null | grep -q "200" && echo "KG healthy" && break
+    sleep 10
+done
+echo ""
+
+mkdir -p results "$TRAJ_DIR"
+
+echo "=== E5b step 100: 500 samples + 100 trajectories ==="
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$CKPT_DIR" \
+    --steps 100 \
+    --eval_data data/freebase/verl_cwq/val.parquet \
+    --output results/eval_e5b_step100_full.json \
+    --kg_server_url http://localhost:18901 \
+    --max_samples 500 \
+    --max_turns 5 \
+    --save_trajectories "$TRAJ_DIR" \
+    --max_trajectory_samples 100
+echo ""
+
+kill $KG_PID 2>/dev/null
+
+# Hop-stratified
+traj="${TRAJ_DIR}/step_100/trajectories.json"
+if [ -f "$traj" ]; then
+    echo "=== Hop-stratified ==="
+    python scripts/eval_hop_stratified.py \
+        --trajectories "$traj" \
+        --output results/hop_stratified_e5b_100.json
+    echo ""
+fi
+
+# Classification
+echo "=== Trajectory Classification ==="
+python3 << 'PYEOF'
+import json, re
+from pathlib import Path
+
+traj_file = Path("results/trajectories/e5b_tool_type_bonus/step_100/trajectories.json")
+if not traj_file.exists():
+    print("No trajectory file found")
+    exit()
+
+trajs = json.loads(traj_file.read_text())
+print(f"E5b Step 100: {len(trajs)} trajectories\n")
+
+counts = {}
+examples = {}
+
+for t in trajs:
+    em = t.get("em", 0)
+    gold_answers = t.get("all_answers", [t.get("gold_answer", "")])
+    gold_lower = [a.lower() for a in gold_answers if a]
+    resp = t.get("full_response", "")
+    num_tools = t.get("num_tool_calls", 0)
+
+    tool_responses = re.findall(r"<tool_response>(.*?)</tool_response>", resp, re.DOTALL)
+    kg_text = " ".join(tool_responses).lower()
+    answer_in_kg = any(ga in kg_text for ga in gold_lower)
+    kg_nonempty = any(tr.strip() and tr.strip() != "[]" and "no results" not in tr.lower()
+                      for tr in tool_responses)
+
+    if num_tools == 0:
+        label = "correct-no-tool" if em > 0 else "wrong-no-tool"
+    elif em > 0:
+        label = "correct-via-tool" if answer_in_kg else "correct-via-memory"
+    elif not kg_nonempty:
+        label = "kg-incomplete"
+    else:
+        label = "wrong-answer"
+
+    counts[label] = counts.get(label, 0) + 1
+    if label not in examples:
+        examples[label] = []
+    if len(examples[label]) < 3:
+        calls = re.findall(r"<search>\s*(\w+)\(([^)]*)\)", resp)
+        examples[label].append({
+            "question": t.get("question", "")[:80],
+            "gold": gold_answers[0][:50] if gold_answers else "",
+            "predicted": t.get("predicted", "")[:50],
+            "tools": "; ".join(f"{a}({e[:30]})" for a, e in calls),
+            "kg_has_answer": answer_in_kg,
+        })
+
+total = len(trajs)
+print("=" * 60)
+print(f"CLASSIFICATION (n={total})")
+print("=" * 60)
+for label in ["correct-via-tool", "correct-via-memory", "correct-no-tool",
+              "kg-incomplete", "wrong-answer", "wrong-no-tool"]:
+    c = counts.get(label, 0)
+    print(f"  {label:<22} {c:>3} ({100*c/total:.1f}%)")
+print(f"  {'TOTAL correct':<22} {sum(c for l,c in counts.items() if 'correct' in l):>3}")
+
+print("\n=== correct-via-tool examples ===")
+for ex in examples.get("correct-via-tool", []):
+    print(f"  Q: {ex['question']}")
+    print(f"  Gold: {ex['gold']}  Pred: {ex['predicted']}")
+    print(f"  Tools: {ex['tools']}")
+    print()
+
+# Save
+output = {"counts": counts, "total": total,
+          "percentages": {k: round(100*v/total, 1) for k,v in counts.items()},
+          "examples": examples}
+Path("results/e5b_step100_classification.json").write_text(json.dumps(output, indent=2))
+print("Saved to results/e5b_step100_classification.json")
+PYEOF
+
+echo "=== Done ==="
+echo "End: $(date)"

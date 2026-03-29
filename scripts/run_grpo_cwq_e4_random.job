@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#SBATCH --job-name=grpo_cwq_7b
+#SBATCH --job-name=grpo_e4_rand
 #SBATCH --nodes=1
 #SBATCH --gpus=4
 #SBATCH --time=24:00:00
@@ -7,9 +7,9 @@
 #SBATCH --error=logs/%x-%j.err
 #SBATCH --partition=workq
 
-# 7B GRPO on CWQ/Freebase (4x GH200)
-# Set REWARD_TYPE via environment: outcome (E1), heuristic (E2), verifiable (E3)
-# Default: outcome (baseline)
+# E4 (R_random) GRPO training — random step rewards ablation
+# R_random = 0.3 * R_answer + 0.7 * mean(Uniform(0,1) per step)
+# Same config as E1/E2/E3 except REWARD_TYPE=random
 
 set -eo pipefail
 
@@ -32,12 +32,10 @@ mkdir -p "$RAY_TMPDIR"
 cd "$SLURM_SUBMIT_DIR"
 export PYTHONPATH="$PWD:${PYTHONPATH:-}"
 
-# Reward type: set via sbatch --export=REWARD_TYPE=verifiable or defaults to outcome
-REWARD_TYPE="${REWARD_TYPE:-outcome}"
-export REWARD_TYPE
-EXPERIMENT_NAME="grpo-cwq-7b-${REWARD_TYPE}-$(date +%Y%m%d)"
+export REWARD_TYPE=random
+EXPERIMENT_NAME="grpo-cwq-7b-random-20260326"
 
-echo "=== 7B GRPO on CWQ (4x GH200) ==="
+echo "=== E4: 7B GRPO Random Step Rewards (4x GH200) ==="
 echo "Date: $(date)"
 echo "Node: $(hostname)"
 echo "Reward type: $REWARD_TYPE"
@@ -45,8 +43,7 @@ echo "Experiment: $EXPERIMENT_NAME"
 echo "GPUs: $(nvidia-smi --query-gpu=name --format=csv,noheader | wc -l)x GH200"
 echo ""
 
-# --- Start KG server with Freebase ---
-echo "Starting Freebase KG server..."
+# --- Start KG server ---
 python -m src_verl.kg_server.server \
     --kg freebase \
     --freebase_dir data/freebase/kg \
@@ -54,8 +51,7 @@ python -m src_verl.kg_server.server \
     --log-level warning > /dev/null 2>&1 &
 KG_PID=$!
 
-# Wait for server — Freebase is large (2.6M entities, 8.3M triples), may take longer
-echo "Waiting for KG server to load (2.6M entities)..."
+echo "Waiting for KG server to load..."
 sleep 30
 for i in $(seq 1 12); do
     if curl -s -o /dev/null -w "%{http_code}" http://localhost:18901/health 2>/dev/null | grep -q "200"; then
@@ -93,9 +89,10 @@ echo "=== Results ==="
 echo "Reward type: $REWARD_TYPE"
 echo "Exit code: $GRPO_EXIT"
 echo "Total time: ${ELAPSED}s ($((ELAPSED / 60))m $((ELAPSED % 60))s)"
+echo "Checkpoints:"
+ls checkpoints/kg-align-verl/${EXPERIMENT_NAME}/ 2>/dev/null | grep global_step | sort -t_ -k3 -n
 echo ""
 
-# Cleanup
 kill $KG_PID 2>/dev/null
 echo "=== Done ==="
 echo "End: $(date)"

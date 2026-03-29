@@ -1,0 +1,41 @@
+{
+  "e5b_goodhart_partial": {
+    "50": {
+      "em": 0.01,
+      "cont_em": 0.396,
+      "f1": 0.057,
+      "tools": 4.9
+    },
+    "100": {
+      "em": 0.49,
+      "cont_em": 0.576,
+      "f1": 0.512,
+      "tools": 2.3
+    },
+    "150": {
+      "em": 0.432,
+      "cont_em": 0.488,
+      "f1": 0.465,
+      "tools": 2.4
+    },
+    "200": {
+      "em": 0.432,
+      "cont_em": 0.496,
+      "f1": 0.462,
+      "tools": 0.2
+    },
+    "250": {
+      "em": 0.0,
+      "cont_em": 0.002,
+      "f1": 0.0,
+      "tools": 0.0
+    },
+    "300": {
+      "em": 0.0,
+      "cont_em": 0.0,
+      "f1": 0.0,
+      "tools": 0.0
+    }
+  },
+  "note": "Extracted from eval_e5b-3437183.err before timeout. Steps 350-700 and trajectories pending."
+}

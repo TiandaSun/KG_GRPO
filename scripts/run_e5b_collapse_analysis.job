@@ -1,0 +1,162 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=e5b_collapse
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=03:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Quick E5b collapse analysis — 20 samples at steps 100,150,200,250,300
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+CKPT_DIR="/projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/grpo-cwq-7b-tool-type-bonus-20260326"
+TRAJ_DIR="results/trajectories/e5b_collapse_analysis"
+
+echo "=== E5b Collapse Quick Analysis ==="
+echo "Date: $(date)"
+
+# Start KG server
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port 18901 --log-level warning &
+KG_PID=$!
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:18901/health 2>/dev/null | grep -q "200" && echo "KG healthy" && break
+    sleep 10
+done
+echo ""
+
+mkdir -p "$TRAJ_DIR"
+
+# Generate trajectories at key collapse steps — small sample for speed
+for step in 100 150 200 250 300; do
+    echo "=== Step $step: generating 20 trajectories ==="
+    python scripts/eval_with_tools.py \
+        --checkpoint_dir "$CKPT_DIR" \
+        --steps "$step" \
+        --eval_data data/freebase/verl_cwq/val.parquet \
+        --output "results/eval_e5b_collapse_step${step}.json" \
+        --kg_server_url http://localhost:18901 \
+        --max_samples 20 \
+        --max_turns 5 \
+        --save_trajectories "$TRAJ_DIR" \
+        --max_trajectory_samples 20
+    echo ""
+done
+
+kill $KG_PID 2>/dev/null
+
+# Collapse analysis
+echo "=== COLLAPSE ANALYSIS ==="
+python3 << 'PYEOF'
+import json
+import re
+from collections import Counter
+from pathlib import Path
+
+TRAJ_DIR = Path("results/trajectories/e5b_collapse_analysis")
+
+for step in [100, 150, 200, 250, 300]:
+    traj_file = TRAJ_DIR / f"step_{step}" / "trajectories.json"
+    if not traj_file.exists():
+        print(f"\n--- Step {step}: file not found ---")
+        continue
+
+    trajs = json.loads(traj_file.read_text())
+    print(f"\n{'='*70}")
+    print(f"STEP {step}: {len(trajs)} trajectories")
+    print(f"{'='*70}")
+
+    # Basic stats
+    ems = [t.get("em", 0) for t in trajs]
+    tool_counts = [t.get("num_tool_calls", 0) for t in trajs]
+    print(f"  EM: {sum(ems)/len(ems):.3f} ({sum(1 for e in ems if e > 0)}/{len(ems)} correct)")
+    print(f"  Tool calls: mean={sum(tool_counts)/len(tool_counts):.2f}")
+    print(f"    0-calls: {sum(1 for t in tool_counts if t==0)}")
+    print(f"    1-call:  {sum(1 for t in tool_counts if t==1)}")
+    print(f"    2-calls: {sum(1 for t in tool_counts if t==2)}")
+    print(f"    3+calls: {sum(1 for t in tool_counts if t>=3)}")
+
+    # Tool action distribution
+    action_counts = Counter()
+    for t in trajs:
+        resp = t.get("full_response", "")
+        for m in re.finditer(r"<search>\s*(\w+)\(", resp):
+            action_counts[m.group(1)] += 1
+    if action_counts:
+        total_actions = sum(action_counts.values())
+        print(f"  Tool actions ({total_actions} total):")
+        for action, cnt in action_counts.most_common():
+            print(f"    {action}: {cnt} ({100*cnt/total_actions:.1f}%)")
+    else:
+        print(f"  Tool actions: NONE")
+
+    # Output format analysis
+    empty_pred = sum(1 for t in trajs if not t.get("predicted", "").strip())
+    has_answer_tag = sum(1 for t in trajs if "<answer>" in t.get("full_response", ""))
+    preds = [t.get("predicted", "") for t in trajs]
+    unique_preds = len(set(preds))
+    pred_lengths = [len(p) for p in preds]
+
+    print(f"  Output format:")
+    print(f"    Empty predictions: {empty_pred}/{len(trajs)}")
+    print(f"    Has <answer> tag: {has_answer_tag}/{len(trajs)}")
+    print(f"    Unique predictions: {unique_preds}/{len(trajs)}")
+    print(f"    Pred lengths: mean={sum(pred_lengths)/len(pred_lengths):.0f}, min={min(pred_lengths)}, max={max(pred_lengths)}")
+
+    # Response length
+    resp_lengths = [len(t.get("full_response", "")) for t in trajs]
+    print(f"  Response length: mean={sum(resp_lengths)/len(resp_lengths):.0f}, min={min(resp_lengths)}, max={max(resp_lengths)}")
+
+    # Selective vs random tool use (for step 200 especially)
+    if 0 < sum(tool_counts) < len(trajs) * 3:
+        # Mixed — some use tools, some don't
+        with_tools = [t for t in trajs if t.get("num_tool_calls", 0) > 0]
+        without_tools = [t for t in trajs if t.get("num_tool_calls", 0) == 0]
+        em_with = sum(t.get("em", 0) for t in with_tools) / max(len(with_tools), 1)
+        em_without = sum(t.get("em", 0) for t in without_tools) / max(len(without_tools), 1)
+        print(f"  Selective tool use analysis:")
+        print(f"    With tools ({len(with_tools)}):    EM={em_with:.3f}")
+        print(f"    Without tools ({len(without_tools)}): EM={em_without:.3f}")
+
+    # Show 5 examples with full detail
+    print(f"\n  --- Examples ---")
+    for i, t in enumerate(trajs[:5]):
+        q = t.get("question", "")[:80]
+        gold = t.get("gold_answer", "")[:50]
+        pred = t.get("predicted", "")[:80]
+        em = t.get("em", 0)
+        tc = t.get("num_tool_calls", 0)
+        resp = t.get("full_response", "")
+
+        # Extract tool calls
+        calls = re.findall(r"<search>\s*(\w+)\(([^)]*)\)", resp)
+        calls_str = "; ".join(f"{a}({e[:30]})" for a, e in calls) if calls else "NONE"
+
+        print(f"  [{i}] Q: {q}")
+        print(f"      Gold: {gold}")
+        print(f"      Pred: '{pred}' (EM={em})")
+        print(f"      Tools: {calls_str}")
+
+        # Show first 300 chars of response to see format
+        resp_clean = resp[:300].replace("\n", "\\n")
+        print(f"      Response[0:300]: {resp_clean}")
+        print()
+
+PYEOF
+
+echo "=== Done ==="
+echo "End: $(date)"

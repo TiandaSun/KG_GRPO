@@ -218,6 +218,10 @@ def main() -> None:
     parser.add_argument("--max_samples", type=int, default=500)
     parser.add_argument("--max_turns", type=int, default=5)
     parser.add_argument("--device", type=str, default="cuda")
+    parser.add_argument("--save_trajectories", type=Path, default=None,
+                        help="Directory to save full trajectories (one JSON per step)")
+    parser.add_argument("--max_trajectory_samples", type=int, default=100,
+                        help="Max trajectories to save per checkpoint")
     args = parser.parse_args()
 
     # Verify KG server is reachable
@@ -238,7 +242,7 @@ def main() -> None:
     args.output.parent.mkdir(parents=True, exist_ok=True)
     results = {}
 
-    all_steps = [0] + args.steps  # Always include SFT base
+    all_steps = args.steps if 0 in args.steps else args.steps  # Only include step 0 if explicitly requested
 
     for step in all_steps:
         logger.info("=== Evaluating step %d (WITH tools) ===", step)
@@ -252,6 +256,7 @@ def main() -> None:
             model = load_checkpoint(args.checkpoint_dir, step, args.base_model, args.device)
 
         ems, cms, f1s, tool_counts = [], [], [], []
+        trajectories: list[dict] = []
 
         for i, (_, row) in enumerate(df.iterrows()):
             if i >= args.max_samples:
@@ -262,6 +267,8 @@ def main() -> None:
             all_answers = row["extra_info"].get("all_answers", [gold])
             if hasattr(all_answers, "tolist"):
                 all_answers = all_answers.tolist()
+            sample_id = row["extra_info"].get("sample_id", str(i))
+            hops = int(row["extra_info"].get("hops", 0))
 
             full_response, n_tools = generate_with_tools(
                 model, tokenizer, question, system_prompt,
@@ -269,10 +276,27 @@ def main() -> None:
             )
 
             predicted = extract_answer(full_response)
-            ems.append(exact_match(predicted, gold, all_answers))
-            cms.append(contains_match(full_response, gold, all_answers))
-            f1s.append(token_f1(predicted, gold))
+            em_score = exact_match(predicted, gold, all_answers)
+            cm_score = contains_match(full_response, gold, all_answers)
+            f1_score = token_f1(predicted, gold)
+            ems.append(em_score)
+            cms.append(cm_score)
+            f1s.append(f1_score)
             tool_counts.append(n_tools)
+
+            if args.save_trajectories and i < args.max_trajectory_samples:
+                trajectories.append({
+                    "sample_id": str(sample_id),
+                    "question": question,
+                    "gold_answer": gold,
+                    "all_answers": [str(a) for a in all_answers],
+                    "hops": hops,
+                    "predicted": predicted,
+                    "full_response": full_response,
+                    "num_tool_calls": n_tools,
+                    "em": em_score,
+                    "f1": f1_score,
+                })
 
             if (i + 1) % 50 == 0:
                 logger.info(
@@ -294,6 +318,14 @@ def main() -> None:
         results[str(step)] = r
         logger.info("Step %d: EM=%.4f ContEM=%.4f F1=%.4f ToolCalls=%.1f (%.0fs)",
                      step, r["em"], r["contains_em"], r["f1"], r["avg_tool_calls"], elapsed)
+
+        if args.save_trajectories and trajectories:
+            traj_dir = args.save_trajectories / f"step_{step}"
+            traj_dir.mkdir(parents=True, exist_ok=True)
+            traj_file = traj_dir / "trajectories.json"
+            with open(traj_file, "w") as tf:
+                json.dump(trajectories, tf, indent=2, ensure_ascii=False)
+            logger.info("Saved %d trajectories to %s", len(trajectories), traj_file)
 
         del model
         torch.cuda.empty_cache()

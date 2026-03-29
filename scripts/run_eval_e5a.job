@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=eval_e5a
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=12:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# E5a (R_retrieval_grounded) full evaluation — Goodhart curve + trajectories + classification
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+CKPT_DIR="checkpoints/kg-align-verl/grpo-cwq-7b-retrieval-grounded-20260326"
+TRAJ_DIR="results/trajectories/e5a_retrieval_grounded"
+
+echo "=== E5a Evaluation (with tools) ==="
+echo "Date: $(date)"
+echo "Checkpoints available:"
+ls "$CKPT_DIR" | grep global_step | sort -t_ -k3 -n
+echo ""
+
+# Start KG server
+echo "Starting Freebase KG server..."
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port 18901 --log-level warning &
+KG_PID=$!
+sleep 30
+for i in $(seq 1 12); do
+    if curl -s -o /dev/null -w "%{http_code}" http://localhost:18901/health 2>/dev/null | grep -q "200"; then
+        echo "KG server healthy after ${i}0+30 seconds"
+        break
+    fi
+    echo "  Still loading... (${i}0+30s)"
+    sleep 10
+done
+echo ""
+
+mkdir -p results "$TRAJ_DIR"
+
+# Part 1: Goodhart curve — eval at key checkpoints
+echo "=== E5a Goodhart curve: steps 100,250,500,750,1000,1250 ==="
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$CKPT_DIR" \
+    --steps 100 250 500 750 1000 1250 \
+    --eval_data data/freebase/verl_cwq/val.parquet \
+    --output results/eval_e5a_goodhart_curve.json \
+    --kg_server_url http://localhost:18901 \
+    --max_samples 500 \
+    --max_turns 5
+echo ""
+
+# Part 2: Trajectories at early/mid/late steps
+for step in 250 500 1250; do
+    echo "=== E5a trajectories: step $step ==="
+    python scripts/eval_with_tools.py \
+        --checkpoint_dir "$CKPT_DIR" \
+        --steps "$step" \
+        --eval_data data/freebase/verl_cwq/val.parquet \
+        --output "results/eval_e5a_traj_${step}.json" \
+        --kg_server_url http://localhost:18901 \
+        --max_samples 500 \
+        --max_turns 5 \
+        --save_trajectories "$TRAJ_DIR" \
+        --max_trajectory_samples 100
+    echo ""
+done
+
+kill $KG_PID 2>/dev/null
+
+# Part 3: Hop-stratified analysis
+echo "=== Hop-stratified analysis ==="
+for step in 250 500 1250; do
+    traj="${TRAJ_DIR}/step_${step}/trajectories.json"
+    if [ -f "$traj" ]; then
+        echo "--- Step $step ---"
+        python scripts/eval_hop_stratified.py \
+            --trajectories "$traj" \
+            --output "results/hop_stratified_e5a_${step}.json"
+        echo ""
+    fi
+done
+
+echo "=== Done ==="
+echo "End: $(date)"

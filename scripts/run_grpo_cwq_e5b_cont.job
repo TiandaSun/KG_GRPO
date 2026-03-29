@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#SBATCH --job-name=grpo_cwq_7b
+#SBATCH --job-name=grpo_e5b
 #SBATCH --nodes=1
 #SBATCH --gpus=4
 #SBATCH --time=24:00:00
@@ -7,9 +7,7 @@
 #SBATCH --error=logs/%x-%j.err
 #SBATCH --partition=workq
 
-# 7B GRPO on CWQ/Freebase (4x GH200)
-# Set REWARD_TYPE via environment: outcome (E1), heuristic (E2), verifiable (E3)
-# Default: outcome (baseline)
+# E5b continuation — auto-resumes from latest checkpoint
 
 set -eo pipefail
 
@@ -32,45 +30,44 @@ mkdir -p "$RAY_TMPDIR"
 cd "$SLURM_SUBMIT_DIR"
 export PYTHONPATH="$PWD:${PYTHONPATH:-}"
 
-# Reward type: set via sbatch --export=REWARD_TYPE=verifiable or defaults to outcome
-REWARD_TYPE="${REWARD_TYPE:-outcome}"
-export REWARD_TYPE
-EXPERIMENT_NAME="grpo-cwq-7b-${REWARD_TYPE}-$(date +%Y%m%d)"
+export REWARD_TYPE=tool_type_bonus
+EXPERIMENT_NAME="grpo-cwq-7b-tool-type-bonus-20260326"
 
-echo "=== 7B GRPO on CWQ (4x GH200) ==="
+# Find latest checkpoint
+CKPT_DIR="checkpoints/kg-align-verl/${EXPERIMENT_NAME}"
+LATEST_STEP=$(ls "$CKPT_DIR" 2>/dev/null | grep global_step | sed 's/global_step_//' | sort -n | tail -1)
+
+echo "=== E5b CONTINUATION ==="
 echo "Date: $(date)"
 echo "Node: $(hostname)"
-echo "Reward type: $REWARD_TYPE"
-echo "Experiment: $EXPERIMENT_NAME"
-echo "GPUs: $(nvidia-smi --query-gpu=name --format=csv,noheader | wc -l)x GH200"
+echo "Resuming from step: $LATEST_STEP"
 echo ""
 
-# --- Start KG server with Freebase ---
-echo "Starting Freebase KG server..."
-python -m src_verl.kg_server.server \
-    --kg freebase \
-    --freebase_dir data/freebase/kg \
-    --port 18901 \
-    --log-level warning > /dev/null 2>&1 &
-KG_PID=$!
+# Strip optimizer from old checkpoints to save space
+for d in "$CKPT_DIR"/global_step_*/actor; do
+    step=$(basename $(dirname "$d") | sed 's/global_step_//')
+    if [ "$step" != "$LATEST_STEP" ]; then
+        count=$(find "$d" -name 'optim_world_size_*.pt' 2>/dev/null | wc -l)
+        if [ "$count" -gt 0 ]; then
+            rm -f "$d"/optim_world_size_*.pt
+            echo "Stripped optim from step $step"
+        fi
+    fi
+done
 
-# Wait for server — Freebase is large (2.6M entities, 8.3M triples), may take longer
-echo "Waiting for KG server to load (2.6M entities)..."
+python -m src_verl.kg_server.server \
+    --kg freebase --freebase_dir data/freebase/kg --port 18901 --log-level warning > /dev/null 2>&1 &
+KG_PID=$!
 sleep 30
 for i in $(seq 1 12); do
-    if curl -s -o /dev/null -w "%{http_code}" http://localhost:18901/health 2>/dev/null | grep -q "200"; then
-        echo "KG server healthy after ${i}0+30 seconds"
-        break
-    fi
-    echo "  Still loading... (${i}0+30s)"
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:18901/health 2>/dev/null | grep -q "200" && echo "KG healthy" && break
     sleep 10
 done
-echo "KG server PID: $KG_PID"
 echo ""
 
 ray stop 2>/dev/null || true
 
-echo "=== Launching GRPO ==="
+echo "=== Launching GRPO (resume_mode=auto) ==="
 echo "Start: $(date)"
 START_TIME=$(date +%s)
 
@@ -79,8 +76,12 @@ python -m verl.trainer.main_ppo \
     --config-path="$PWD/configs_verl" \
     --config-name=grpo_cwq_7b \
     trainer.experiment_name="$EXPERIMENT_NAME" \
+    trainer.resume_mode=auto \
     +actor_rollout_ref.rollout.enable_sleep_mode=true \
     actor_rollout_ref.rollout.agent.default_agent_loop=tool_agent \
+    actor_rollout_ref.rollout.gpu_memory_utilization=0.7 \
+    ++actor_rollout_ref.rollout.over_sample_rate=0.1 \
+    ++actor_rollout_ref.rollout.agent.num_workers=16 \
     data.dataloader_num_workers=0
 GRPO_EXIT=$?
 set -e
@@ -90,12 +91,10 @@ ELAPSED=$((END_TIME - START_TIME))
 
 echo ""
 echo "=== Results ==="
-echo "Reward type: $REWARD_TYPE"
 echo "Exit code: $GRPO_EXIT"
-echo "Total time: ${ELAPSED}s ($((ELAPSED / 60))m $((ELAPSED % 60))s)"
-echo ""
+echo "Total time: ${ELAPSED}s ($((ELAPSED / 60))m)"
+echo "Checkpoints:"
+ls "$CKPT_DIR" 2>/dev/null | grep global_step | sort -t_ -k3 -n
 
-# Cleanup
 kill $KG_PID 2>/dev/null
 echo "=== Done ==="
-echo "End: $(date)"

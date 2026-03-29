@@ -1,0 +1,109 @@
+{
+  "counts": {
+    "wrong-answer": 12,
+    "kg-incomplete": 33,
+    "correct-via-memory": 45,
+    "correct-via-tool": 10
+  },
+  "total": 100,
+  "percentages": {
+    "wrong-answer": 12.0,
+    "kg-incomplete": 33.0,
+    "correct-via-memory": 45.0,
+    "correct-via-tool": 10.0
+  },
+  "examples": {
+    "wrong-answer": [
+      {
+        "question": "Who was the president in 1980 of the country that has Azad Kashmir?",
+        "gold": "Muhammad Zia-ul-Haq",
+        "predicted": "Zulfikar Ali Bhutto",
+        "tools": "get_tail_entities(President, organization.role.l); get_tail_entities(President, organization.role.l); get_tail_entities(President, organization.role.l)",
+        "kg_has_answer": false
+      },
+      {
+        "question": "When did the champion of the 1999 World Series win their first World Series?",
+        "gold": "1923 World Series",
+        "predicted": "1927 World Series",
+        "tools": "get_tail_entities(1999 World Series, sports.spor); get_tail_entities(New York Yankees, sports.sport)",
+        "kg_has_answer": true
+      },
+      {
+        "question": "Where is mascot Phillie Phanatic's team's spring training stadium located?",
+        "gold": "Bright House Field",
+        "predicted": "Miami",
+        "tools": "get_tail_entities(Philadelphia Phillies, sports.); get_tail_entities(Phillie Phanatic, sports.masco)",
+        "kg_has_answer": false
+      }
+    ],
+    "kg-incomplete": [
+      {
+        "question": "What is the mascot of the team that has Nicholas S. Zeppos as its leader?",
+        "gold": "Vanderbilt University Mr. Commodore",
+        "predicted": "Fighting Irish",
+        "tools": "get_tail_entities(Nicholas S. Zeppos, sports.spo); get_tail_entities(Nicholas S. Zeppos, sports.spo)",
+        "kg_has_answer": false
+      },
+      {
+        "question": "Which professional athletes who began their careers in or before 2007 did the Cl",
+        "gold": "Jeff Faine",
+        "predicted": "Eric Mangini",
+        "tools": "get_tail_entities(Cleveland Browns, sports_team); get_tail_entities(Cleveland Browns, sports_team)",
+        "kg_has_answer": false
+      },
+      {
+        "question": "What is the governmental type in the country where God Bless Fiji is recognized ",
+        "gold": "Military dictatorship",
+        "predicted": "Parliamentary system",
+        "tools": "get_tail_entities(Fiji, organization_scope); get_tail_entities(Fiji, organization_scope)",
+        "kg_has_answer": false
+      }
+    ],
+    "correct-via-memory": [
+      {
+        "question": "What country borders Bolivia and contains Goi\u00c3\u00a1s?",
+        "gold": "Brazil",
+        "predicted": "Brazil",
+        "tools": "get_tail_entities(Bolivia, organization_scope); get_tail_entities(Bolivia, organization_scope)",
+        "kg_has_answer": false
+      },
+      {
+        "question": "Who is the coach of the team owned by Steve Bisciotti?",
+        "gold": "John Harbaugh",
+        "predicted": "John Harbaugh",
+        "tools": "get_tail_entities(Steve Bisciotti, sports.sports); get_tail_entities(Baltimore Ravens, sports.sport)",
+        "kg_has_answer": false
+      },
+      {
+        "question": "The country that has the national anthem Ee Mungu Nguvu Yetu accepts what curren",
+        "gold": "Kenyan shilling",
+        "predicted": "Kenyan shilling",
+        "tools": "get_tail_entities(Kenya shilling, finance.curren); get_tail_entities(Kenya shilling, finance.curren); get_tail_entities(Kenya shilling, finance.curren)",
+        "kg_has_answer": false
+      }
+    ],
+    "correct-via-tool": [
+      {
+        "question": "Rift Valley Province is located in a nation that uses which form of currency?",
+        "gold": "Kenyan shilling",
+        "predicted": "Kenyan shilling",
+        "tools": "get_tail_entities(Rift Valley Province, location); get_tail_entities(Kenya, location.country.curren); get_tail_entities(Kenyan shilling, common.topic.)",
+        "kg_has_answer": true
+      },
+      {
+        "question": "What Tebetan-speaking country's CO2 emissions per capita were once 1965 metric t",
+        "gold": "China",
+        "predicted": "China",
+        "tools": "get_tail_entities(China, organization.organizati); get_tail_entities(China, organization.organizati)",
+        "kg_has_answer": true
+      },
+      {
+        "question": "What team that won the 1997 AFC Championship Game championship did Tom Brady pla",
+        "gold": "New England Patriots",
+        "predicted": "New England Patriots",
+        "tools": "get_tail_entities(1997 AFC Championship Game, sp); get_tail_entities(New England Patriots, sports.s)",
+        "kg_has_answer": true
+      }
+    ]
+  }
+}

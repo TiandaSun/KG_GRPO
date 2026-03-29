@@ -125,6 +125,32 @@ def compute_score(
             "num_tool_calls": float(num_tool_calls),
         }
 
+    elif reward_type == "retrieval_grounded":
+        step_rewards = _retrieval_grounded_step_rewards(steps, predicted)
+        avg_step = sum(step_rewards) / max(len(step_rewards), 1)
+        total = 0.3 * r_outcome + 0.7 * avg_step
+        return {
+            "score": total,
+            "r_outcome": r_outcome,
+            "r_step_avg": avg_step,
+            "em": em,
+            "f1": f1,
+            "num_tool_calls": float(num_tool_calls),
+        }
+
+    elif reward_type == "tool_type_bonus":
+        step_rewards = _tool_type_bonus_step_rewards(steps)
+        avg_step = sum(step_rewards) / max(len(step_rewards), 1)
+        total = 0.3 * r_outcome + 0.7 * avg_step
+        return {
+            "score": total,
+            "r_outcome": r_outcome,
+            "r_step_avg": avg_step,
+            "em": em,
+            "f1": f1,
+            "num_tool_calls": float(num_tool_calls),
+        }
+
     else:
         logger.warning("Unknown reward_type=%s, falling back to outcome", reward_type)
         return {
@@ -193,6 +219,92 @@ def _heuristic_step_rewards(
         r_overlap = overlap / max(len(retrieved_tokens), 1)
         r_reach = 1.0 if overlap > 0 else 0.0
         rewards.append(0.5 * r_overlap + 0.5 * r_reach)
+
+    return rewards
+
+
+# ---------------------------------------------------------------------------
+# R_retrieval_grounded step rewards (E5a)
+# ---------------------------------------------------------------------------
+
+def _parse_action(call: str) -> tuple[str, list[str]]:
+    """Parse action name and args from a tool call string like 'get_tail_entities(entity, relation)'."""
+    match = re.match(r"(\w+)\(([^)]*)\)", call.strip())
+    if not match:
+        return "", []
+    action = match.group(1)
+    args = [a.strip().strip("'\"") for a in match.group(2).split(",") if a.strip()]
+    return action, args
+
+
+def _retrieval_grounded_step_rewards(
+    steps: list[dict[str, str]],
+    predicted_answer: str,
+) -> list[float]:
+    """E5a: Reward entity retrieval tools more, especially when output appears in answer."""
+    if not steps:
+        return []
+
+    pred_lower = _normalize(predicted_answer)
+    rewards: list[float] = []
+
+    for step in steps:
+        action, args = _parse_action(step["call"])
+        obs = step["observation"]
+
+        if action in ("get_tail_entities", "get_head_entities"):
+            # Entity retrieval — check if any retrieved entity appears in predicted answer
+            obs_entities = [e.strip().strip('"') for e in obs.strip("[]").split(",") if e.strip()]
+            used_in_answer = any(
+                _normalize(ent) in pred_lower for ent in obs_entities if ent.strip()
+            )
+            if used_in_answer:
+                rewards.append(1.0)     # Retrieved entity used in answer
+            elif len(obs_entities) > 0 and obs.strip() not in ("[]", "", "No results found"):
+                rewards.append(0.3)     # Retrieved but not used
+            else:
+                rewards.append(0.0)     # Empty result
+
+        elif action in ("get_tail_relations", "get_head_relations"):
+            # Relation discovery — lower reward (exploration only)
+            if obs.strip() and obs.strip() not in ("[]", "No results found"):
+                rewards.append(0.2)     # Relations found
+            else:
+                rewards.append(0.0)     # Empty
+
+        else:
+            rewards.append(0.0)  # Unknown action
+
+    return rewards
+
+
+# ---------------------------------------------------------------------------
+# R_tool_type_bonus step rewards (E5b)
+# ---------------------------------------------------------------------------
+
+def _tool_type_bonus_step_rewards(
+    steps: list[dict[str, str]],
+) -> list[float]:
+    """E5b: Reward entity retrieval tools more than relation tools (simpler than E5a)."""
+    if not steps:
+        return []
+
+    tool_type_weights = {
+        "get_tail_entities": 1.0,
+        "get_head_entities": 1.0,
+        "get_tail_relations": 0.3,
+        "get_head_relations": 0.3,
+    }
+
+    rewards: list[float] = []
+    for step in steps:
+        action, _ = _parse_action(step["call"])
+        weight = tool_type_weights.get(action, 0.0)
+        obs = step["observation"]
+        if obs.strip() and obs.strip() not in ("[]", "No results found"):
+            rewards.append(weight)
+        else:
+            rewards.append(0.0)
 
     return rewards
 

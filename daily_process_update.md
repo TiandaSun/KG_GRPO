@@ -204,8 +204,18 @@ Without tools: E1 steadily improves, E3 peaks at step 500 then declines. EM=0 ev
 6. **Go/No-Go: GO** — R_verifiable works. Proceed to Phase C.
 
 ### E2 Training (R_heuristic)
-- Job 3272743: Running (restarted after node failure), ~22h remaining
-- Will complete the 3-way comparison (outcome vs heuristic vs verifiable)
+- Job 3272743: Running (restarted after node failure)
+- Reward: `R_heuristic = 0.3 * R_outcome + 0.7 * avg(step_entity_overlap)`
+  - Each step: 0.5 * entity_overlap_with_gold + 0.5 * reach_indicator
+  - Heuristic step signal based on ProGraph-R1 approach — not KG-verifiable, just entity overlap
+- Same config as E1/E3: 4x GH200, lr=5e-7, batch_size=64, 3 epochs, 1293 steps
+- Purpose: complete the 3-way comparison (outcome vs heuristic vs verifiable)
+- **Waiting for E2 results** — once done, run with-tool eval on E2 checkpoints for the full comparison table
+
+### Cleanup
+- Removed obsolete docs, scripts, and log files (3.4GB → 64MB logs)
+- Updated memory files for future conversation context
+- Fixed GRPO job script: `RAY_DEDUP_LOGS=1` + KG server `--log-level warning` to reduce future training logs from ~1.6GB to ~5-20MB
 
 ### SPARQL Hop Annotations
 - Extracted from original CWQ train JSON (27,639 samples)

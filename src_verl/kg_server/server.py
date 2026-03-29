@@ -218,6 +218,9 @@ def main() -> None:
     parser.add_argument("--host", type=str, default="0.0.0.0", help="Server host.")
     parser.add_argument("--port", type=int, default=8001, help="Server port.")
     parser.add_argument("--workers", type=int, default=1, help="Number of workers.")
+    parser.add_argument("--log-level", type=str, default="info",
+                        choices=["debug", "info", "warning", "error"],
+                        help="Uvicorn log level (default: info). Use 'warning' to suppress access logs.")
     args = parser.parse_args()
 
     global _adapter
@@ -235,7 +238,8 @@ def main() -> None:
         host=args.host,
         port=args.port,
         workers=args.workers,
-        log_level="info",
+        log_level=args.log_level,
+        access_log=args.log_level != "warning",
     )
 
 

@@ -1,0 +1,117 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=eval_e2
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=12:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# E2 (R_heuristic) full evaluation — with-tools eval on all checkpoints
+# Checkpoints: 200, 400, 600, 800, 1000, 1200
+# Also saves trajectories for steps 200, 600, 1200
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+echo "=== E2 Evaluation (with tools) ==="
+echo "Date: $(date)"
+echo ""
+
+# Start KG server
+echo "Starting Freebase KG server..."
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port 18901 --log-level warning &
+KG_PID=$!
+sleep 30
+for i in $(seq 1 12); do
+    if curl -s -o /dev/null -w "%{http_code}" http://localhost:18901/health 2>/dev/null | grep -q "200"; then
+        echo "KG server healthy after ${i}0+30 seconds"
+        break
+    fi
+    echo "  Still loading... (${i}0+30s)"
+    sleep 10
+done
+echo ""
+
+mkdir -p results results/trajectories/e2_heuristic
+
+# Part 1: Goodhart curve — all 6 checkpoints
+echo "=== E2 Goodhart curve: steps 200,400,600,800,1000,1200 ==="
+python scripts/eval_with_tools.py \
+    --checkpoint_dir checkpoints/kg-align-verl/grpo-cwq-7b-heuristic-20260325 \
+    --steps 200 400 600 800 1000 1200 \
+    --eval_data data/freebase/verl_cwq/val.parquet \
+    --output results/eval_e2_goodhart_curve.json \
+    --kg_server_url http://localhost:18901 \
+    --max_samples 500 \
+    --max_turns 5
+echo ""
+
+# Part 2: Trajectories for key steps (early, mid, late)
+echo "=== E2 trajectories: step 200 ==="
+python scripts/eval_with_tools.py \
+    --checkpoint_dir checkpoints/kg-align-verl/grpo-cwq-7b-heuristic-20260325 \
+    --steps 200 \
+    --eval_data data/freebase/verl_cwq/val.parquet \
+    --output results/eval_e2_traj_200.json \
+    --kg_server_url http://localhost:18901 \
+    --max_samples 500 \
+    --max_turns 5 \
+    --save_trajectories results/trajectories/e2_heuristic \
+    --max_trajectory_samples 100
+echo ""
+
+echo "=== E2 trajectories: step 600 ==="
+python scripts/eval_with_tools.py \
+    --checkpoint_dir checkpoints/kg-align-verl/grpo-cwq-7b-heuristic-20260325 \
+    --steps 600 \
+    --eval_data data/freebase/verl_cwq/val.parquet \
+    --output results/eval_e2_traj_600.json \
+    --kg_server_url http://localhost:18901 \
+    --max_samples 500 \
+    --max_turns 5 \
+    --save_trajectories results/trajectories/e2_heuristic \
+    --max_trajectory_samples 100
+echo ""
+
+echo "=== E2 trajectories: step 1200 ==="
+python scripts/eval_with_tools.py \
+    --checkpoint_dir checkpoints/kg-align-verl/grpo-cwq-7b-heuristic-20260325 \
+    --steps 1200 \
+    --eval_data data/freebase/verl_cwq/val.parquet \
+    --output results/eval_e2_traj_1200.json \
+    --kg_server_url http://localhost:18901 \
+    --max_samples 500 \
+    --max_turns 5 \
+    --save_trajectories results/trajectories/e2_heuristic \
+    --max_trajectory_samples 100
+echo ""
+
+kill $KG_PID 2>/dev/null
+
+# Hop-stratified analysis on best E2 checkpoint
+echo "=== Hop-stratified analysis ==="
+for step in 200 600 1200; do
+    traj="results/trajectories/e2_heuristic/step_${step}/trajectories.json"
+    if [ -f "$traj" ]; then
+        echo "--- Step $step ---"
+        python scripts/eval_hop_stratified.py \
+            --trajectories "$traj" \
+            --output "results/hop_stratified_e2_${step}.json"
+        echo ""
+    fi
+done
+
+echo "=== Done ==="
+echo "End: $(date)"

@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=collect_data
+#SBATCH --nodes=1
+#SBATCH --gpus=0
+#SBATCH --time=00:30:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Short CPU-only job to collect paper data without overloading login node
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+echo "=== Data Collection ==="
+echo "Date: $(date)"
+echo "Node: $(hostname)"
+echo ""
+
+python scripts/collect_data.py
+
+echo ""
+echo "=== Done ==="
+echo "End: $(date)"

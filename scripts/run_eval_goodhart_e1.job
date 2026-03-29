@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=eval_e1_curve
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=10:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# E1 Goodhart curve: eval steps 100,250,750,1000
+# Also saves trajectories for step 1250 (Task 3)
+# Already have: steps 0, 500, 1250 (in results/eval_e1_with_tools.json)
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+echo "=== E1 Goodhart Curve Eval ==="
+echo "Date: $(date)"
+echo ""
+
+# Start KG server
+echo "Starting Freebase KG server..."
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port 18901 --log-level warning &
+KG_PID=$!
+sleep 30
+for i in $(seq 1 12); do
+    if curl -s -o /dev/null -w "%{http_code}" http://localhost:18901/health 2>/dev/null | grep -q "200"; then
+        echo "KG server healthy after ${i}0+30 seconds"
+        break
+    fi
+    echo "  Still loading... (${i}0+30s)"
+    sleep 10
+done
+echo ""
+
+mkdir -p results results/trajectories/e1_outcome
+
+# Part 1: New checkpoints
+echo "=== E1 curve: steps 100,250,750,1000 ==="
+python scripts/eval_with_tools.py \
+    --checkpoint_dir checkpoints/kg-align-verl/grpo-cwq-7b-outcome-20260321 \
+    --steps 100 250 750 1000 \
+    --eval_data data/freebase/verl_cwq/val.parquet \
+    --output results/eval_e1_goodhart_curve.json \
+    --kg_server_url http://localhost:18901 \
+    --max_samples 500 \
+    --max_turns 5
+echo ""
+
+# Part 2: Re-run step 1250 WITH trajectory saving
+echo "=== E1 trajectories: step 1250 ==="
+python scripts/eval_with_tools.py \
+    --checkpoint_dir checkpoints/kg-align-verl/grpo-cwq-7b-outcome-20260321 \
+    --steps 1250 \
+    --eval_data data/freebase/verl_cwq/val.parquet \
+    --output results/eval_e1_traj_1250.json \
+    --kg_server_url http://localhost:18901 \
+    --max_samples 500 \
+    --max_turns 5 \
+    --save_trajectories results/trajectories/e1_outcome \
+    --max_trajectory_samples 100
+echo ""
+
+kill $KG_PID 2>/dev/null
+echo "=== Done ==="
+echo "End: $(date)"
