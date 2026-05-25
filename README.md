@@ -23,17 +23,6 @@ KG reasoning is the ideal testbed because KG provides free, deterministic, step-
 | R_verifiable_step | R_valid + R_on_path + R_progress + R_coherence |
 | R_random | Random step rewards + real outcome (ablation) |
 
-## Setup
-
-```bash
-# Isambard (GH200, ARM)
-source ~/miniforge3/bin/activate && conda activate kg_verl
-module load cudatoolkit && module load gcc-native/14.2
-
-# Viking (H100, x86)
-module load Miniconda3 && module load CUDA/12.8.0 && source activate kg_verl
-```
-
 ## Project Structure
 
 ```
