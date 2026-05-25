@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=llama_diag
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=06:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Diagnostic eval for Llama EM=0 finding.
+# Three runs on llama_e3_1293 to isolate variables:
+#   A1: test.parquet,  100 samples, max_new_tokens=2048, max_turns=3 (does longer gen help?)
+#   A2: val.parquet,   500 samples, max_new_tokens=512,  max_turns=5 (reproduce OLD config)
+#   A3: test.parquet,  500 samples, max_new_tokens=512,  max_turns=5 (test vs val + max_turns)
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+CKPT_DIR="/projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/grpo-cwq-llama-8b-verifiable-20260331"
+BASE_MODEL="outputs/verl-sft-llama-8b-merged"
+KG_PORT=$((18000 + SLURM_JOB_ID % 1000))
+
+echo "=== Llama Diagnostic Eval ==="
+echo "Date: $(date)"
+echo "KG port: $KG_PORT"
+
+# Start KG server
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port $KG_PORT --log-level warning &
+KG_PID=$!
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready"
+
+mkdir -p results/llama_diagnostic results/trajectories/llama_diagnostic
+
+# === Run A1: test.parquet, 100 samples, max_new_tokens=2048, max_turns=3 ===
+echo ""
+echo "=== A1: test.parquet, 100 samples, max_new_tokens=2048, max_turns=3 ==="
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$CKPT_DIR" \
+    --steps 1293 \
+    --base_model "$BASE_MODEL" \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --output results/llama_diagnostic/A1_test_100_2048tok_3turns.json \
+    --kg_server_url http://localhost:$KG_PORT \
+    --max_samples 100 \
+    --max_turns 3 \
+    --max_new_tokens 2048 \
+    --save_trajectories results/trajectories/llama_diagnostic/A1 \
+    --max_trajectory_samples 30
+
+# === Run A2: val.parquet, 500 samples, max_new_tokens=512, max_turns=5 (reproduce OLD config) ===
+echo ""
+echo "=== A2: val.parquet, 500 samples, max_new_tokens=512, max_turns=5 ==="
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$CKPT_DIR" \
+    --steps 1293 \
+    --base_model "$BASE_MODEL" \
+    --eval_data data/freebase/verl_cwq/val.parquet \
+    --output results/llama_diagnostic/A2_val_500_512tok_5turns.json \
+    --kg_server_url http://localhost:$KG_PORT \
+    --max_samples 500 \
+    --max_turns 5 \
+    --max_new_tokens 512 \
+    --save_trajectories results/trajectories/llama_diagnostic/A2 \
+    --max_trajectory_samples 30
+
+# === Run A3: test.parquet, 500 samples, max_new_tokens=512, max_turns=5 ===
+echo ""
+echo "=== A3: test.parquet, 500 samples, max_new_tokens=512, max_turns=5 ==="
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$CKPT_DIR" \
+    --steps 1293 \
+    --base_model "$BASE_MODEL" \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --output results/llama_diagnostic/A3_test_500_512tok_5turns.json \
+    --kg_server_url http://localhost:$KG_PORT \
+    --max_samples 500 \
+    --max_turns 5 \
+    --max_new_tokens 512 \
+    --save_trajectories results/trajectories/llama_diagnostic/A3 \
+    --max_trajectory_samples 30
+
+kill $KG_PID 2>/dev/null
+echo ""
+echo "=== Done: $(date) ==="

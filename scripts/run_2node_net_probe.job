@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_net_probe
+#SBATCH --nodes=2
+#SBATCH --gpus-per-node=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=4
+#SBATCH --time=00:10:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Probe which IP / hostname pattern is routable between 2 Isambard compute nodes.
+# Runs ~2 min; tells us the correct HEAD address to use in the multi-node job.
+
+set -eo pipefail
+
+nodes=($(scontrol show hostnames "$SLURM_JOB_NODELIST"))
+HEAD=${nodes[0]}; WORKER=${nodes[1]}
+echo "=== Net probe: HEAD=$HEAD, WORKER=$WORKER ==="
+
+# 1. Enumerate IPs on each node
+echo ""
+echo "--- IPs on $HEAD ---"
+srun --nodes=1 --ntasks=1 -w "$HEAD" bash -c 'hostname -s; hostname -I; ip -4 -o addr show 2>/dev/null | awk "{print \$2, \$4}"'
+
+echo ""
+echo "--- IPs on $WORKER ---"
+srun --nodes=1 --ntasks=1 -w "$WORKER" bash -c 'hostname -s; hostname -I; ip -4 -o addr show 2>/dev/null | awk "{print \$2, \$4}"'
+
+# 2. Start a tiny HTTP server on HEAD on a high port, test reachability from WORKER
+KG_PORT=$((18000 + SLURM_JOB_ID % 1000))
+echo ""
+echo "=== Starting test HTTP server on $HEAD:$KG_PORT ==="
+srun --nodes=1 --ntasks=1 -w "$HEAD" --export=ALL bash -c "
+    python -c 'from http.server import HTTPServer, BaseHTTPRequestHandler
+import sys
+class H(BaseHTTPRequestHandler):
+    def do_GET(self): self.send_response(200); self.end_headers(); self.wfile.write(b\"ok\\n\")
+    def log_message(self,*a,**k): pass
+HTTPServer((\"0.0.0.0\", $KG_PORT), H).serve_forever()' &
+    sleep 60
+" &
+SERVER_SRUN_PID=$!
+sleep 8
+
+# 3. Try connecting from WORKER using various addresses
+echo ""
+echo "=== Reachability probes from $WORKER ==="
+for addr in "$HEAD" "$(srun --nodes=1 --ntasks=1 -w "$HEAD" hostname -s)"; do
+    code=$(srun --nodes=1 --ntasks=1 -w "$WORKER" --export=ALL \
+        curl --connect-timeout 5 -s -o /dev/null -w "%{http_code}" \
+        "http://${addr}:${KG_PORT}/" 2>/dev/null || echo "FAIL")
+    echo "  via hostname '$addr':  $code"
+done
+
+# Try each IP from HEAD's `hostname -I`
+IPS=$(srun --nodes=1 --ntasks=1 -w "$HEAD" hostname -I)
+for ip in $IPS; do
+    code=$(srun --nodes=1 --ntasks=1 -w "$WORKER" --export=ALL \
+        curl --connect-timeout 5 -s -o /dev/null -w "%{http_code}" \
+        "http://${ip}:${KG_PORT}/" 2>/dev/null || echo "FAIL")
+    echo "  via IP '$ip':  $code"
+done
+
+# Also try the /etc/hosts resolved address
+resolved=$(srun --nodes=1 --ntasks=1 -w "$WORKER" getent hosts "$HEAD" 2>/dev/null | awk '{print $1}')
+echo "  (WORKER's getent resolves $HEAD → $resolved)"
+
+# Cleanup
+wait $SERVER_SRUN_PID 2>/dev/null || true
+echo ""
+echo "=== Probe done ==="

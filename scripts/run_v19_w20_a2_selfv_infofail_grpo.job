@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=v19_w20_a2
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --time=12:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# v19 W20 A2 — E5b+SelfV (R-selfV) under informative-failure KG API.
+# Reward unchanged (tool_type_bonus_retrieval_contrib); KG server returns ERROR
+# codes for empty responses (--informative_errors). Init from E5b+KL@400 (same
+# fork point as the original E5b+SelfV used in §4.3).
+
+set -eo pipefail
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+module load brics/nccl 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export VLLM_USE_V1=1
+export RAY_DEDUP_LOGS=1
+export RAY_TMPDIR="/tmp/ray-${SLURM_JOB_ID}"
+mkdir -p "$RAY_TMPDIR"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+: "${SEED:?SEED env var required (1 or 2)}"
+
+export REWARD_TYPE=tool_type_bonus_retrieval_contrib
+INIT_BASE="outputs/verl-sft-cwq-39b-step400"
+EXPERIMENT_NAME="grpo-cwq-7b-w20-a2-infofail-seed${SEED}-20260520"
+KG_PORT=$((18700 + SLURM_JOB_ID % 90))
+
+echo "=== v19 W20 A2: E5b+SelfV + informative-failure KG  seed=${SEED} ==="
+echo "Date: $(date)"
+echo "Reward: $REWARD_TYPE"
+echo "Experiment: $EXPERIMENT_NAME"
+echo "Init: $INIT_BASE"
+echo "KG port: $KG_PORT  (informative_errors=ON)"
+
+[ -d "$INIT_BASE" ] || { echo "ERROR: $INIT_BASE not found"; exit 1; }
+
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg \
+    --port $KG_PORT --informative_errors --log-level warning &
+KG_PID=$!
+TOOL_CFG="configs_verl/kg_tool_config_freebase_${SLURM_JOB_ID}.yaml"
+trap 'kill $KG_PID 2>/dev/null; rm -f "$TOOL_CFG" 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server (informative-failure) ready on port $KG_PORT"
+sed "s|http://localhost:18901|http://localhost:${KG_PORT}|" \
+    configs_verl/kg_tool_config_freebase.yaml > "$TOOL_CFG"
+
+ray stop 2>/dev/null || true
+
+python -m verl.trainer.main_ppo \
+    --config-path="$PWD/configs_verl" \
+    --config-name=grpo_cwq_7b \
+    trainer.experiment_name="$EXPERIMENT_NAME" \
+    trainer.total_training_steps=400 \
+    trainer.save_freq=50 \
+    trainer.resume_mode=auto \
+    actor_rollout_ref.model.path="$INIT_BASE" \
+    actor_rollout_ref.actor.use_kl_loss=true \
+    actor_rollout_ref.actor.kl_loss_coef=0.05 \
+    actor_rollout_ref.actor.kl_loss_type=low_var_kl \
+    actor_rollout_ref.actor.optim.lr=3.0e-7 \
+    data.train_batch_size=128 \
+    ++data.seed=$SEED \
+    actor_rollout_ref.actor.data_loader_seed=$SEED \
+    +actor_rollout_ref.rollout.enable_sleep_mode=true \
+    actor_rollout_ref.rollout.agent.default_agent_loop=tool_agent \
+    actor_rollout_ref.rollout.multi_turn.tool_config_path="$TOOL_CFG" \
+    data.dataloader_num_workers=0
+
+kill $KG_PID 2>/dev/null
+echo "=== Done: $(date) ==="

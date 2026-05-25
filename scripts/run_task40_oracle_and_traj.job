@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=t40_oracle_traj
+#SBATCH --nodes=1
+#SBATCH --gpus=0
+#SBATCH --cpus-per-task=8
+#SBATCH --time=08:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Task 40 Steps 2+3+5 (CPU only):
+#   Step 2: Oracle gold-path extraction on train Category B
+#   Step 3: Verified gold trajectory generation (with local KG server)
+#   Step 5: Build train_category_b.parquet
+#
+# Depends on Step 1 producing data/freebase/verl_cwq/train_category_b_ids.json.
+#
+# Submit with:
+#   sbatch --dependency=afterok:<MERGE_JOBID> scripts/run_task40_oracle_and_traj.job
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+mkdir -p results logs data/freebase/verl_cwq
+
+# Use port 18902 to avoid colliding with any running training job (which
+# typically uses 18901). If SLURM job id maps to a different number we still
+# stay away from 18901.
+KG_PORT=18902
+
+echo "=== Task 40 Oracle + Trajectory Generation ==="
+echo "Date: $(date)  Node: $(hostname)  KG port: $KG_PORT"
+
+# --- Step 2: Oracle gold paths on train Category B ---
+echo ""
+echo "--- Step 2: Oracle gold paths ---"
+python scripts/task40_oracle_train.py \
+    --train data/freebase/verl_cwq/train.parquet \
+    --category_b data/freebase/verl_cwq/train_category_b_ids.json \
+    --triples data/freebase/kg/triples.txt \
+    --output data/freebase/verl_cwq/train_oracle_gold_paths.jsonl \
+    --stats_output results/task40_oracle_stats.json
+
+echo "Oracle complete: $(wc -l < data/freebase/verl_cwq/train_oracle_gold_paths.jsonl) SOLVABLE records"
+
+# --- Start KG server in background for Step 3 verification ---
+echo ""
+echo "--- Starting KG server on port $KG_PORT ---"
+python -m src_verl.kg_server.server \
+    --kg freebase --freebase_dir data/freebase/kg \
+    --port "$KG_PORT" --log-level warning \
+    > "logs/t40_kg_server-${SLURM_JOB_ID}.log" 2>&1 &
+KG_PID=$!
+
+trap 'if kill -0 $KG_PID 2>/dev/null; then kill $KG_PID 2>/dev/null; fi' EXIT
+
+# Wait for server health
+READY=0
+for i in $(seq 1 60); do
+    if curl -s -o /dev/null -w "%{http_code}" "http://localhost:${KG_PORT}/health" 2>/dev/null | grep -q "200"; then
+        READY=1
+        break
+    fi
+    sleep 5
+done
+if [ "$READY" != "1" ]; then
+    echo "ERROR: KG server did not become ready on port $KG_PORT"
+    tail -50 "logs/t40_kg_server-${SLURM_JOB_ID}.log" || true
+    exit 1
+fi
+echo "KG server ready."
+
+# --- Step 3: Generate + verify gold trajectories ---
+echo ""
+echo "--- Step 3: Gold trajectory generation ---"
+python scripts/task40_gen_gold_trajectories.py \
+    --input data/freebase/verl_cwq/train_oracle_gold_paths.jsonl \
+    --train data/freebase/verl_cwq/train.parquet \
+    --kg_server_url "http://localhost:${KG_PORT}" \
+    --output data/freebase/verl_cwq/gold_kg_trajectories.jsonl \
+    --stats_output results/task40_trajectory_stats.json \
+    --target_count 1000
+
+echo "Trajectories complete: $(wc -l < data/freebase/verl_cwq/gold_kg_trajectories.jsonl) verified"
+
+# --- Stop KG server ---
+kill $KG_PID 2>/dev/null || true
+sleep 2
+
+# --- Step 5: Build Category B parquet ---
+echo ""
+echo "--- Step 5: Build train_category_b.parquet ---"
+python scripts/task40_build_cat_b_parquet.py \
+    --train data/freebase/verl_cwq/train.parquet \
+    --category_b data/freebase/verl_cwq/train_category_b_ids.json \
+    --output data/freebase/verl_cwq/train_category_b.parquet
+
+echo ""
+echo "=== Task 40 Steps 2+3+5 done: $(date) ==="

@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_w5_kl25_grpo
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --time=24:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# v15 Lane 4 — W5 KL coefficient ablation (KL=0.25).
+# Same recipe as G2 GRPO (rule-SFT init, REWARD_TYPE=tool_type_bonus, low_var_kl,
+# total_training_steps=500), only kl_loss_coef varies.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+module load brics/nccl 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export VLLM_USE_V1=1
+export RAY_DEDUP_LOGS=1
+export RAY_TMPDIR="/tmp/ray-${SLURM_JOB_ID}"
+mkdir -p "$RAY_TMPDIR"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+export REWARD_TYPE=tool_type_bonus
+KL_COEF=0.25
+KLNORM=25
+INIT_BASE="outputs/verl-sft-cwq-7b-G2-from-base-sft-merged"
+EXPERIMENT_NAME="grpo-cwq-7b-w5-kl${KLNORM}-20260505"
+KG_PORT=$((19500 + SLURM_JOB_ID % 100))
+
+echo "=== W5 KL ablation kl=${KL_COEF} (4x GH200) ==="
+echo "Date: $(date)"
+echo "Reward: $REWARD_TYPE (E5b)"
+echo "Experiment: $EXPERIMENT_NAME"
+echo "Init: $INIT_BASE"
+echo "KG port: $KG_PORT"
+echo "KL coef: $KL_COEF"
+
+[ -d "$INIT_BASE" ] || { echo "ERROR: init base not found at $INIT_BASE"; exit 1; }
+
+# KG server (per-job port to avoid collisions)
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port $KG_PORT --log-level warning &
+KG_PID=$!
+TOOL_CFG="configs_verl/kg_tool_config_freebase_${SLURM_JOB_ID}.yaml"
+trap 'kill $KG_PID 2>/dev/null; rm -f "$TOOL_CFG" 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready on port $KG_PORT"
+
+# Per-job tool config (rewrite kg_server_url to our port)
+sed "s|http://localhost:18901|http://localhost:${KG_PORT}|" \
+    configs_verl/kg_tool_config_freebase.yaml > "$TOOL_CFG"
+
+ray stop 2>/dev/null || true
+
+python -m verl.trainer.main_ppo \
+    --config-path="$PWD/configs_verl" \
+    --config-name=grpo_cwq_7b \
+    trainer.experiment_name="$EXPERIMENT_NAME" \
+    trainer.total_training_steps=500 \
+    actor_rollout_ref.model.path="$INIT_BASE" \
+    actor_rollout_ref.actor.use_kl_loss=true \
+    actor_rollout_ref.actor.kl_loss_coef=$KL_COEF \
+    actor_rollout_ref.actor.kl_loss_type=low_var_kl \
+    +actor_rollout_ref.rollout.enable_sleep_mode=true \
+    actor_rollout_ref.rollout.agent.default_agent_loop=tool_agent \
+    actor_rollout_ref.rollout.multi_turn.tool_config_path="$TOOL_CFG" \
+    data.dataloader_num_workers=0
+
+kill $KG_PID 2>/dev/null
+echo "=== Done: $(date) ==="

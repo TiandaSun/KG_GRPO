@@ -1,0 +1,136 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=ab_test
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --time=03:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# A/B TEST: Run E1 (outcome) then E2 (heuristic) with save_freq=50
+# Both from scratch, same config, same node.
+# Tests whether the save deadlock is reward-dependent or universal.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+module load brics/nccl 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export VLLM_USE_V1=1
+export RAY_DEDUP_LOGS=1
+export RAY_TMPDIR="/tmp/ray-${SLURM_JOB_ID}"
+mkdir -p "$RAY_TMPDIR"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+# --- Start KG server ---
+python -m src_verl.kg_server.server \
+    --kg freebase --freebase_dir data/freebase/kg --port 18901 --log-level warning > /dev/null 2>&1 &
+KG_PID=$!
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:18901/health 2>/dev/null | grep -q "200" && echo "KG healthy" && break
+    sleep 10
+done
+echo ""
+
+# ============================================================
+# TEST A: REWARD_TYPE=outcome (E1), save_freq=50
+# ============================================================
+echo "========================================"
+echo "=== TEST A: outcome, save_freq=50 ==="
+echo "========================================"
+echo "Start: $(date)"
+
+export REWARD_TYPE=outcome
+ray stop 2>/dev/null || true
+
+timeout 4800 python -m verl.trainer.main_ppo \
+    --config-path="$PWD/configs_verl" \
+    --config-name=grpo_cwq_7b \
+    trainer.experiment_name="ab-test-outcome" \
+    trainer.save_freq=50 \
+    trainer.test_freq=200 \
+    trainer.val_before_train=false \
+    +actor_rollout_ref.rollout.enable_sleep_mode=true \
+    actor_rollout_ref.rollout.agent.default_agent_loop=tool_agent \
+    data.dataloader_num_workers=0 || true
+
+A_STEPS=$(grep -c "Training Progress" logs/ab_test-${SLURM_JOB_ID}.err 2>/dev/null || echo "0")
+echo ""
+echo "TEST A RESULT: outcome completed $A_STEPS steps"
+echo "Checkpoints: $(ls checkpoints/kg-align-verl/ab-test-outcome/ 2>/dev/null | grep global | tr '\n' ' ')"
+if [ "$A_STEPS" -gt 55 ]; then
+    echo ">>> TEST A: PASSED step 50 save"
+else
+    echo ">>> TEST A: FAILED (hung or crashed at save)"
+fi
+echo "End A: $(date)"
+echo ""
+
+# Clean up for test B
+rm -rf checkpoints/kg-align-verl/ab-test-outcome/ 2>/dev/null
+ray stop 2>/dev/null || true
+sleep 10
+
+# ============================================================
+# TEST B: REWARD_TYPE=heuristic (E2), save_freq=50
+# ============================================================
+echo "========================================"
+echo "=== TEST B: heuristic, save_freq=50 ==="
+echo "========================================"
+echo "Start: $(date)"
+
+export REWARD_TYPE=heuristic
+
+timeout 4800 python -m verl.trainer.main_ppo \
+    --config-path="$PWD/configs_verl" \
+    --config-name=grpo_cwq_7b \
+    trainer.experiment_name="ab-test-heuristic" \
+    trainer.save_freq=50 \
+    trainer.test_freq=200 \
+    trainer.val_before_train=false \
+    +actor_rollout_ref.rollout.enable_sleep_mode=true \
+    actor_rollout_ref.rollout.agent.default_agent_loop=tool_agent \
+    data.dataloader_num_workers=0 || true
+
+# Count steps from BOTH tests (they share the same stderr)
+TOTAL_STEPS=$(grep -c "Training Progress" logs/ab_test-${SLURM_JOB_ID}.err 2>/dev/null || echo "0")
+B_STEPS=$((TOTAL_STEPS - A_STEPS))
+echo ""
+echo "TEST B RESULT: heuristic completed $B_STEPS steps"
+echo "Checkpoints: $(ls checkpoints/kg-align-verl/ab-test-heuristic/ 2>/dev/null | grep global | tr '\n' ' ')"
+if [ "$B_STEPS" -gt 55 ]; then
+    echo ">>> TEST B: PASSED step 50 save"
+else
+    echo ">>> TEST B: FAILED (hung or crashed at save)"
+fi
+echo "End B: $(date)"
+
+# Clean up
+rm -rf checkpoints/kg-align-verl/ab-test-outcome/ checkpoints/kg-align-verl/ab-test-heuristic/ 2>/dev/null
+kill $KG_PID 2>/dev/null
+
+echo ""
+echo "========================================"
+echo "=== A/B TEST SUMMARY ==="
+echo "========================================"
+echo "Test A (outcome):   $A_STEPS steps"
+echo "Test B (heuristic): $B_STEPS steps"
+if [ "$A_STEPS" -gt 55 ] && [ "$B_STEPS" -le 55 ]; then
+    echo "CONCLUSION: Bug is REWARD-DEPENDENT (heuristic only)"
+elif [ "$A_STEPS" -le 55 ] && [ "$B_STEPS" -le 55 ]; then
+    echo "CONCLUSION: Bug is UNIVERSAL (environment/verl issue, not reward)"
+elif [ "$A_STEPS" -gt 55 ] && [ "$B_STEPS" -gt 55 ]; then
+    echo "CONCLUSION: Bug is NOT REPRODUCIBLE (both passed)"
+fi
+echo "=== Done ==="

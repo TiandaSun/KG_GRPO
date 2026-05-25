@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=39b_passk
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=18:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Phase 7 Action I3: Pass@32 with tools on 39B @ step 400.
+#
+# Same 200-Q test subset (seed=42) used by Tasks 37/38b — directly comparable to
+# E3@500 pass@16 = 37.0%.
+#
+# Uses task17_pass_at_k.py's e3 code path to load the 39B checkpoint; output key
+# will be "e3_step_400" in the JSON but represents 39B.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+KG_PORT=$((18000 + SLURM_JOB_ID % 1000))
+
+echo "=== Phase 7 Action I3: pass@32 on 39B @ step 400, 200 Q, with tools ==="
+echo "Date: $(date)  KG port: $KG_PORT"
+
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port $KG_PORT --log-level warning &
+KG_PID=$!
+trap 'kill $KG_PID 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready"
+
+mkdir -p results/phase7
+
+python scripts/task17_pass_at_k.py \
+    --checkpoint_dir /projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/grpo-cwq-7b-39b-kl-20260413 \
+    --step 400 \
+    --base_model outputs/verl-sft-cwq-7b-merged \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --kg_server_url http://localhost:$KG_PORT \
+    --filter_ids results/task37_sample_ids.json \
+    --n_samples 32 \
+    --n_questions 200 \
+    --temperature 0.7 \
+    --models e3 \
+    --output results/phase7/task38b_39b_pass_at_k.json
+
+kill $KG_PID 2>/dev/null
+echo "=== Done: $(date) ==="

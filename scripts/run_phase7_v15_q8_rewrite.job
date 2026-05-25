@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v15_q8_rewrite
+#SBATCH --nodes=1
+#SBATCH --gpus=0
+#SBATCH --cpus-per-task=8
+#SBATCH --time=02:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# V15-Q8 Lane 8 step 1: synthetic-schema rewrite (CPU-only).
+#
+# Reads data/freebase/verl_cwq/{train,val,test}.parquet, replaces every entity
+# string (MIDs and labels alike) with a deterministic synthetic URI of the form
+# entity://<safe_label>__<short_hash>, and writes the rewritten parquets to
+# data/freebase/verl_cwq_q8_synthetic/. Also rewrites
+# data/freebase/sft_trajectories.jsonl into sft_trajectories_q8_synthetic.jsonl.
+#
+# Relations are NOT rewritten — only entities. This isolates the L_lang
+# (linguistic familiarity) confound while keeping L_sig + L_comp + L_prior intact.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+echo "=== V15-Q8 schema rewrite (CPU) ==="
+echo "Date: $(date)"
+echo "Working dir: $PWD"
+
+mkdir -p data/freebase/verl_cwq_q8_synthetic
+
+python scripts/task_q8_synthetic_schema.py \
+    --input_dir data/freebase/verl_cwq \
+    --output_dir data/freebase/verl_cwq_q8_synthetic \
+    --sft_input data/freebase/sft_trajectories.jsonl \
+    --sft_output data/freebase/sft_trajectories_q8_synthetic.jsonl
+
+echo ""
+echo "=== Sanity check outputs ==="
+ls -la data/freebase/verl_cwq_q8_synthetic/
+wc -l data/freebase/sft_trajectories_q8_synthetic.jsonl
+
+echo ""
+echo "=== First 5 URI mappings ==="
+python3 -c "
+import json
+m = json.load(open('data/freebase/verl_cwq_q8_synthetic/entity_mapping.json'))
+items = list(m['original_to_uri'].items())
+print(f'Total entities mapped: {len(items)}')
+for orig, uri in items[:5]:
+    print(f'  {orig!r:60s} -> {uri}')
+"
+
+echo ""
+echo "=== Q8 wrapper smoke test ==="
+python3 -c "
+from pathlib import Path
+from src_verl.kg_server.q8_synthetic_adapter import Q8SyntheticAdapter
+a = Q8SyntheticAdapter.from_files(Path('data/freebase/kg'),
+                                  Path('data/freebase/verl_cwq_q8_synthetic/entity_mapping.json'))
+import json
+m = json.load(open('data/freebase/verl_cwq_q8_synthetic/entity_mapping.json'))
+items = list(m['original_to_uri'].items())
+# Find a URI whose original we know exists in the KG
+ok = 0; tested = 0
+for orig, uri in items[:200]:
+    rels = a.get_tail_relations(uri)
+    tested += 1
+    if rels: ok += 1
+print(f'smoke-test: {ok}/{tested} URIs returned non-empty tail relations')
+print(f'num_entities_total={a.num_entities}')
+"
+
+echo ""
+echo "=== Done: $(date) ==="

@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=t33_l3_audit
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=2
+#SBATCH --time=12:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Task 33 L3: Wikidata Probe + Anthropic LLM Rubric Audit
+# CPU-only job (network + API calls). ~6h, ~$5-15 cost.
+# API key passed via environment variable from sbatch --export.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+if [ -z "$ANTHROPIC_API_KEY" ]; then
+    echo "ERROR: ANTHROPIC_API_KEY not set"
+    exit 1
+fi
+
+echo "=== Task 33 L3: Wikidata + Anthropic LLM Rubric Audit ==="
+echo "Date: $(date)"
+echo "Node: $(hostname)"
+echo "API key set: $(echo $ANTHROPIC_API_KEY | head -c 15)..."
+echo ""
+
+mkdir -p results logs
+
+python scripts/task33_l3_wikidata_probe.py \
+    --input data/freebase/cwq_original_train.json \
+    --l1 results/task33_l1_lexical.json \
+    --l2 results/task33_l2_volatility.json \
+    --output results/task33_l3_classifications.json \
+    --n_sample 300 \
+    --stratified \
+    --sleep_s 1.0
+
+echo ""
+echo "=== Done: $(date) ==="

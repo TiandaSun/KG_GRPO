@@ -1,0 +1,132 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v14d1_sft_full
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --time=20:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# V14-D1 Qwen2.5-14B E5b-stabilized — FULL SFT (5K primary corpus).
+#
+# Runs after pilot passes. Auto-merges LoRA adapter to produce a verl-compatible
+# full checkpoint at outputs/verl-sft-cwq-14b-from-base-merged.
+#
+# Hyperparams (v13 14B recipe):
+#   - LR = 1.0e-5 (0.5× 7B's 2e-5)
+#   - per_device_train_batch_size = 1 (VRAM-safe on 120GB GH200)
+#   - gradient_accumulation_steps = 8  (effective batch = 32 on 4 GPUs,
+#     matches 7B's effective 32 from bs=2 × grad_accum=8 × 2 GPUs)
+#   - num_train_epochs = 1 (0.7× of 7B's 2-epoch baseline; single pass is
+#     generally sufficient for 14B — adjust if pilot suggests otherwise)
+#
+# Expected walltime: 12-18h (7B took ~6h with 2 epochs; 14B at 1 epoch with
+# smaller per-device bs is roughly comparable). 20h walltime gives safety margin.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+MODEL="Qwen/Qwen2.5-14B-Instruct"
+TRAIN_FILE="data/freebase/sft_trajectories.jsonl"
+OUTPUT_DIR="outputs/verl-sft-cwq-14b-from-base"
+MERGED_DIR="outputs/verl-sft-cwq-14b-from-base-merged"
+
+mkdir -p logs outputs
+
+echo "=== V14-D1 Qwen2.5-14B SFT FULL ==="
+echo "Date: $(date)"
+echo "Model: $MODEL"
+echo "Train: $TRAIN_FILE ($(wc -l < "$TRAIN_FILE") samples)"
+echo "Output: $OUTPUT_DIR"
+echo "Merged: $MERGED_DIR"
+
+if [ ! -f "$TRAIN_FILE" ]; then
+    echo "ERROR: SFT corpus not found at $TRAIN_FILE"
+    exit 1
+fi
+
+# Note: the shared YAML config (configs_verl/sft_cwq.yaml) has
+#   per_device_train_batch_size=2, grad_accum=8, lr=2e-5, epochs=2
+# For 14B we override via a dedicated config file NOT required — the
+# sft_multiturn CLI only takes --num_train_epochs, --train_file, --model_path,
+# --output_dir. Changing batch size / LR for 14B requires editing the YAML
+# OR wrapping the call. We keep the YAML intact (7B is production) and
+# instead rely on env-driven patches: set HF-style env vars is not supported
+# here, so we export a TEMP override YAML.
+
+TMP_CONFIG="${TMPDIR:-/tmp}/sft_cwq_14b_${SLURM_JOB_ID}.yaml"
+cat > "$TMP_CONFIG" <<'YAML'
+model:
+  model_name: "Qwen/Qwen2.5-14B-Instruct"
+  torch_dtype: "bfloat16"
+  attn_implementation: "eager"
+
+lora:
+  lora_r: 64
+  lora_alpha: 128
+  lora_target_modules: "all-linear"
+  lora_dropout: 0.05
+  use_dora: true
+  use_rslora: true
+
+training:
+  num_train_epochs: 1
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 8
+  learning_rate: 1.0e-5
+  gradient_checkpointing: true
+  max_seq_length: 2048
+  logging_steps: 10
+  save_strategy: "epoch"
+  warmup_ratio: 0.05
+  optim: "adamw_torch"
+
+data:
+  train_file: "data/freebase/sft_trajectories.jsonl"
+  output_dir: "outputs/verl-sft-cwq-14b-from-base"
+
+wandb:
+  wandb_project: "kg-align-verl"
+  wandb_run_name: "sft-cwq-14b-from-base"
+YAML
+
+echo "Generated override config: $TMP_CONFIG"
+cat "$TMP_CONFIG"
+echo ""
+
+python src_verl/training/sft_multiturn.py \
+    --config "$TMP_CONFIG" \
+    --model_path "$MODEL" \
+    --output_dir "$OUTPUT_DIR" \
+    --num_train_epochs 1 \
+    --train_file "$TRAIN_FILE"
+
+echo ""
+echo "=== Merge LoRA adapter → full HF model ==="
+python scripts/merge_sft_adapter.py \
+    --base_model "$MODEL" \
+    --adapter_path "$OUTPUT_DIR" \
+    --output_path "$MERGED_DIR"
+
+# Copy tokenizer / chat template alongside merged weights
+cp -n "$OUTPUT_DIR"/tokenizer* "$MERGED_DIR/" 2>/dev/null || true
+cp -n "$OUTPUT_DIR"/chat_template.jinja "$MERGED_DIR/" 2>/dev/null || true
+
+echo ""
+echo "=== Done: $(date) ==="
+echo "Adapter:        $OUTPUT_DIR"
+echo "Merged model:   $MERGED_DIR"

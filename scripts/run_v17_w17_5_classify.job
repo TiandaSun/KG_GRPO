@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v17_w17_5_classify
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --cpus-per-task=8
+#SBATCH --time=00:30:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# v17 W17.5 — CPU-only trajectory classification.
+# Chains after W17.4 via --dependency. Applies task16_classify to:
+#   - W17.2 SFT-only baseline (3531 trajectories)
+#   - Each W17.4 GRPO step (3531 trajectories each)
+# Outputs classified.json files + W17_5_CLASSIFICATION.md summary table.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+python scripts/v17_classify_curve.py

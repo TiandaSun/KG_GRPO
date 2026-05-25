@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v16_q8_redo_sft_only
+#SBATCH --nodes=1
+#SBATCH --gpus=0
+#SBATCH --cpus-per-task=4
+#SBATCH --time=00:30:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# V16-Q8-REDO Phase 1 (resubmit): SFT-only rewrite + sanity check (CPU-only).
+#
+# CONTEXT: Job 4478189 TIMEOUT at 1h walltime. Parquet rewrite finished cleanly
+# (data/freebase/verl_cwq_q8_redo/{train,val,test}.parquet + entity_mapping.json),
+# but the SFT-trajectory pass was only ~50% complete (2500/5000 in ~50 min).
+#
+# Root cause of slowdown: the original rewriter built a single 746K-entity
+# global alternation regex and applied it to every message — O(traj * 746K).
+#
+# FIX (this job): per-trajectory candidate scoping via a first-word inverted
+# index. For each trajectory we tokenize text, look up candidates in O(1) per
+# token, then build a tiny whole-word regex from typically tens of candidates
+# (avg expected: ~10-50 / traj). Net runtime expected 5-10 min for 5000 trajs.
+#
+# IMPORTANT: SFT input has NO sample_id field — the only key per record is
+# `trajectory`. So we cannot use a per-row strict local set tied to a parquet
+# row. The first-word inverted-index scan over the 746K-entity global mapping
+# is the cheapest correct alternative and preserves whole-word semantics.
+#
+# This job:
+#   - SKIPS the parquet pass (--sft_only) and re-uses the existing
+#     data/freebase/verl_cwq_q8_redo/entity_mapping.json
+#   - Rewrites data/freebase/sft_trajectories.jsonl ->
+#     data/freebase/sft_trajectories_q8_redo.jsonl, preserving every input
+#     record field (only `trajectory` content is rewritten)
+#   - Runs the unchanged 6-check sanity protocol at the end:
+#     (a) 5 random parquet rows side-by-side
+#     (b) 5 random SFT trajectories side-by-side; system msgs identical
+#     (c) Mapping counts + label-length distribution
+#     (d) [HARD-FAIL] System-prompt fingerprint preserved unchanged in SFT
+#     (e) [HARD-FAIL] Whole-word probe on "Lou Seal"
+#     (f) [HARD-FAIL] No nested 'entity://...entity://' corruption
+#     plus (a)+(b) hard-fail on row-count mismatch / system byte-mismatch.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+echo "=== V16-Q8-REDO Phase 1 SFT-only resubmit (CPU only) ==="
+echo "Date: $(date)"
+echo "Working dir: $PWD"
+echo "Hostname: $(hostname)"
+
+mkdir -p data/freebase/verl_cwq_q8_redo
+mkdir -p results/phase7
+mkdir -p logs
+
+# Pre-flight: AST-validate the script before consuming compute
+python -c 'import ast; ast.parse(open("scripts/task_v16_q8_redo_rewrite.py").read())'
+echo "AST validation passed."
+
+echo ""
+echo "=== Pre-flight: confirm parquet pass already succeeded ==="
+ls -la data/freebase/verl_cwq_q8_redo/train.parquet \
+       data/freebase/verl_cwq_q8_redo/val.parquet \
+       data/freebase/verl_cwq_q8_redo/test.parquet \
+       data/freebase/verl_cwq_q8_redo/entity_mapping.json
+
+echo ""
+echo "=== Running SFT-only rewriter + sanity-check (single CLI invocation) ==="
+python scripts/task_v16_q8_redo_rewrite.py \
+    --sft-only \
+    --produce-sanity-report \
+    --input_dir data/freebase/verl_cwq \
+    --output_dir data/freebase/verl_cwq_q8_redo \
+    --sft_input data/freebase/sft_trajectories.jsonl \
+    --sft_output data/freebase/sft_trajectories_q8_redo.jsonl \
+    --report_path results/phase7/v16_q8_redo_sanity_report.md
+
+echo ""
+echo "=== Output listing ==="
+ls -la data/freebase/verl_cwq_q8_redo/
+ls -la data/freebase/sft_trajectories_q8_redo.jsonl
+ls -la results/phase7/v16_q8_redo_sanity_report.md
+
+echo ""
+echo "=== Sanity report HEAD ==="
+head -80 results/phase7/v16_q8_redo_sanity_report.md
+
+echo ""
+echo "=== Sanity report TAIL (overall verdict) ==="
+tail -10 results/phase7/v16_q8_redo_sanity_report.md
+
+echo ""
+echo "=== Done: $(date) ==="

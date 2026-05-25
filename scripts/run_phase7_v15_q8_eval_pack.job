@@ -1,0 +1,153 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v15_q8_eval
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --cpus-per-task=72
+#SBATCH --time=12:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# V15-Q8 Lane 8 step 4: packed-4 eval on synthetic-schema test set.
+#
+# Mirrors scripts/run_phase7_s01_eval_pack4.job: 4 (step) evals share one 4-GPU
+# allocation. Each eval runs on its own GPU 0..3.
+#
+# Usage:
+#   sbatch --export=ALL,P0=50,P1=100,P2=150,P3=200 scripts/run_phase7_v15_q8_eval_pack.job
+#   sbatch --export=ALL,P0=250,P1=300,P2=350,P3=400 scripts/run_phase7_v15_q8_eval_pack.job
+#
+# P0..P3 are checkpoint STEPs (or "skip"). The Q8 experiment has a single seed
+# (seed=42 baked into the GRPO job). All 4 evals share ONE q8_synthetic KG server.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+P0="${P0:-skip}"
+P1="${P1:-skip}"
+P2="${P2:-skip}"
+P3="${P3:-skip}"
+
+EXPERIMENT="grpo-cwq-7b-q8-synthetic-20260506"
+BASE_MODEL="outputs/verl-sft-cwq-7b-q8-synthetic-merged"
+EVAL_DATA="data/freebase/verl_cwq_q8_synthetic/test.parquet"
+Q8_MAPPING="data/freebase/verl_cwq_q8_synthetic/entity_mapping.json"
+KG_PORT=$((19200 + SLURM_JOB_ID % 100))
+
+echo "=== V15-Q8 packed-4 eval ==="
+echo "Date: $(date)"
+echo "Slots: P0=$P0 P1=$P1 P2=$P2 P3=$P3"
+echo "Experiment: $EXPERIMENT"
+echo "Eval data: $EVAL_DATA"
+
+# --- ONE shared KG server for all 4 evals (q8_synthetic mode) ---
+python -m src_verl.kg_server.server \
+    --kg q8_synthetic \
+    --freebase_dir data/freebase/kg \
+    --q8_mapping_path "$Q8_MAPPING" \
+    --port $KG_PORT \
+    --log-level warning &
+KG_PID=$!
+trap 'kill $KG_PID 2>/dev/null; wait 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server (q8_synthetic) ready on port $KG_PORT"
+
+run_eval() {
+    local idx="$1"   # CUDA device index (0..3)
+    local step="$2"  # checkpoint STEP or "skip"
+    if [ "$step" = "skip" ]; then
+        echo "[GPU $idx] skipped"
+        return 0
+    fi
+    local src="/projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/${EXPERIMENT}/global_step_${step}/actor"
+    local dst="outputs/verl-q8-synthetic_step${step}-merged"
+    local out_json="results/phase7/v15_q8_synthetic_step${step}_full_test.json"
+    local ps_dir="results/phase7/v15_q8_synthetic_step${step}_full_per_sample"
+    local logfile="logs/p7_v15_q8_eval-${SLURM_JOB_ID}-gpu${idx}-step${step}.log"
+
+    mkdir -p "$ps_dir" results/phase7
+
+    echo "[GPU $idx] step=$step  ->  $logfile"
+
+    if [ ! -d "$src" ]; then
+        echo "[GPU $idx] ERROR: FSDP ckpt not at $src" | tee -a "$logfile"
+        return 1
+    fi
+
+    {
+        echo "=== GPU $idx step=$step  $(date) ==="
+        if [ ! -f "$dst/config.json" ]; then
+            echo "Merging FSDP -> HF"
+            mkdir -p "$dst"
+            CUDA_VISIBLE_DEVICES=$idx python -m verl.model_merger merge --backend fsdp --local_dir "$src" --target_dir "$dst"
+            if [ ! -f "$dst/tokenizer.json" ]; then
+                cp -n "$BASE_MODEL"/tokenizer* "$dst/" 2>/dev/null || true
+                cp -n "$BASE_MODEL"/chat_template.jinja "$dst/" 2>/dev/null || true
+            fi
+        else
+            echo "[skip] merged ckpt already at $dst"
+        fi
+        CUDA_VISIBLE_DEVICES=$idx python scripts/eval_with_tools.py \
+            --checkpoint_dir "$dst" \
+            --steps 0 \
+            --base_model "$dst" \
+            --eval_data "$EVAL_DATA" \
+            --output "$out_json" \
+            --kg_server_url http://localhost:$KG_PORT \
+            --max_samples 0 \
+            --max_turns 5 \
+            --max_new_tokens 512 \
+            --save_per_sample "$ps_dir"
+        echo "=== GPU $idx done $(date) ==="
+    } > "$logfile" 2>&1
+}
+
+# --- Launch 4 in parallel ---
+run_eval 0 "$P0" &
+PID0=$!
+run_eval 1 "$P1" &
+PID1=$!
+run_eval 2 "$P2" &
+PID2=$!
+run_eval 3 "$P3" &
+PID3=$!
+
+fail=0
+wait $PID0 || { echo "GPU 0 failed"; fail=1; }
+wait $PID1 || { echo "GPU 1 failed"; fail=1; }
+wait $PID2 || { echo "GPU 2 failed"; fail=1; }
+wait $PID3 || { echo "GPU 3 failed"; fail=1; }
+
+kill $KG_PID 2>/dev/null
+echo ""
+echo "=== All slots done $(date) ==="
+echo "Output JSONs:"
+for step in "$P0" "$P1" "$P2" "$P3"; do
+    [ "$step" = "skip" ] && continue
+    f="results/phase7/v15_q8_synthetic_step${step}_full_test.json"
+    if [ -f "$f" ]; then
+        echo "  ok $f"
+        python3 -c "import json; d=json.load(open('$f')); s=d['0']; print(f'    step=$step EM={s[\"em\"]:.4f} ContEM={s[\"contains_em\"]:.4f} F1={s[\"f1\"]:.4f} Tools={s[\"avg_tool_calls\"]:.2f}')" 2>/dev/null || true
+    else
+        echo "  missing: $f"
+    fi
+done
+exit $fail

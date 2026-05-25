@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_searchr1
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --time=24:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Phase 7 Action II2: Search-R1 training on CWQ with Freebase adapter.
+#
+# Reviewer non-negotiable: Search-R1 (arXiv:2503.09516) achieves 35-45% on
+# HotpotQA/NQ with outcome-only reward + GRPO. If its recipe produces >E3 on
+# CWQ/Freebase, our process-reward diagnostic collapses. We need this number.
+#
+# Prereqs:
+#   1. Clone Search-R1 repo to external/Search-R1/ (NOT committed to our repo):
+#        cd external/ && git clone https://github.com/PeterGriffinJin/Search-R1.git
+#   2. Run the adapter on port 19001:
+#        python scripts/phase7_ii2_searchr1_adapter.py --port 19001 &
+#   3. Patch Search-R1's training config to point at http://localhost:19001/retrieve
+#      instead of its wiki BM25 server
+#
+# This job assumes the above setup is complete and just runs the training loop.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+module load brics/nccl 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+FREEBASE_PORT=18901
+ADAPTER_PORT=19001
+
+# Start Freebase KG server
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port $FREEBASE_PORT --log-level warning &
+KG_PID=$!
+trap 'kill $KG_PID $ADAPTER_PID 2>/dev/null' EXIT
+
+echo "Waiting for Freebase server..."
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$FREEBASE_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "Freebase server ready"
+
+# Start Search-R1 adapter
+python scripts/phase7_ii2_searchr1_adapter.py --freebase_url "http://localhost:$FREEBASE_PORT" --port $ADAPTER_PORT &
+ADAPTER_PID=$!
+sleep 15
+curl -s -o /dev/null -w "%{http_code}" http://localhost:$ADAPTER_PORT/health 2>/dev/null | grep -q "200" && echo "Adapter ready" || echo "WARN: adapter not healthy"
+
+# --- ACTUAL SEARCH-R1 TRAINING ---
+# This part must be filled in after cloning Search-R1. Expected pattern:
+#
+#   cd external/Search-R1
+#   python -m searchr1.trainer.main_ppo \
+#       data.train_files=<our_cwq_train_adapted_to_searchr1_format> \
+#       data.val_files=<our_cwq_val> \
+#       retriever.url=http://localhost:$ADAPTER_PORT/retrieve \
+#       trainer.experiment_name=searchr1-cwq-freebase \
+#       trainer.total_training_steps=800
+#
+# For now we ERROR OUT loudly so the user knows the setup is incomplete.
+
+if [ ! -d "external/Search-R1" ]; then
+    echo "ERROR: external/Search-R1 not cloned yet"
+    echo "Run: mkdir -p external && cd external && git clone https://github.com/PeterGriffinJin/Search-R1.git"
+    exit 1
+fi
+
+echo ""
+echo "!!! Search-R1 training not yet plumbed. Fill in the training command above."
+echo "!!! Adapter is running at http://localhost:$ADAPTER_PORT/retrieve"
+echo "!!! Test it manually with:"
+echo "     curl -X POST http://localhost:$ADAPTER_PORT/retrieve -H 'Content-Type: application/json' -d '{\"query\": \"Obama born_in\", \"topk\": 5}'"
+sleep 60  # keep the adapter alive briefly so user can smoke-test
+
+kill $ADAPTER_PID $KG_PID 2>/dev/null
+echo "=== Done: $(date) ==="

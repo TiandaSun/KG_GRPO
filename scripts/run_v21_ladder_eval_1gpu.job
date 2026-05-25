@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=v21_lev1
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --cpus-per-task=18
+#SBATCH --time=04:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# v20 W21 Part A eval — 1-GPU sequential variant (backfills far better than 4-GPU
+# under fairshare pressure). Evaluates one ladder run's diagnostic checkpoints
+# {100,200,300,400} sequentially on the 200-Q seed-42 subset, saving trajectories.
+#
+# Usage: sbatch --export=ALL,RUNG=e3,SEED=2 scripts/run_v21_ladder_eval_1gpu.job
+
+set -eo pipefail
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+: "${RUNG:?RUNG required (e3/e5b/e5bkl)}"
+: "${SEED:?SEED required (2/3)}"
+
+EXP="grpo-cwq-7b-w21-${RUNG}-seed${SEED}-20260522"
+CKPT_ROOT="/projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/${EXP}"
+BASE_MODEL="outputs/verl-sft-cwq-7b-merged"
+EVAL_DATA="data/freebase/verl_cwq/test.parquet"
+FILTER_IDS="results/task37_sample_ids.json"
+OUT_DIR="_handoff/data/w21/ladder_eval/${RUNG}_seed${SEED}"
+KG_PORT=$((18400 + SLURM_JOB_ID % 90))
+
+mkdir -p "$OUT_DIR" logs
+[ -d "$CKPT_ROOT" ] || { echo "ERROR: $CKPT_ROOT missing"; exit 1; }
+
+WANT_STEPS="100 200 300 400"
+STEPS=""
+for s in $WANT_STEPS; do
+    [ -d "$CKPT_ROOT/global_step_${s}/actor" ] && STEPS="$STEPS $s"
+done
+echo "=== v21 ladder eval (1-GPU) $RUNG seed$SEED  steps:[$STEPS]  $(date) ==="
+
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg \
+    --port $KG_PORT --log-level warning &
+KG_PID=$!
+trap 'kill $KG_PID 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q 200 && break
+    sleep 5
+done
+echo "KG ready on $KG_PORT"
+
+for step in $STEPS; do
+    src="$CKPT_ROOT/global_step_${step}/actor"
+    dst="outputs/v21_${RUNG}_seed${SEED}_step${step}-merged"
+    echo "--- step $step: merge+eval $(date) ---"
+    if [ ! -f "$dst/config.json" ]; then
+        mkdir -p "$dst"
+        python -m verl.model_merger merge --backend fsdp --local_dir "$src" --target_dir "$dst"
+        [ -f "$dst/tokenizer.json" ] || cp -n "$BASE_MODEL"/tokenizer* "$dst/" 2>/dev/null || true
+        [ -f "$dst/chat_template.jinja" ] || cp -n "$BASE_MODEL"/chat_template.jinja "$dst/" 2>/dev/null || true
+    fi
+    python scripts/eval_with_tools.py \
+        --checkpoint_dir "$dst" --steps 0 --base_model "$dst" \
+        --eval_data "$EVAL_DATA" --output "${OUT_DIR}/step${step}.json" \
+        --kg_server_url http://localhost:$KG_PORT \
+        --filter_ids "$FILTER_IDS" --max_samples 0 \
+        --max_turns 5 --max_new_tokens 512 \
+        --save_per_sample "${OUT_DIR}/step${step}_per_sample" \
+        --save_trajectories "${OUT_DIR}/step${step}_traj" --max_trajectory_samples 9999
+    # free disk: remove merged HF copy after eval
+    rm -rf "$dst"
+done
+
+kill $KG_PID 2>/dev/null
+echo "=== Done $(date) ==="

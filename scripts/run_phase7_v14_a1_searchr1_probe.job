@@ -1,0 +1,176 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_sr1_probe
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=0:30:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# V14-A1 Search-R1 Option 2 probe.
+#
+# After patching external/Search-R1/verl/third_party/vllm/__init__.py to route
+# vllm 0.12 through the 0.6.3 wrapper, verify whether the import chain even
+# works with our stock kg_verl env (vllm 0.12, transformers 4.57, tensordict 0.10).
+#
+# This is a FAIL-FAST probe: imports only, no training.
+# Runs for ~5 minutes max. No login-node impact.
+#
+# If this passes, we resubmit the full training with confidence.
+# If it fails, we fall back to Option 3 (reframe with E1 as Search-R1 equivalent).
+
+set -o pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+module load brics/nccl 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TMPDIR="/tmp"
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+# CRITICAL: put Search-R1's vendored verl first on path (matches how the train
+# job would be invoked)
+export PYTHONPATH="$PWD/external/Search-R1:$PWD:${PYTHONPATH:-}"
+
+REPORT="results/phase7/v14_a1_option2_probe_report.md"
+mkdir -p results/phase7
+
+echo "=== Search-R1 Option 2 probe (imports only): $(date) ==="
+echo "Env: kg_verl"
+python --version
+echo "Node: $(hostname)  arch: $(uname -m)"
+
+# Baseline versions
+echo ""
+echo "=== Baseline package versions ==="
+python - <<'PY' 2>&1
+import importlib
+for name in ["torch", "vllm", "transformers", "tensordict", "ray", "verl"]:
+    try:
+        m = importlib.import_module(name)
+        v = getattr(m, "__version__", "(unknown)")
+        print(f"  {name:15s} = {v}")
+    except Exception as e:
+        print(f"  {name:15s} = IMPORT FAILED: {type(e).__name__}: {e}")
+PY
+
+# Probe 1: does the patched version-check accept vllm 0.12?
+echo ""
+echo "=== Probe 1: third_party/vllm __init__ routing ==="
+python - <<'PY' 2>&1
+import sys, traceback
+try:
+    # This import triggers the version check + the vllm_v_0_6_3 wrapper imports
+    from verl.third_party.vllm import LLM, LLMEngine, parallel_state, vllm_version
+    print(f"[PROBE-1 OK] routed through wrapper vllm_version={vllm_version}")
+    print(f"  LLM class:         {LLM}")
+    print(f"  LLMEngine class:   {LLMEngine}")
+    print(f"  parallel_state:    {parallel_state}")
+except Exception as e:
+    print(f"[PROBE-1 FAIL] {type(e).__name__}: {e}")
+    traceback.print_exc()
+    sys.exit(1)
+PY
+PROBE1=$?
+
+# Probe 2: can we import fsdp_workers (which fails first per original error)?
+echo ""
+echo "=== Probe 2: import fsdp_workers (original crash location) ==="
+python - <<'PY' 2>&1
+import sys, traceback
+try:
+    from verl.workers.fsdp_workers import ActorRolloutRefWorker, CriticWorker
+    print(f"[PROBE-2 OK] ActorRolloutRefWorker = {ActorRolloutRefWorker}")
+except Exception as e:
+    print(f"[PROBE-2 FAIL] {type(e).__name__}: {e}")
+    traceback.print_exc()
+    sys.exit(2)
+PY
+PROBE2=$?
+
+# Probe 3: can we construct a small vllm LLM via Search-R1's wrapper?
+echo ""
+echo "=== Probe 3: Search-R1-wrapped vllm LLM with tiny model ==="
+python - <<'PY' 2>&1
+import sys, traceback
+try:
+    from verl.third_party.vllm import LLM as SR1_LLM
+    # Try constructing with minimal args — this will exercise a lot of internals
+    llm = SR1_LLM(
+        model="Qwen/Qwen2.5-0.5B-Instruct",
+        tokenizer="Qwen/Qwen2.5-0.5B-Instruct",
+        enforce_eager=True,
+        gpu_memory_utilization=0.3,
+        dtype="bfloat16",
+        load_format="auto",  # not dummy_dtensor, just to smoke the path
+        max_model_len=512,
+    )
+    print(f"[PROBE-3 OK] Constructed SR1_LLM: {type(llm).__name__}")
+except Exception as e:
+    print(f"[PROBE-3 FAIL] {type(e).__name__}: {e}")
+    traceback.print_exc()
+    # Don't bail — probe 3 is optional (the wrapper may require RL-specific args)
+PY
+PROBE3=$?
+
+# Verdict
+cat > "$REPORT" <<MD
+# V14-A1 Search-R1 Option 2 probe (2026-04-20)
+
+## Baseline
+- vllm: $(python -c 'import vllm; print(vllm.__version__)')
+- transformers: $(python -c 'import transformers; print(transformers.__version__)')
+- Patched file: \`external/Search-R1/verl/third_party/vllm/__init__.py\`
+
+## Probe results
+- Probe 1 (import version wrapper): $([ $PROBE1 -eq 0 ] && echo PASS || echo FAIL)
+- Probe 2 (import fsdp_workers):    $([ $PROBE2 -eq 0 ] && echo PASS || echo FAIL)
+- Probe 3 (construct tiny SR1 LLM): $([ $PROBE3 -eq 0 ] && echo PASS || echo "FAIL (non-fatal)")
+
+MD
+
+if [ $PROBE1 -eq 0 ] && [ $PROBE2 -eq 0 ]; then
+    cat >> "$REPORT" <<MD
+## VERDICT: OPTION 2 VIABLE
+
+Critical imports pass under the patched wrapper. Resubmit the full V14-A1 training:
+\`\`\`
+sbatch scripts/run_phase7_v14_a1_searchr1_train.job
+\`\`\`
+If the training job still crashes during data loading or first batch, investigate further;
+otherwise proceed.
+MD
+    echo "=== VERDICT: Option 2 viable ==="
+    exit 0
+else
+    cat >> "$REPORT" <<MD
+## VERDICT: OPTION 2 NOT VIABLE
+
+One or more critical imports fail — the 0.6.3 wrapper is too tightly coupled
+to vllm ≤0.6.3 internals. Recommendation: fall back to **Option 3** —
+reframe paper using our existing E1 (outcome-only reward) as the
+Search-R1-equivalent baseline. Zero new compute, stronger paper claim:
+"Search-R1's outcome-only recipe (as reimplemented via our E1) collapses
+to EM≈0 on CWQ/Freebase, vs 35-45% on HotpotQA/NQ, showing the recipe
+doesn't transfer to compositional KG QA."
+
+## Undo instructions
+Revert the patch:
+\`\`\`
+cd external/Search-R1
+git checkout verl/third_party/vllm/__init__.py
+\`\`\`
+This does NOT affect kg_verl env — no packages were installed.
+MD
+    echo "=== VERDICT: Option 2 NOT viable, reverting patch ==="
+    # Revert the patch automatically to keep external/Search-R1 clean
+    (cd external/Search-R1 && git checkout verl/third_party/vllm/__init__.py 2>/dev/null || true)
+    exit 3
+fi

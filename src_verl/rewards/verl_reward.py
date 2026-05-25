@@ -86,6 +86,17 @@ def compute_score(
             "num_tool_calls": float(num_tool_calls),
         }
 
+    elif reward_type == "outcome_em_only":
+        # E1' / Search-R1-equivalent: pure binary EM, no F1 blending.
+        # Matches Search-R1 (arXiv:2503.09516) reward formulation exactly.
+        return {
+            "score": em,
+            "r_outcome": em,
+            "em": em,
+            "f1": f1,
+            "num_tool_calls": float(num_tool_calls),
+        }
+
     elif reward_type == "heuristic":
         step_rewards = _heuristic_step_rewards(steps, ground_truth, all_answers)
         avg_step = sum(step_rewards) / max(len(step_rewards), 1)
@@ -103,6 +114,34 @@ def compute_score(
         step_rewards = _verifiable_step_rewards(steps, kg_path, extra_info)
         avg_step = sum(step_rewards) / max(len(step_rewards), 1)
         total = 0.3 * r_outcome + 0.7 * avg_step
+        return {
+            "score": total,
+            "r_outcome": r_outcome,
+            "r_step_avg": avg_step,
+            "em": em,
+            "f1": f1,
+            "num_tool_calls": float(num_tool_calls),
+        }
+
+    elif reward_type == "verifiable_onpath":
+        # Task 22: Single-component ablation — only r_on_path, no progress/coherence/valid
+        step_rewards = _verifiable_onpath_step_rewards(steps, kg_path, extra_info)
+        avg_step = sum(step_rewards) / max(len(step_rewards), 1)
+        total = 0.3 * r_outcome + 0.7 * avg_step
+        return {
+            "score": total,
+            "r_outcome": r_outcome,
+            "r_step_avg": avg_step,
+            "em": em,
+            "f1": f1,
+            "num_tool_calls": float(num_tool_calls),
+        }
+
+    elif reward_type == "verifiable_balanced":
+        # Task 23: Same 4-component verifiable reward but with 0.5/0.5 split
+        step_rewards = _verifiable_step_rewards(steps, kg_path, extra_info)
+        avg_step = sum(step_rewards) / max(len(step_rewards), 1)
+        total = 0.5 * r_outcome + 0.5 * avg_step
         return {
             "score": total,
             "r_outcome": r_outcome,
@@ -146,6 +185,98 @@ def compute_score(
             "score": total,
             "r_outcome": r_outcome,
             "r_step_avg": avg_step,
+            "em": em,
+            "f1": f1,
+            "num_tool_calls": float(num_tool_calls),
+        }
+
+    elif reward_type == "tool_type_bonus_format":
+        # Task 39A: E5b-stabilized via format reward component.
+        # Prevents format drift that caused E5b-original to collapse at step 150.
+        step_rewards = _tool_type_bonus_step_rewards(steps)
+        avg_step = sum(step_rewards) / max(len(step_rewards), 1)
+        r_format = _format_valid(solution_str)
+        total = 0.25 * r_outcome + 0.60 * avg_step + 0.15 * r_format
+        return {
+            "score": total,
+            "r_outcome": r_outcome,
+            "r_step_avg": avg_step,
+            "r_format": r_format,
+            "em": em,
+            "f1": f1,
+            "num_tool_calls": float(num_tool_calls),
+        }
+
+    elif reward_type == "tool_type_bonus_oracle_query_match":
+        # Task 39 Variant I-Oracle (diagnostic upper bound).
+        # R = 0.25*r_outcome + 0.50*r_tool_type + 0.25*r_query_match_oracle
+        # r_query_match_oracle compares the (entity, relation) pairs in the
+        # trajectory's tool calls against the gold path extracted by Task 36's
+        # oracle. Requires gold path in extra_info (via train_oracle_gold_paths).
+        # Hackability defenses:
+        #   1. Dedup (entity, relation) pairs across turns (StepSearch-style).
+        #   2. Gate: reward only fires if ≥2 distinct gold pairs are covered
+        #      (KG-Implicit-RM anti-spam).
+        #   3. Trajectory-level (not per-turn) — matched_unique / distinct_calls.
+        step_rewards = _tool_type_bonus_step_rewards(steps)
+        avg_step = sum(step_rewards) / max(len(step_rewards), 1)
+        gold_path_pairs = _extract_gold_pairs(extra_info)
+        r_query_match = _oracle_query_match(steps, gold_path_pairs)
+        # Ramp the match weight over the first 50 steps via extra_info['global_step'],
+        # ToolRL lesson: warm-start reward shaping.
+        step_num = extra_info.get("global_step", 0) or 0
+        ramp = min(1.0, step_num / 50.0)
+        query_weight = 0.10 + (0.25 - 0.10) * ramp  # 0.10 → 0.25
+        step_weight = 0.50
+        answer_weight = 1.0 - query_weight - step_weight  # stays near 0.25
+        total = answer_weight * r_outcome + step_weight * avg_step + query_weight * r_query_match
+        return {
+            "score": total,
+            "r_outcome": r_outcome,
+            "r_step_avg": avg_step,
+            "r_query_match": r_query_match,
+            "em": em,
+            "f1": f1,
+            "num_tool_calls": float(num_tool_calls),
+        }
+
+    elif reward_type == "tool_type_bonus_retrieval_contrib":
+        # Task 39 Variant I-Self (deployable, no oracle leak).
+        # R = 0.25*r_outcome + 0.50*r_tool_type + 0.25*r_retrieval_contrib
+        # r_retrieval_contrib rewards tool calls where
+        #   (a) the call returned non-empty results, AND
+        #   (b) at least one returned entity appears verbatim in the final <answer>
+        # Self-verifiable — no gold labels required.
+        step_rewards = _tool_type_bonus_step_rewards(steps)
+        avg_step = sum(step_rewards) / max(len(step_rewards), 1)
+        r_retrieval = _retrieval_contribution(steps, predicted)
+        total = 0.25 * r_outcome + 0.50 * avg_step + 0.25 * r_retrieval
+        return {
+            "score": total,
+            "r_outcome": r_outcome,
+            "r_step_avg": avg_step,
+            "r_retrieval_contrib": r_retrieval,
+            "em": em,
+            "f1": f1,
+            "num_tool_calls": float(num_tool_calls),
+        }
+
+    elif reward_type == "tool_type_bonus_retrieval_contrib_anti_quote":
+        # v19 W18 — Anti-quote-and-stop variant of I-Self (R-selfV in paper).
+        # Identical to tool_type_bonus_retrieval_contrib EXCEPT r_retrv is
+        # forced to 0 if the trajectory has <2 DISTINCT non-empty <search>
+        # calls (blocks the single-tool-call quote-and-stop attractor).
+        # Falsifies the Mode-4 r_retrv mechanism if R1 still collapses; confirms
+        # if R1 does NOT cliff. Pre-registered per hpc_tasks.md v19 W18.
+        step_rewards = _tool_type_bonus_step_rewards(steps)
+        avg_step = sum(step_rewards) / max(len(step_rewards), 1)
+        r_retrieval = _retrieval_contribution_anti_quote(steps, predicted, min_distinct_nonempty=2)
+        total = 0.25 * r_outcome + 0.50 * avg_step + 0.25 * r_retrieval
+        return {
+            "score": total,
+            "r_outcome": r_outcome,
+            "r_step_avg": avg_step,
+            "r_retrieval_contrib": r_retrieval,
             "em": em,
             "f1": f1,
             "num_tool_calls": float(num_tool_calls),
@@ -310,6 +441,202 @@ def _tool_type_bonus_step_rewards(
 
 
 # ---------------------------------------------------------------------------
+# Format validity check (Task 39A)
+# ---------------------------------------------------------------------------
+
+_VALID_TOOL_CALL_RE = re.compile(r"get_(tail|head)_(relations|entities)\s*\(")
+
+
+def _format_valid(solution_str: str) -> float:
+    """Binary format validity check for E5b-stabilized Variant A.
+
+    Returns 1.0 if all of the following hold, else 0.0:
+      1. No <search> tag nested inside a <think>...</think> block.
+      2. <answer>...</answer> tag exists with non-empty content.
+      3. If any <search> tags exist, at least one contains a valid tool call
+         matching get_(tail|head)_(relations|entities)\\(.
+
+    Designed to block three reward-hacking shortcuts:
+      - Emitting empty <answer></answer> to grab format reward without answering.
+      - Emitting pretty tags with malformed/missing tool calls.
+      - Nesting <search> inside <think> (the format drift that caused E5b collapse).
+    """
+    # Check 1: no <search> inside any <think>...</think>
+    for think_match in re.finditer(r"<think>(.*?)</think>", solution_str, re.DOTALL):
+        if "<search>" in think_match.group(1):
+            return 0.0
+
+    # Check 2: <answer>...</answer> exists and is non-empty
+    answer_match = re.search(r"<answer>(.*?)</answer>", solution_str, re.DOTALL)
+    if not answer_match or not answer_match.group(1).strip():
+        return 0.0
+
+    # Check 3: if any <search> tags, at least one must contain a valid tool call
+    search_tags = re.findall(r"<search>(.*?)</search>", solution_str, re.DOTALL)
+    if search_tags:
+        if not any(_VALID_TOOL_CALL_RE.search(call) for call in search_tags):
+            return 0.0
+
+    return 1.0
+
+
+# ---------------------------------------------------------------------------
+# Variant I helpers (Phase 7 Task 39)
+# ---------------------------------------------------------------------------
+
+def _extract_gold_pairs(extra_info: dict) -> set[tuple[str, str]]:
+    """Extract gold (entity, relation) pairs from extra_info for Variant I-Oracle.
+
+    Accepts several shapes (for robustness across data prep scripts):
+      1. extra_info["oracle_gold_pairs"]: list of [entity, relation]
+      2. extra_info["oracle_triple_chain"]: list of [head, relation, tail]
+         → we take (head, relation) and (tail, relation) since either can be
+         a productive query.
+      3. extra_info["kg_path"]: list of [head, relation, tail] (same treatment)
+    Returns an empty set if none present.
+    """
+    pairs: set[tuple[str, str]] = set()
+
+    raw_pairs = extra_info.get("oracle_gold_pairs")
+    if raw_pairs:
+        for pair in _to_python(raw_pairs) or []:
+            if len(pair) >= 2:
+                pairs.add((_normalize(str(pair[0])), _normalize(str(pair[1]))))
+        return pairs
+
+    for key in ("oracle_triple_chain", "kg_path"):
+        chain = extra_info.get(key)
+        if not chain:
+            continue
+        for triple in _to_python(chain) or []:
+            if len(triple) < 3:
+                continue
+            h, r, t = str(triple[0]), str(triple[1]), str(triple[2])
+            pairs.add((_normalize(h), _normalize(r)))
+            pairs.add((_normalize(t), _normalize(r)))
+    return pairs
+
+
+def _oracle_query_match(
+    steps: list[dict[str, str]],
+    gold_pairs: set[tuple[str, str]],
+) -> float:
+    """Variant I-Oracle query-match reward.
+
+    Returns a float in [0, 1].
+    - Dedups (entity, relation) across turns (anti-redundancy).
+    - Returns 0 if <2 distinct gold pairs are matched (anti-spam gate).
+    - Otherwise matched_unique / max(1, distinct_calls).
+    """
+    if not gold_pairs or not steps:
+        return 0.0
+
+    distinct_calls: set[tuple[str, str]] = set()
+    for step in steps:
+        action, args = _parse_action(step["call"])
+        if action not in (
+            "get_tail_entities", "get_head_entities",
+            "get_tail_relations", "get_head_relations",
+        ):
+            continue
+        entity = _normalize(args[0]) if args else ""
+        # relations-only tools have no relation arg → use action as pseudo-relation
+        # so spam like get_tail_relations(X) can still be tracked for dedup.
+        relation = _normalize(args[1]) if len(args) > 1 else f"_{action}"
+        if entity:
+            distinct_calls.add((entity, relation))
+
+    if not distinct_calls:
+        return 0.0
+
+    matched_unique = len(distinct_calls & gold_pairs)
+    if matched_unique < 2:
+        return 0.0  # anti-spam gate
+
+    return matched_unique / len(distinct_calls)
+
+
+def _retrieval_contribution(
+    steps: list[dict[str, str]],
+    predicted_answer: str,
+) -> float:
+    """Variant I-Self (deployable) retrieval contribution reward.
+
+    Counts tool calls where
+      (a) the call returned a non-empty, non-error observation, AND
+      (b) at least one entity in the observation appears verbatim (case-insensitive)
+          in the final <answer>...</answer>.
+    Returns productive_calls / max(1, total_calls).
+    """
+    if not steps:
+        return 0.0
+    answer_norm = _normalize(predicted_answer)
+    if not answer_norm:
+        return 0.0
+
+    productive = 0
+    for step in steps:
+        obs = step.get("observation", "") or ""
+        obs_stripped = obs.strip()
+        if not obs_stripped or obs_stripped in ("[]", "No results found") or obs_stripped.startswith("ERROR"):
+            continue
+        # Parse comma-separated list-like result
+        entities = [
+            e.strip().strip('"').strip("'")
+            for e in obs_stripped.strip("[]").split(",")
+        ]
+        if any(ent and _normalize(ent) in answer_norm for ent in entities):
+            productive += 1
+
+    return productive / len(steps)
+
+
+def _retrieval_contribution_anti_quote(
+    steps: list[dict[str, str]],
+    predicted_answer: str,
+    min_distinct_nonempty: int = 2,
+) -> float:
+    """v19 W18 — Anti-quote-and-stop r_retrv variant.
+
+    Same as _retrieval_contribution PLUS a gate: r_retrv is forced to 0 if the
+    trajectory contains fewer than `min_distinct_nonempty` (default 2) DISTINCT
+    <search> calls that returned a non-empty / non-error observation. This blocks
+    the Mode-4 collapse attractor where the policy issues a single tool call and
+    quotes its result back as the answer (Tools/Q ≈ 1 with high per-call r_retrv).
+
+    "Distinct" = unique (action_name, entity, relation) triple — re-issuing the
+    same search call does not count as a second distinct call.
+    """
+    if not steps:
+        return 0.0
+    answer_norm = _normalize(predicted_answer)
+    if not answer_norm:
+        return 0.0
+
+    nonempty_signatures: set[tuple[str, str, str]] = set()
+    productive = 0
+    for step in steps:
+        obs = step.get("observation", "") or ""
+        obs_stripped = obs.strip()
+        if not obs_stripped or obs_stripped in ("[]", "No results found") or obs_stripped.startswith("ERROR"):
+            continue
+        action = step.get("action", "") or ""
+        entity = step.get("entity", "") or ""
+        relation = step.get("relation", "") or ""
+        nonempty_signatures.add((action, entity, relation))
+        entities = [
+            e.strip().strip('"').strip("'")
+            for e in obs_stripped.strip("[]").split(",")
+        ]
+        if any(ent and _normalize(ent) in answer_norm for ent in entities):
+            productive += 1
+
+    if len(nonempty_signatures) < min_distinct_nonempty:
+        return 0.0
+    return productive / len(steps)
+
+
+# ---------------------------------------------------------------------------
 # R_verifiable step rewards
 # ---------------------------------------------------------------------------
 
@@ -402,6 +729,51 @@ def _verifiable_step_rewards(
 
         # Update prev_entities for next step's coherence check
         prev_entities = current_entities | obs_entities
+
+    return rewards
+
+
+# ---------------------------------------------------------------------------
+# R_verifiable_onpath step rewards (Task 22: single-component ablation)
+# ---------------------------------------------------------------------------
+
+def _verifiable_onpath_step_rewards(
+    steps: list[dict[str, str]],
+    kg_path: list,
+    extra_info: dict,
+) -> list[float]:
+    """Single-component ablation: only r_on_path, no progress/coherence/valid."""
+    if not steps:
+        return []
+
+    # Build set of path triples for r_on_path (same logic as _verifiable_step_rewards)
+    path_triples: set[tuple[str, str, str]] = set()
+    path_entities: set[str] = set()
+    for triple in (kg_path or []):
+        if hasattr(triple, '__len__') and len(triple) >= 3:
+            h, r, t = str(triple[0]).lower(), str(triple[1]).lower(), str(triple[2]).lower()
+            path_triples.add((h, r, t))
+            path_entities.add(h)
+            path_entities.add(t)
+
+    rewards: list[float] = []
+    for step in steps:
+        obs = step["observation"]
+
+        r_on_path = 0.0
+        if path_triples and obs:
+            obs_lower = obs.lower()
+            for h, r, t in path_triples:
+                if h in obs_lower and t in obs_lower:
+                    r_on_path = 1.0
+                    break
+            if r_on_path == 0.0:
+                obs_words = set(obs_lower.split())
+                hits = len(path_entities & obs_words)
+                if hits > 0:
+                    r_on_path = min(hits / max(len(path_entities), 1), 0.5)
+
+        rewards.append(r_on_path)
 
     return rewards
 

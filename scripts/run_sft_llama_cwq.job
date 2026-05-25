@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=sft_llama_cwq
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --time=24:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Task 24 Step 1: Llama-3.1-8B-Instruct SFT warmup on CWQ gold trajectories.
+# Trains LoRA adapter (rank 64), then merges into full model for verl GRPO.
+# Same SFT data and hyperparameters as Qwen SFT.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+module load brics/nccl 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export HF_TOKEN=$(cat "$HOME/.cache/huggingface/token" 2>/dev/null)
+export PYTHONUNBUFFERED=1
+export WANDB_PROJECT=kg-align-verl
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+BASE_MODEL="meta-llama/Llama-3.1-8B-Instruct"
+ADAPTER_DIR="outputs/verl-sft-llama-8b"
+MERGED_DIR="outputs/verl-sft-llama-8b-merged"
+
+echo "=== Task 24 Step 1: Llama SFT Warmup (4x GH200) ==="
+echo "Date: $(date)"
+echo "Node: $(hostname)"
+echo "Model: $BASE_MODEL"
+echo "GPUs: $(nvidia-smi --query-gpu=name --format=csv,noheader | wc -l)x GH200"
+echo ""
+
+# Step 1: Download model (if not cached)
+echo "=== Downloading model (if needed) ==="
+python -c "
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
+print('Downloading tokenizer...')
+AutoTokenizer.from_pretrained('$BASE_MODEL')
+print('Downloading model...')
+AutoModelForCausalLM.from_pretrained('$BASE_MODEL', torch_dtype=torch.bfloat16, device_map='cpu')
+print('Download complete.')
+"
+echo ""
+
+# Step 2: SFT training with LoRA
+echo "=== Starting SFT Training ==="
+echo "Start: $(date)"
+SFT_START=$(date +%s)
+
+# Use torchrun for multi-GPU SFT
+torchrun --nproc_per_node=4 --master_port=29500 \
+    scripts/sft_train.py \
+    --model_name "$BASE_MODEL" \
+    --data_path data/freebase/sft_trajectories.jsonl \
+    --output_dir "$ADAPTER_DIR" \
+    --num_epochs 2 \
+    --lr 2e-4 \
+    --batch_size 2 \
+    --grad_accum 8 \
+    --max_seq_length 4096 \
+    --lora_rank 64 \
+    --lora_alpha 128 \
+    --lora_dropout 0.05 \
+    --attn_implementation eager \
+    --seed 42
+
+SFT_EXIT=$?
+SFT_END=$(date +%s)
+SFT_ELAPSED=$((SFT_END - SFT_START))
+
+echo ""
+echo "SFT exit code: $SFT_EXIT"
+echo "SFT time: ${SFT_ELAPSED}s ($((SFT_ELAPSED / 60))m)"
+
+if [ $SFT_EXIT -ne 0 ]; then
+    echo "SFT training failed, exiting."
+    exit 1
+fi
+
+# Step 3: Merge adapter into base model
+echo ""
+echo "=== Merging LoRA Adapter ==="
+python scripts/merge_sft_adapter.py \
+    --base_model "$BASE_MODEL" \
+    --adapter_path "$ADAPTER_DIR" \
+    --output_path "$MERGED_DIR"
+
+MERGE_EXIT=$?
+echo "Merge exit code: $MERGE_EXIT"
+
+if [ $MERGE_EXIT -ne 0 ]; then
+    echo "Merge failed, exiting."
+    exit 1
+fi
+
+echo ""
+echo "=== Done ==="
+echo "Adapter: $ADAPTER_DIR"
+echo "Merged model: $MERGED_DIR"
+echo "End: $(date)"

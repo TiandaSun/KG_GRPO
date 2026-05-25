@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_s02_g2sft
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --time=12:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# S0.2 — Multi-seed G2 SFT distill from base SFT.
+#
+# Mirrors run_phase7_variant_g_sft_arm.job (ARM=G2):
+#   - Init from outputs/verl-sft-cwq-7b-merged
+#   - Train file: data/freebase/verl_cwq/39b_self_distill.jsonl  (14,082 trajectories — verified `wc -l`)
+#   - 1 epoch, LoRA + merge
+# Only difference vs the original G2 SFT: per-seed output dir, wandb run name,
+# and an explicit --seed flag plumbed through SFTConfig (data_seed = seed).
+#
+# Usage:
+#   sbatch --export=ALL,SEED=1 scripts/run_phase7_s02_g2_sft_seed.job
+#   sbatch --export=ALL,SEED=2 scripts/run_phase7_s02_g2_sft_seed.job
+#   sbatch --export=ALL,SEED=3 scripts/run_phase7_s02_g2_sft_seed.job
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+: "${SEED:?SEED env var required (1, 2, or 3)}"
+
+INIT_BASE="outputs/verl-sft-cwq-7b-merged"
+TRAIN_FILE="data/freebase/verl_cwq/39b_self_distill.jsonl"
+OUTPUT_DIR="outputs/verl-sft-cwq-7b-G2-seed${SEED}-from-base-sft"
+MERGED_DIR="${OUTPUT_DIR}-merged"
+WANDB_RUN="sft-cwq-7b-G2-seed${SEED}-20260427"
+
+echo "=== S0.2 G2 SFT seed=${SEED} (4x GH200) ==="
+echo "Date: $(date)"
+echo "Init: $INIT_BASE"
+echo "Train: $TRAIN_FILE"
+echo "Output: $OUTPUT_DIR"
+echo "Merged: $MERGED_DIR"
+
+[ -d "$INIT_BASE" ] || { echo "ERROR: $INIT_BASE not found"; exit 1; }
+[ -f "$TRAIN_FILE" ] || { echo "ERROR: $TRAIN_FILE not found"; exit 1; }
+TRAIN_LINES=$(wc -l < "$TRAIN_FILE")
+echo "Trajectories in $TRAIN_FILE: $TRAIN_LINES (expected 14082)"
+
+python src_verl/training/sft_multiturn.py \
+    --config configs_verl/sft_cwq.yaml \
+    --model_path "$INIT_BASE" \
+    --output_dir "$OUTPUT_DIR" \
+    --num_train_epochs 1 \
+    --train_file "$TRAIN_FILE" \
+    --seed "$SEED" \
+    --wandb_run_name "$WANDB_RUN"
+
+echo ""
+echo "=== Merge LoRA adapter ==="
+python scripts/merge_sft_adapter.py \
+    --base_model "$INIT_BASE" \
+    --adapter_path "$OUTPUT_DIR" \
+    --output_path "$MERGED_DIR"
+
+cp -n "$INIT_BASE"/tokenizer* "$MERGED_DIR/" 2>/dev/null || true
+cp -n "$INIT_BASE"/chat_template.jinja "$MERGED_DIR/" 2>/dev/null || true
+
+echo ""
+echo "=== Done: $(date) ==="
+echo "Merged checkpoint: $MERGED_DIR"

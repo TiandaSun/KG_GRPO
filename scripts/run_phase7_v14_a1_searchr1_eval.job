@@ -1,0 +1,141 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v14a1_searchr1_eval
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=20:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# V14-A1 Search-R1 baseline evaluation — two arms:
+#   Arm A: our 4-tool prompt (eval_with_tools.py on data/freebase/verl_cwq/test.parquet)
+#   Arm B: Search-R1 single-tool prompt (eval_searchr1_singletool.py via adapter)
+# Full 3,531-sample CWQ test set per arm per checkpoint.
+
+set -eo pipefail  # NOT set -u (breaks conda activate)
+
+# --- Environment ------------------------------------------------------------
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+module load brics/nccl 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TMPDIR=/tmp
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export VLLM_ATTENTION_BACKEND=XFORMERS
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+FREEBASE_PORT=18901
+ADAPTER_PORT=19001
+EXPERIMENT_NAME="searchr1-cwq-7b-20260420"
+CKPT_DIR="/projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/$EXPERIMENT_NAME"
+# Step list: checkpoints saved every 100 steps. Filter to whichever actually exist.
+STEP_CANDIDATES="100 200 300 400 500"
+
+mkdir -p results/phase7
+
+echo "=== V14-A1 Search-R1 eval (Arm A + Arm B) ==="
+echo "Date: $(date)"
+echo "Node: $(hostname)"
+echo "Checkpoint dir: $CKPT_DIR"
+if [ -d "$CKPT_DIR" ]; then
+    echo "Available checkpoints:"
+    ls "$CKPT_DIR" | grep global_step | sort -t_ -k3 -n || echo "  (none yet)"
+else
+    echo "WARNING: $CKPT_DIR does not exist. Training job may not have run."
+fi
+echo
+
+# Filter STEP_CANDIDATES down to steps that actually got saved
+ACTUAL_STEPS=""
+for s in $STEP_CANDIDATES; do
+    if [ -d "$CKPT_DIR/global_step_$s" ]; then
+        ACTUAL_STEPS="$ACTUAL_STEPS $s"
+    fi
+done
+ACTUAL_STEPS="${ACTUAL_STEPS# }"
+if [ -z "$ACTUAL_STEPS" ]; then
+    echo "ERROR: no checkpoints found in $CKPT_DIR" >&2
+    exit 1
+fi
+echo "Will evaluate steps: $ACTUAL_STEPS"
+echo
+
+# --- Start KG server --------------------------------------------------------
+python -m src_verl.kg_server.server \
+    --kg freebase --freebase_dir data/freebase/kg --port $FREEBASE_PORT --log-level warning \
+    > "logs/${SLURM_JOB_NAME}-${SLURM_JOB_ID}.kg.log" 2>&1 &
+KG_PID=$!
+
+trap 'kill $ADAPTER_PID $KG_PID 2>/dev/null; echo "=== End: $(date) ==="' EXIT
+
+echo "Waiting for KG server..."
+for i in $(seq 1 24); do
+    if curl -s -o /dev/null -w "%{http_code}" http://localhost:$FREEBASE_PORT/health 2>/dev/null | grep -q "200"; then
+        echo "KG server healthy after ~$((i*5))s"
+        break
+    fi
+    sleep 5
+done
+
+# --- Start Search-R1 adapter ------------------------------------------------
+python scripts/phase7_ii2_searchr1_adapter.py \
+    --freebase_port $FREEBASE_PORT --port $ADAPTER_PORT \
+    > "logs/${SLURM_JOB_NAME}-${SLURM_JOB_ID}.adapter.log" 2>&1 &
+ADAPTER_PID=$!
+
+echo "Waiting for adapter..."
+for i in $(seq 1 12); do
+    if curl -s -o /dev/null -w "%{http_code}" http://localhost:$ADAPTER_PORT/health 2>/dev/null | grep -q "200"; then
+        echo "Adapter healthy after ~$((i*5))s"
+        break
+    fi
+    sleep 5
+done
+echo
+
+# --- Arm A: our 4-tool eval -------------------------------------------------
+# Tests: "does a single-tool-trained model do anything useful with 4 tools?"
+echo "=== Arm A: 4-tool eval (our eval_with_tools.py, full 3531 test) ==="
+for s in $ACTUAL_STEPS; do
+    out="results/phase7/v14_a1_searchr1_step${s}_fulltool_eval.json"
+    echo "  -> step $s -> $out"
+    python scripts/eval_with_tools.py \
+        --checkpoint_dir "$CKPT_DIR" \
+        --steps "$s" \
+        --base_model "Qwen/Qwen2.5-7B-Instruct" \
+        --eval_data data/freebase/verl_cwq/test.parquet \
+        --output "$out" \
+        --kg_server_url http://localhost:$FREEBASE_PORT \
+        --max_samples -1 \
+        --max_turns 5 \
+        --max_new_tokens 512
+done
+echo
+
+# --- Arm B: Search-R1 single-tool eval --------------------------------------
+echo "=== Arm B: Search-R1 single-tool eval (full 3531 test) ==="
+STEPS_CSV="$(echo $ACTUAL_STEPS | tr ' ' ',')"
+python scripts/eval_searchr1_singletool.py \
+    --checkpoint_dir "$CKPT_DIR" \
+    --steps $ACTUAL_STEPS \
+    --base_model "Qwen/Qwen2.5-7B-Instruct" \
+    --eval_data data/freebase/searchr1_cwq/test.parquet \
+    --adapter_url http://localhost:$ADAPTER_PORT \
+    --output "results/phase7/v14_a1_searchr1_step{step}_singletool_eval.json" \
+    --max_samples -1 \
+    --max_turns 5 \
+    --max_new_tokens 512 \
+    --topk 3
+
+echo
+echo "=== Done ==="
+echo "Arm A outputs: results/phase7/v14_a1_searchr1_step*_fulltool_eval.json"
+echo "Arm B outputs: results/phase7/v14_a1_searchr1_step*_singletool_eval.json"

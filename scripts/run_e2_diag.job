@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=e2_diag
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --time=02:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# DIAGNOSTIC: Test E2 heuristic with sleep_mode=false
+# Goal: determine if enable_sleep_mode causes the post-checkpoint hang
+# If this passes step 50 (first checkpoint save), sleep_mode is the culprit.
+# 2h walltime = ~120 steps at 48s/step — enough to hit step 50 save + continue.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+module load brics/nccl 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export VLLM_USE_V1=1
+export RAY_DEDUP_LOGS=1
+export RAY_TMPDIR="/tmp/ray-${SLURM_JOB_ID}"
+mkdir -p "$RAY_TMPDIR"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+export REWARD_TYPE=heuristic
+# Use a SEPARATE checkpoint dir so we don't overwrite existing E2 data
+EXPERIMENT_NAME="grpo-cwq-7b-heuristic-diag-nosleep"
+
+echo "=== E2 DIAGNOSTIC: sleep_mode=false ==="
+echo "Date: $(date)"
+echo "Node: $(hostname)"
+echo "Purpose: Test if sleep_mode causes post-checkpoint hang"
+echo "Expect: Should pass step 50 checkpoint save without hanging"
+echo "GPUs: $(nvidia-smi --query-gpu=name --format=csv,noheader | wc -l)x GH200"
+echo ""
+
+# --- Start KG server ---
+echo "Starting Freebase KG server..."
+python -m src_verl.kg_server.server \
+    --kg freebase \
+    --freebase_dir data/freebase/kg \
+    --port 18901 \
+    --log-level warning > /dev/null 2>&1 &
+KG_PID=$!
+
+echo "Waiting for KG server..."
+sleep 30
+for i in $(seq 1 12); do
+    if curl -s -o /dev/null -w "%{http_code}" http://localhost:18901/health 2>/dev/null | grep -q "200"; then
+        echo "KG server healthy after ${i}0+30 seconds"
+        break
+    fi
+    sleep 10
+done
+echo ""
+
+ray stop 2>/dev/null || true
+
+echo "=== Launching GRPO (sleep_mode=FALSE) ==="
+echo "Start: $(date)"
+START_TIME=$(date +%s)
+
+set +e
+python -m verl.trainer.main_ppo \
+    --config-path="$PWD/configs_verl" \
+    --config-name=grpo_cwq_7b \
+    trainer.experiment_name="$EXPERIMENT_NAME" \
+    actor_rollout_ref.rollout.agent.default_agent_loop=tool_agent \
+    data.dataloader_num_workers=0
+GRPO_EXIT=$?
+set -e
+# NOTE: NO +actor_rollout_ref.rollout.enable_sleep_mode=true
+# sleep_mode defaults to false — vLLM keeps GPU memory during training
+
+END_TIME=$(date +%s)
+ELAPSED=$((END_TIME - START_TIME))
+
+echo ""
+echo "=== DIAGNOSTIC RESULTS ==="
+echo "Exit code: $GRPO_EXIT"
+echo "Total time: ${ELAPSED}s ($((ELAPSED / 60))m $((ELAPSED % 60))s)"
+
+# Report progress
+STEPS_DONE=$(grep -c "Training Progress" logs/e2_diag-${SLURM_JOB_ID}.err 2>/dev/null || echo "?")
+echo "Steps completed: $STEPS_DONE"
+echo "Checkpoints saved:"
+ls checkpoints/kg-align-verl/${EXPERIMENT_NAME}/ 2>/dev/null | grep global_step | sort -t_ -k3 -n
+
+if [ "$STEPS_DONE" -gt 55 ]; then
+    echo ""
+    echo ">>> PASSED step 50 checkpoint — sleep_mode was the issue!"
+    echo ">>> Safe to run full E2 with sleep_mode=false"
+else
+    echo ""
+    echo ">>> Did NOT pass step 50 — issue is NOT sleep_mode"
+    echo ">>> Check logs for other errors"
+fi
+
+kill $KG_PID 2>/dev/null
+echo "=== Done ==="
+echo "End: $(date)"

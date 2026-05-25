@@ -1,0 +1,1946 @@
+{
+  "summary": {
+    "model": "gpt-4o",
+    "n": 150,
+    "em_mean": 0.0,
+    "avg_tool_calls": 3.6866666666666665,
+    "elapsed_s": 515.9226489067078
+  },
+  "per_sample": [
+    {
+      "sample_id": "WebQTrn-2722_8babdaa9ecd05a72e3227b43b1f98771",
+      "question": "For what did the personage who was educated at the Dewitt High School win a gold medal?",
+      "gold": [
+        "Gymnastics at the 2012 Summer Olympics \u2013 Women's artistic team all-around"
+      ],
+      "prediction": "It seems there is an issue retrieving information about Dewitt High School from the knowledge graph. Without access to the specific data, I'm unable to determine which personage educated at Dewitt High School won a gold medal and for what achievement. If you have any additional details or another query, feel free to ask!",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.03225806451612903
+    },
+    {
+      "sample_id": "WebQTrn-124_028bb5f442b37a4af9f9fd9fa0bc5e9a",
+      "question": "What movies did the person who went to William O. Schafer Elementary School direct?",
+      "gold": [
+        "By the Sea",
+        "In the Land of Blood and Honey",
+        "A Place in Time",
+        "Unbroken"
+      ],
+      "prediction": "It seems there is an issue retrieving information about William O. Schafer Elementary School from the knowledge graph. Without this data, I can't determine which person attended this school or what movies they directed. If you have another query or need further assistance, feel free to ask!",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-54_d14abf7768bdbdaa66897780b56dace1",
+      "question": "What country did the person who went to B Steyr control?",
+      "gold": [
+        "Nazi Germany"
+      ],
+      "prediction": "It seems there is an issue retrieving information about \"B Steyr\" from the knowledge graph. Could you please provide more context or clarify the entity you are referring to?",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-3535_dfcf84e9ba3b9baef4ee1f2cc51994b6",
+      "question": "Who did the voice of character Kovu?",
+      "gold": [
+        "Jason Marsden"
+      ],
+      "prediction": "It seems there is an issue accessing the knowledge graph for the entity \"Kovu.\" However, I can provide information based on general knowledge. The character Kovu from \"The Lion King II: Simba's Pride\" was voiced by Jason Marsden.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.1111111111111111
+    },
+    {
+      "sample_id": "WebQTest-1091_31c94b951f3d708ac503327d7979da93",
+      "question": "Which type of religions practiced in the United States, where the religion place of worship is called, Candi Laras?",
+      "gold": [
+        "Buddhism"
+      ],
+      "prediction": "It seems there is an issue retrieving information about \"Candi Laras\" from the knowledge graph. However, \"Candi\" typically refers to ancient Hindu or Buddhist temples in Indonesia. If \"Candi Laras\" is indeed a place of worship, it might be associated with Hinduism or Buddhism. These religions are practiced in the United States, but without specific data from the knowledge graph, I can't confirm the exact association of \"Candi Laras.\"",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 1.0,
+      "f1": 0.03076923076923077
+    },
+    {
+      "sample_id": "WebQTrn-60_eae3033643523fd3a54b6c147fdfa728",
+      "question": "What Portuguese=speaking country had the net migration number of -10000?",
+      "gold": [
+        "Guinea-Bissau"
+      ],
+      "prediction": "It seems there is an issue with retrieving entities related to the Portuguese language. I will try a different approach by listing known Portuguese-speaking countries and then checking their net migration numbers.",
+      "em": 0.0,
+      "num_tool_calls": 13,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-1001_4e074d51c67d5358b05e462d1f48f3e5",
+      "question": "What other Superbowls did the champion of the 1934 NFL Championship game win?",
+      "gold": [
+        "Super Bowl XLVI",
+        "Super Bowl XLII",
+        "Super Bowl XXI",
+        "Super Bowl XXV"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-1077_7bd6b37d01a372aa5af2a8d5ef53d827",
+      "question": "What religion practiced in Afghanistan has a sacred site in Jesusalem?",
+      "gold": [
+        "Sunni Islam"
+      ],
+      "prediction": "It seems there is an issue with retrieving data from the knowledge graph. However, based on general knowledge, the religion practiced in Afghanistan that has a sacred site in Jerusalem is Islam. The Al-Aqsa Mosque in Jerusalem is considered the third holiest site in Islam.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.047619047619047616
+    },
+    {
+      "sample_id": "WebQTrn-60_c417b54801bbb53466b1157ffb79cc29",
+      "question": "What country do they speak Portuguese and where they appointed Jos\u00c3\u00a9 Manuel Barroso to a governmental position?",
+      "gold": [
+        "Portugal",
+        "Portugal",
+        "Portugal"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-513_64fc62dc06d16e612aafb00889d4ada1",
+      "question": "What location that appointed Mikheil Saakashvili to governmental position is a country in Eastern Europe?",
+      "gold": [
+        "Georgia"
+      ],
+      "prediction": "It seems there is an issue accessing the knowledge graph with the entity \"Mikheil Saakashvili.\" However, based on general knowledge, Mikheil Saakashvili was appointed to a governmental position in Ukraine, which is a country in Eastern Europe.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-1348_d50300a04640da2d3013e859ecdc9257",
+      "question": "Which team did Peyton Manning 's father play for, where the sports team owner is Rita Benson LeBlanc?",
+      "gold": [
+        "New Orleans Saints"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-1823_6ac48b436d99ed7cd3f2d9329d95a0c8",
+      "question": "What is the government type where \"Ardulfurataini Estan\" is the national anthem?",
+      "gold": [
+        "Parliamentary system",
+        "Republic",
+        "Parliamentary republic",
+        "Federal republic"
+      ],
+      "prediction": "It seems there is an issue accessing the knowledge graph with the entity \"Ardulfurataini Estan.\" However, I can provide information based on general knowledge.\n\n\"Ardulfurataini Estan\" is the national anthem of Iraq. The government type of Iraq is a federal parliamentary republic.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.10526315789473684
+    },
+    {
+      "sample_id": "WebQTrn-1722_4c9c478708f3daab701711f12484d823",
+      "question": "Which continent includes the country that is home to the city of New Providence?",
+      "gold": [
+        "North America"
+      ],
+      "prediction": "It seems there is an issue accessing the knowledge graph for the entity \"New Providence.\" However, I can provide information based on general knowledge.\n\nNew Providence is an island in the Bahamas, and the Bahamas is a country located in the continent of North America.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.10256410256410257
+    },
+    {
+      "sample_id": "WebQTest-1817_e04d0ee5dcbfd8b2dbb1e8be247e94d4",
+      "question": "What university with a sports team named Oxford University RFC did JRR Tolkien go to?",
+      "gold": [
+        "University of Oxford"
+      ],
+      "prediction": "It seems there is an issue retrieving information about \"Oxford University RFC\" from the knowledge graph. However, based on general knowledge, J.R.R. Tolkien attended the University of Oxford.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 1.0,
+      "f1": 0.19999999999999998
+    },
+    {
+      "sample_id": "WebQTrn-21_2b2e7b36b664bdd3e85b7c3a190677fc",
+      "question": "Who is the prime minister of the country that has Loma?",
+      "gold": [
+        "Hailemariam Desalegn"
+      ],
+      "prediction": "It seems there is an issue retrieving information about \"Loma\" from the knowledge graph. Could you please provide more context or specify the country or region you are referring to with \"Loma\"?",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-14_2c7762d283ed24be7f442f301fb3a5c4",
+      "question": "Where with a population once of less than 5732212 is Rome, Italy located?",
+      "gold": [
+        "Lazio",
+        "Province of Rome"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-998_7b6c0cc98675b4b7a6638ef625cfa860",
+      "question": "When was the last championship won by the 1970 NBA Finals Champions?",
+      "gold": [
+        "1973 NBA Finals"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-2834_d3301dedbdcb2d171a75be1631e8cec5",
+      "question": "What major religion in the US has Lumbini as a sacred site?",
+      "gold": [
+        "Buddhism"
+      ],
+      "prediction": "Lumbini is a sacred site in Buddhism.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.2857142857142857
+    },
+    {
+      "sample_id": "WebQTest-361_d4b7b091dfd540b6b8efcab6634968d1",
+      "question": "What museum that opened later than 1891 should I visit when I go to Vienna, Austria next year?",
+      "gold": [
+        "Sigmund Freud Museum"
+      ],
+      "prediction": "It seems there is a persistent issue with retrieving data. Unfortunately, I'm unable to access the information needed to answer your question at this time. You might want to check online resources or travel guides for museums in Vienna that opened after 1891.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-1528_a2694b95163afd08c03e36c6c195cab6",
+      "question": "What film that has a character named Charles De Batz-Castelmore does Logan Lerman play in?",
+      "gold": [
+        "The Three Musketeers"
+      ],
+      "prediction": "It seems there is an issue with accessing the knowledge graph. However, I can provide information based on general knowledge.\n\nLogan Lerman plays the character D'Artagnan in the film \"The Three Musketeers\" (2011). Charles De Batz-Castelmore is a historical figure who is often associated with the character D'Artagnan, as he was the inspiration for the character in Alexandre Dumas' novel \"The Three Musketeers.\" Therefore, the film you are referring to is likely \"The Three Musketeers\" (2011).",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.05797101449275362
+    },
+    {
+      "sample_id": "WebQTrn-237_f43785599ba51bf943f98f8d9bbf102a",
+      "question": "Who is the man in the position of head coach of the squad that earned victory in the 2011 AFC Championship Game?",
+      "gold": [
+        "Mike Tomlin"
+      ],
+      "prediction": "It seems there is an issue retrieving information about the \"2011 AFC Championship Game\" directly. However, I can provide the answer based on general knowledge.\n\nThe New England Patriots won the 2011 AFC Championship Game. The head coach of the New England Patriots at that time was Bill Belichick.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-2250_06a710540c2c24122b76d789e90023a9",
+      "question": "What city is the child organization of Sony Canada's headquarters set in?",
+      "gold": [
+        "Minato"
+      ],
+      "prediction": "It seems there is an issue retrieving information about \"Sony Canada\" or \"Sony\" from the knowledge graph. However, I can provide some general information: Sony Canada is a subsidiary of Sony Corporation, and its headquarters are typically located in Toronto, Ontario. If you need more specific or updated information, I recommend checking Sony Canada's official website or recent press releases.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-2478_e53e37596014fb9723a81c577c51b4f3",
+      "question": "What is the school mascot of the organization where you'd find the Syracuse University Video Production Unit?",
+      "gold": [
+        "Syracuse University Otto the Orange"
+      ],
+      "prediction": "It seems there is an issue with retrieving data from the knowledge graph. However, I can provide the information based on general knowledge: The school mascot of Syracuse University is Otto the Orange.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.25
+    },
+    {
+      "sample_id": "WebQTest-832_1315945fdcb4fad1310ab7862120be0f",
+      "question": "When was the most recent World Series win for the team which won the 2010 World Series?",
+      "gold": [
+        "2014 World Series"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-2218_dacbec08f8d31829038751934850ed95",
+      "question": "What is the hometown of the architect who designed Mount Vernon?",
+      "gold": [
+        "Westmoreland County"
+      ],
+      "prediction": "It seems there is an issue retrieving information about Mount Vernon from the knowledge graph. However, I can provide some general information: Mount Vernon was the plantation home of George Washington, the first President of the United States. The design of Mount Vernon is attributed to George Washington himself, who expanded the house in phases over several decades.\n\nIf you are looking for the hometown of George Washington, he was born in Westmoreland County, Virginia.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.05797101449275362
+    },
+    {
+      "sample_id": "WebQTrn-1539_de8059b06640bb0b9cbe51ff95a7589a",
+      "question": "Who plays in the film with the character Commander Kent?",
+      "gold": [
+        "Kevin James"
+      ],
+      "prediction": "It seems there is an issue retrieving information about \"Commander Kent\" from the knowledge graph. Without access to the specific data, I can't determine which film features the character Commander Kent or who plays in it. You might want to try searching for this information on a movie database or search engine.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-1557_25aa66737549ccec679a88f7ec71c350",
+      "question": "What college did Charles Drew attend that has McGill Redman soccer team?",
+      "gold": [
+        "McGill University"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-61_4dbb23937c062d0f3a3496d2fbf26a12",
+      "question": "What religion is practiced in the place where there is a religious place of worship called St. Mary's Cathedral, Batticaloa?",
+      "gold": [
+        "Catholicism"
+      ],
+      "prediction": "It seems there is an issue accessing the information about \"St. Mary's Cathedral, Batticaloa\" from the knowledge graph. However, based on general knowledge, St. Mary's Cathedral in Batticaloa is a Roman Catholic church, so the religion practiced there is Christianity, specifically Roman Catholicism.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.04878048780487806
+    },
+    {
+      "sample_id": "WebQTrn-2069_cd2a8c46c7872f3823f42c32e37aaff2",
+      "question": "What spoken languages are used in the country that has national anthem of Chile?",
+      "gold": [
+        "Aymara language",
+        "Mapudungun Language",
+        "Rapa Nui Language",
+        "Spanish Language",
+        "Puquina Language"
+      ],
+      "prediction": "It seems there is an issue with retrieving data from the knowledge graph. However, I can provide information based on general knowledge.\n\nThe national anthem of Chile is \"Himno Nacional de Chile.\" The country associated with this anthem is Chile. The official language spoken in Chile is Spanish.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.08888888888888888
+    },
+    {
+      "sample_id": "WebQTrn-513_f1baf868abb7a6160db9dddb32a4058c",
+      "question": "Of the countries that are in eastern Europe, which has a country capital of Grodno?",
+      "gold": [
+        "Belarusian People's Republic"
+      ],
+      "prediction": "It seems there is an issue retrieving information about Grodno directly. However, I can provide some context: Grodno is not the capital of any country. It is a city in Belarus, and the capital of Belarus is Minsk. Therefore, there is no country in Eastern Europe with Grodno as its capital.",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-1023_52deecbffa5c67b0c724c84174c5e019",
+      "question": "What is the currency of the place whose religious organization leadership is the Society of Jesus?",
+      "gold": [
+        "Argentine peso"
+      ],
+      "prediction": "It seems there is an issue retrieving information about the \"Society of Jesus\" from the knowledge graph. However, I can provide some general information: The Society of Jesus, also known as the Jesuits, is a religious order within the Catholic Church. The headquarters of the Catholic Church is in Vatican City, and the currency used there is the Euro. Therefore, the currency of the place associated with the leadership of the Society of Jesus is the Euro.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-2486_bcd294e8b78226fb373c0a54e4dcba01",
+      "question": "Where did the actor who played Forbes Cover Billionair graduate from?",
+      "gold": [
+        "Wharton School of the University of Pennsylvania"
+      ],
+      "prediction": "It seems there is an issue retrieving the actor for \"Forbes Cover Billionaire.\" Could you please provide the name of the actor or more context about the film or show?",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 0.0,
+      "f1": 0.06451612903225806
+    },
+    {
+      "sample_id": "WebQTrn-2314_3b127d6561a71b006b3e6bcf490bf6bc",
+      "question": "What is the currency in the governmental jurisdiction with office holder Astrid Fischel Volio?",
+      "gold": [
+        "Costa Rican col\u00f3n"
+      ],
+      "prediction": "It seems there is an issue retrieving information about Astrid Fischel Volio from the knowledge graph. Without access to the specific data, I can't determine the governmental jurisdiction or its currency directly.\n\nHowever, if you have any additional information or another way to identify the jurisdiction, I might be able to help further. Alternatively, you could try looking up Astrid Fischel Volio's governmental role or jurisdiction through other resources.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-2215_2fa90adc92b5095b8e1fd27754180250",
+      "question": "Where was the person who recorded \"I'm Gonna Get Drunk and Play Hank Williams\" born?",
+      "gold": [
+        "Glen Dale"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-538_e650705713c2b0f407612c8935722c71",
+      "question": "Which film had Lois lowry as it's wirter and starrted musical artist Taylor Swift?",
+      "gold": [
+        "The Giver"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-567_5c5b62b8b365e36d8e8836335518d242",
+      "question": "What movie by Ron Howard did Lois Freeman-Fox edit?",
+      "gold": [
+        "Osmosis Jones"
+      ],
+      "prediction": "It seems there is an issue retrieving information about Lois Freeman-Fox from the knowledge graph. Without access to the specific data, I can't directly find which movie by Ron Howard she edited. However, you might want to check her filmography or Ron Howard's film credits for more information.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-1528_ac372aaf6e68f8a1bd4b4c8e75972875",
+      "question": "What Joel Schumacher directed movie is Logan Lerman in?",
+      "gold": [
+        "The Number 23"
+      ],
+      "prediction": "It seems there is an issue accessing the knowledge graph to retrieve information about Logan Lerman's filmography. However, based on external knowledge, Logan Lerman starred in the movie \"The Number 23,\" which was directed by Joel Schumacher.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.1111111111111111
+    },
+    {
+      "sample_id": "WebQTrn-783_8df6a029e48ff843dee388bf684c1054",
+      "question": "Which language with the initials fra do Jewish people speak?",
+      "gold": [
+        "French"
+      ],
+      "prediction": "It seems there is an issue with accessing the knowledge graph for the specific query about the languages spoken by Jewish people. However, based on general knowledge, the language with the initials \"fra\" that Jewish people speak is \"Judeo-French.\"",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.05714285714285715
+    },
+    {
+      "sample_id": "WebQTest-983_e296550bdbe5592272f3980a755ff750",
+      "question": "Where did Tennessee Williams attend college, and has an organization headquarters located in New York City?",
+      "gold": [
+        "The New School"
+      ],
+      "prediction": "It seems there is an issue with accessing the knowledge graph. I am unable to retrieve the information at the moment. Please try again later.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-567_2a2de50d3b65cc5d2c88f54e283a4b8a",
+      "question": "What movie released to video did Ron Howard do?",
+      "gold": [
+        "American Graffiti"
+      ],
+      "prediction": "It seems there is an issue with accessing the knowledge graph. However, based on general knowledge, Ron Howard directed the movie \"The Paper\" which was released directly to video.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-983_a4f4a46401a4dd8b2eb579dfc1290e0e",
+      "question": "Which university attended by Tennessee Williams has more than 23799 undergraduates?",
+      "gold": [
+        "University of Missouri"
+      ],
+      "prediction": "It seems there is an issue with retrieving data from the knowledge graph. However, I can provide some information based on general knowledge.\n\nTennessee Williams attended several universities, including:\n1. University of Missouri\n2. Washington University in St. Louis\n3. University of Iowa\n\nAmong these, the University of Missouri is known to have a large undergraduate population, often exceeding 23,799 students. Therefore, the University of Missouri is likely the university you are referring to.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 1.0,
+      "f1": 0.08333333333333333
+    },
+    {
+      "sample_id": "WebQTest-1560_597bd7b2c629237d470d67390eba7edb",
+      "question": "Who founded the New York University, and was buried in Philadelphia?",
+      "gold": [
+        "Mordecai Manuel Noah"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-241_b96b735d1d754f27bc8986b614669f7b",
+      "question": "What countries bordering the location of the film \"Amen\"?",
+      "gold": [
+        "Belgium",
+        "Germany",
+        "Italy",
+        "Luxembourg",
+        "Monaco",
+        "Spain",
+        "Switzerland",
+        "United Kingdom",
+        "Andorra"
+      ],
+      "prediction": "It seems there is an issue retrieving information about the film \"Amen\" from the knowledge graph. However, I can provide some general information.\n\nThe film \"Amen\" is directed by Costa-Gavras and is set during World War II, primarily in Germany and the Vatican City. Therefore, the countries bordering the primary location (Germany) during that time would include:\n\n- Denmark\n- Poland\n- Czech Republic\n- Austria\n- Switzerland\n- France\n- Luxembourg\n- Belgium\n- Netherlands\n\nIf you need more specific information or further assistance, feel free to ask!",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 1.0,
+      "f1": 0.026666666666666665
+    },
+    {
+      "sample_id": "WebQTrn-347_6f7252fc04cfac2cabbe4d12f43b4b42",
+      "question": "What is the causes of death of the actor who played the character NASCAR Driver #2?",
+      "gold": [
+        "Racing Accident",
+        "Basilar skull fracture"
+      ],
+      "prediction": "It seems there is an issue with retrieving information about the character \"NASCAR Driver #2.\" The entity might not be correctly identified in the knowledge graph. Could you provide more context or details about the movie or actor involved?",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-1069_1ad460cd0410838a2d94b2dd7bd93efe",
+      "question": "What languages are spoken in the country where Faroese is used?",
+      "gold": [
+        "Greenlandic language",
+        "Danish Language",
+        "Faroese",
+        "German Language"
+      ],
+      "prediction": "It seems there is an issue with accessing the knowledge graph. However, I can provide information based on general knowledge. Faroese is primarily spoken in the Faroe Islands. The official languages of the Faroe Islands are Faroese and Danish.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 1.0,
+      "f1": 0.05714285714285715
+    },
+    {
+      "sample_id": "WebQTrn-3170_4c56262d6806c8bd5c0fadb75177520a",
+      "question": "What degree did the official who held the title Director for Multilateral Affairs have?",
+      "gold": [
+        "Political Science"
+      ],
+      "prediction": "It seems there is an issue retrieving information about the \"Director for Multilateral Affairs\" from the knowledge graph. Without access to the specific data, I'm unable to determine the degree held by the official with that title. If you have any other questions or need further assistance, feel free to ask!",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-3384_e83e8190540386b20d8b60496674e1d5",
+      "question": "What language is spoken by the people governed by the government of Denmark?",
+      "gold": [
+        "Greenlandic language",
+        "Danish Language",
+        "Faroese",
+        "German Language"
+      ],
+      "prediction": "It seems there is an issue with retrieving data from the knowledge graph. However, I can provide the information based on general knowledge: The official language spoken in Denmark is Danish.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.13793103448275862
+    },
+    {
+      "sample_id": "WebQTrn-2006_e258f4c46fa686cf9c12150935e9211f",
+      "question": "What magazine did the person who said \"To observe attentively is to remember distinctly.\" work for?",
+      "gold": [
+        "Graham's Magazine",
+        "Broadway Journal",
+        "Burton's Gentleman's Magazine"
+      ],
+      "prediction": "It seems there is a persistent issue with retrieving data. However, based on historical knowledge, Edgar Allan Poe worked for several magazines during his lifetime, including the \"Southern Literary Messenger.\"",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-1171_a8ed8aa8e8eaf11e4b00b81b2ac2ac23",
+      "question": "What actor was featured in Mike and Dave Need Wedding Dates and didthe voice of Darth Vader?",
+      "gold": [
+        "Zac Efron"
+      ],
+      "prediction": "It seems there is an issue with retrieving data from the knowledge graph. However, I can provide the answer based on my knowledge.\n\nThe actor who was featured in \"Mike and Dave Need Wedding Dates\" and did the voice of Darth Vader is not the same person. James Earl Jones is the actor who provided the voice for Darth Vader. In \"Mike and Dave Need Wedding Dates,\" the main actors include Zac Efron and Adam DeVine, but neither of them voiced Darth Vader.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 1.0,
+      "f1": 0.052631578947368425
+    },
+    {
+      "sample_id": "WebQTrn-2006_1ce88b8c60eb9aa20dc2bba16e8075a9",
+      "question": "What magazine with earliest publication end date did Edgar Allan Poe work for?",
+      "gold": [
+        "Burton's Gentleman's Magazine"
+      ],
+      "prediction": "It seems there is an issue with retrieving data from the knowledge graph. However, I can provide some information based on general knowledge.\n\nEdgar Allan Poe worked for several magazines during his career. Some of the notable ones include:\n\n1. **Southern Literary Messenger** - Poe worked as an editor and contributor from 1835 to 1837.\n2. **Burton's Gentleman's Magazine** - He worked here as an editor in 1839.\n3. **Graham's Magazine** - Poe was an editor from 1841 to 1842.\n4. **The Broadway Journal** - Poe worked here in 1845.\n\nAmong these, the **Southern Literary Messenger** had the earliest publication end date during Poe's tenure, as he left the magazine in 1837.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 1.0,
+      "f1": 0.09345794392523364
+    },
+    {
+      "sample_id": "WebQTrn-2570_21b94f9ec2dedb9a3e863788c5df1fac",
+      "question": "Who was the US President during WW2 who held his government position until 8-26-1920?",
+      "gold": [
+        "Franklin D. Roosevelt"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-1278_984678664419049133d2bd748b68df1b",
+      "question": "Name the people that dated the recording artist of Playa Young Thugs (P.Y.T.).?",
+      "gold": [
+        "Jada Pinkett Smith",
+        "Salli Richardson",
+        "Kidada Jones"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-1812_19c95ace02f0dd9b7f67de3ecc3e8f5a",
+      "question": "Of the Caribbean nations, which country has Papiamento as an official language?",
+      "gold": [
+        "Netherlands Antilles"
+      ],
+      "prediction": "I encountered an issue while trying to retrieve information from the knowledge graph. However, I can provide the answer based on general knowledge.\n\nThe Caribbean nation where Papiamento is an official language is Aruba.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-2540_5e56c7691b80c044d23d2f29efc3d94f",
+      "question": "Who inspired Monet and influenced Paul Verlaine?",
+      "gold": [
+        "St\u00e9phane Mallarm\u00e9"
+      ],
+      "prediction": "It seems there is an issue with retrieving data from the knowledge graph. However, historically, Eug\u00e8ne Delacroix is known to have inspired Claude Monet, and Charles Baudelaire is known to have influenced Paul Verlaine.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-1965_de1aeafb354b0cc40a64b7579efade3e",
+      "question": "Who was the voice actor for Lola Bunny and written out of the film Bridesmaids?",
+      "gold": [
+        "Kristen Wiig"
+      ],
+      "prediction": "It seems there is an issue accessing the knowledge graph for the specific entities \"Lola Bunny\" and \"Bridesmaids.\" However, I can provide information based on general knowledge.\n\nThe voice actor for Lola Bunny in the original \"Space Jam\" movie was Kath Soucie. In the 2021 sequel \"Space Jam: A New Legacy,\" the character was voiced by Zendaya.\n\nAs for the film \"Bridesmaids,\" the actress who was originally cast but later written out of the film was Mindy Kaling.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-3515_55fa7341d78ac73e185e97a34f8e446f",
+      "question": "Where did Paul Ryan attend university, that has 14546 of undergraduates?",
+      "gold": [
+        "Miami University"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-1770_6325ee890e333f0d4fe222c15a95906f",
+      "question": "What is the name of the daughter of the actor that played the character Etta James?",
+      "gold": [
+        "Blue Ivy"
+      ],
+      "prediction": "It seems there is an issue with retrieving data from the knowledge graph. However, I can provide the answer based on my training data.\n\nThe actor who played Etta James in the film \"Cadillac Records\" is Beyonc\u00e9 Knowles. Beyonc\u00e9's daughter is named Blue Ivy Carter.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 1.0,
+      "f1": 0.09302325581395349
+    },
+    {
+      "sample_id": "WebQTrn-1577_1fad167a955dd126cc7ca38ed92d28f0",
+      "question": "Where did James Baldwin go to school that had the smallest number of undergraduates?",
+      "gold": [
+        "The New School"
+      ],
+      "prediction": "It seems there is an issue retrieving data for James Baldwin. However, I can provide some general information. James Baldwin attended several schools, including DeWitt Clinton High School in the Bronx. If you are looking for specific information about the number of undergraduates at each school he attended, you might need to consult historical records or databases that provide enrollment numbers for those institutions during his time.",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 0.0,
+      "f1": 0.030303030303030304
+    },
+    {
+      "sample_id": "WebQTest-590_333ea4f58397c8015c2e32a6794a638e",
+      "question": "Who knows the ruler of the country that speaks Libyan Arabic?",
+      "gold": [
+        "Abdullah al-Thani"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-3136_b4d880aff516130a828b227d4297f270",
+      "question": "Which of the four regions that make up the United Kingdom is Wyvern Hill located in?",
+      "gold": [
+        "Scotland"
+      ],
+      "prediction": "It seems there is an issue retrieving information about Wyvern Hill from the knowledge graph. However, based on general knowledge, Wyvern Hill is located in England, which is one of the four regions that make up the United Kingdom.",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-743_56e8d2e51ce1a46013d0176a58f8d5b3",
+      "question": "Who were the brothers of the subject of the film An American Affair?",
+      "gold": [
+        "Ted Kennedy",
+        "Joseph P. Kennedy, Jr.",
+        "Robert F. Kennedy"
+      ],
+      "prediction": "It seems there is an issue retrieving information about the film \"An American Affair\" from the knowledge graph. However, if you can provide the name of the subject or character from the film, I can try to find information about their brothers.",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-2815_56e8d2e51ce1a46013d0176a58f8d5b3",
+      "question": "Where was the subject of the movie \"An American Affair\" raised?",
+      "gold": [
+        "Brookline"
+      ],
+      "prediction": "It seems there is an issue with retrieving information about the movie \"An American Affair\" from the knowledge graph. However, if you have any other questions or need further assistance, feel free to ask!",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-62_1901065f16bfad63f514f48ecebd767e",
+      "question": "Who are the children of the award nominated artist of \"Lend a Paw\"?",
+      "gold": [
+        "Diane Disney Miller",
+        "Sharon Mae Disney"
+      ],
+      "prediction": "It seems there is a persistent issue with retrieving data from the knowledge graph. However, I can provide information based on known facts: Walt Disney had two children, Diane Disney Miller and Sharon Mae Disney.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 1.0,
+      "f1": 0.16666666666666669
+    },
+    {
+      "sample_id": "WebQTest-1384_ae0ef655e304be3e017fd9cd4955fd62",
+      "question": "What religion is practiced in the setting for the movie \"Defamation?\"?",
+      "gold": [
+        "Judaism"
+      ],
+      "prediction": "It seems there is an issue retrieving information about the movie \"Defamation\" from the knowledge graph. However, I can provide some context based on general knowledge.\n\nThe movie \"Defamation\" is a documentary by Yoav Shamir that explores the topic of anti-Semitism and its perception in the modern world. The setting and context of the film primarily involve Jewish culture and religion, as it examines issues related to Judaism and anti-Semitism. Therefore, the religion practiced in the setting of the movie is Judaism.",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 1.0,
+      "f1": 0.0273972602739726
+    },
+    {
+      "sample_id": "WebQTrn-2784_e5f7e727ee2fa56a9000a6576ba27d41",
+      "question": "Which movies does Tupac play in, whose netflix_id film is more than 863,004?",
+      "gold": [
+        "Murder Was the Case",
+        "Above the Rim",
+        "Bullet",
+        "Gang Related",
+        "Juice",
+        "Gridlock'd"
+      ],
+      "prediction": "It seems there is an issue with retrieving data from the knowledge graph. Unfortunately, I cannot access the information needed to answer your question at this time. Please try again later.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-1278_6dce1c983c27151e3dfe43f04e68bf48",
+      "question": "Which award nominee in the 28th NAACP Image Awards dated Tupac Shakur?",
+      "gold": [
+        "Jada Pinkett Smith",
+        "Jada Pinkett Smith"
+      ],
+      "prediction": "It seems there is an issue with retrieving data from the knowledge graph. However, based on historical information, Jada Pinkett Smith, who was a nominee at the 28th NAACP Image Awards, had a close relationship with Tupac Shakur.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.16666666666666669
+    },
+    {
+      "sample_id": "WebQTrn-21_86bde4a3d89de3a9f4e467f289982d13",
+      "question": "What is the name of the Prime Minister of Ethiopia?",
+      "gold": [
+        "Hailemariam Desalegn"
+      ],
+      "prediction": "It seems there is an issue accessing the knowledge graph to retrieve the information. However, as of my last update, the Prime Minister of Ethiopia is Abiy Ahmed.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-2569_382323d8e4417de2b2ee78b7dcf62771",
+      "question": "Where do the Houston Rockets play basketball, that opened after 1975?",
+      "gold": [
+        "Toyota Center"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-2316_4644f7a827779692f5a3f3f894acacd9",
+      "question": "Which peer of Alexander Calder influenced the work of Jackson Pollock?",
+      "gold": [
+        "Joan Mir"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-2316_a459bc48bed76ae151bace77f3ff774a",
+      "question": "Who died on 7-26-1875 that influenced Jackson Pollock?",
+      "gold": [
+        "Carl Jung"
+      ],
+      "prediction": "It seems there is an issue accessing the knowledge graph to find the information directly. However, I can provide some context based on general knowledge.\n\nJackson Pollock was influenced by several artists, including Thomas Hart Benton, Pablo Picasso, and Diego Rivera. To find out who among his influences died on July 26, 1875, we would need to check the birth and death dates of these artists or any other potential influences.\n\nIf you have a specific list of artists or influences in mind, I can help verify their death dates. Otherwise, you might need to consult a detailed biography or historical record of Jackson Pollock's influences.",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-2784_3db4e5394a73964976f58989d87836ea",
+      "question": "What was the movie produced by Dr. Dre and acted in by Tupac?",
+      "gold": [
+        "Murder Was the Case"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-712_c82a1eba72695beab0bf7376904b0212",
+      "question": "Out of the countries with territories in Oceania, which has the smallest number of people in their army?",
+      "gold": [
+        "Timor-Leste"
+      ],
+      "prediction": "It seems there is a persistent issue with retrieving data from the knowledge graph. Without access to the specific data, I can't directly determine which country with territories in Oceania has the smallest army.\n\nHowever, based on general knowledge, countries like New Zealand and some smaller Pacific island nations typically have smaller military forces compared to larger countries like the United States, France, or Australia. If you have specific countries in mind, I can try to provide more detailed information.",
+      "em": 0.0,
+      "num_tool_calls": 7,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-1812_29aa4d58e974f804b2a78b9dc96c62c0",
+      "question": "Which country in the caribbean region has the largest army?",
+      "gold": [
+        "Barbados"
+      ],
+      "prediction": "It seems there is an issue retrieving the list of countries in the Caribbean region from the knowledge graph. However, based on general knowledge, Cuba is known to have the largest army in the Caribbean region.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-1000_e1d76e5ac038c985924d768c2027643f",
+      "question": "What Oceania country is the birthplace of Vicki Buck?",
+      "gold": [
+        "New Zealand"
+      ],
+      "prediction": "It seems there is an issue accessing the information about Vicki Buck in the knowledge graph. However, Vicki Buck is known to be from New Zealand, an Oceania country.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.14814814814814814
+    },
+    {
+      "sample_id": "WebQTrn-3682_6aa8e2e40b178f22e763c3f5084a92d3",
+      "question": "Which Chinese dialect belongs to the Sino-Tibetan language family?",
+      "gold": [
+        "Standard Chinese"
+      ],
+      "prediction": "It seems there is an issue accessing the knowledge graph. However, I can tell you that Mandarin, Cantonese, and other Chinese dialects are part of the Sino-Tibetan language family.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.06896551724137931
+    },
+    {
+      "sample_id": "WebQTrn-3428_cb37f7a88b3461d617cb87efc0f102d4",
+      "question": "Where did the actor, that was the character, Brumhilda, and Seal get married at?",
+      "gold": [
+        "Mexico"
+      ],
+      "prediction": "It seems there is an issue retrieving information about the character \"Brumhilda\" or \"Br\u00fcnnhilde.\" However, I can try to find the actor who played this character and then determine where they got married to Seal.\n\nLet's first identify the actor who played Brumhilda.",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-894_8c3a4e617ef58ad8f45e3de29a55c96d",
+      "question": "Who inspired Scott Fitzgerald that died the earliest?",
+      "gold": [
+        "John Keats"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-124_c758be067db7406a171bba1bbcf3149d",
+      "question": "What movie that Jon Hutman was a production designer for did Angelina Jolie direct?",
+      "gold": [
+        "In the Land of Blood and Honey",
+        "Unbroken"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-60_6b8ef173b0fe9eb52a18df50991df028",
+      "question": "In which three countries do people speak Portuguese, that has an ISO numeric of greater than 132?",
+      "gold": [
+        "Portugal",
+        "Macau",
+        "Equatorial Guinea",
+        "South Africa",
+        "China",
+        "Mozambique",
+        "Guinea-Bissau",
+        "Guyana",
+        "Timor-Leste"
+      ],
+      "prediction": "It seems there is an issue with retrieving data from the knowledge graph. However, I can provide some general information. Portuguese is primarily spoken in the following countries:\n\n1. Portugal\n2. Brazil\n3. Mozambique\n4. Angola\n5. Guinea-Bissau\n6. East Timor\n7. Equatorial Guinea\n8. Cape Verde\n9. S\u00e3o Tom\u00e9 and Pr\u00edncipe\n\nTo find the countries with an ISO numeric code greater than 132, you would need to check the ISO numeric codes for these countries.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.05479452054794521
+    },
+    {
+      "sample_id": "WebQTest-1289_104f814ab1b9df67d3e07b2912c529ae",
+      "question": "What type of music Mozart composed was featured in the movie \"Aida\"?",
+      "gold": [
+        "Opera"
+      ],
+      "prediction": "It seems there is an issue with retrieving data from the knowledge graph. However, I can provide some general information. \n\nMozart was known for composing various types of music, including operas, symphonies, chamber music, and piano concertos. If you are referring to the movie \"Aida,\" it is important to note that \"Aida\" is an opera composed by Giuseppe Verdi, not Mozart. If Mozart's music was featured in a movie titled \"Aida,\" it would likely be one of his well-known compositions, such as a symphony or an opera overture.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 1.0,
+      "f1": 0.02380952380952381
+    },
+    {
+      "sample_id": "WebQTest-759_4800df0becd2268912f4b6d59fc000e4",
+      "question": "Who has dated the actor from \"A Stoning in Fulham County\"?",
+      "gold": [
+        "Thandie Newton",
+        "Juliette Lewis",
+        "Sinitta",
+        "Shalane McCall",
+        "Robin Givens"
+      ],
+      "prediction": "It seems there is an issue retrieving information about \"A Stoning in Fulham County\" from the knowledge graph. Without access to the specific data, I can't directly find the actor from the film or their dating history.\n\nIf you have the name of the actor, I can help find their dating history. Otherwise, you might want to check other sources for the cast of the film.",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-743_97d1854efab5172bdfe763781a23257e",
+      "question": "Who is JFK's brothers that  are lawyers?",
+      "gold": [
+        "Ted Kennedy",
+        "Robert F. Kennedy"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-1001_6bcfac70e63efec42212159c644a593a",
+      "question": "In what events ending prior to 3 February 2008 did the Giants win the Super Bowl?",
+      "gold": [
+        "Super Bowl XXV",
+        "Super Bowl XXI"
+      ],
+      "prediction": "It seems there is an issue with accessing the knowledge graph. However, I can provide information based on general knowledge.\n\nThe New York Giants won the Super Bowl prior to February 3, 2008, in the following events:\n1. Super Bowl XXI (1987) - The Giants defeated the Denver Broncos.\n2. Super Bowl XXV (1991) - The Giants defeated the Buffalo Bills.\n\nThese are the Super Bowl victories for the Giants before the specified date.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.09523809523809523
+    },
+    {
+      "sample_id": "WebQTrn-567_3fc1da87d6688d1e68a71f1721401694",
+      "question": "What movie by Ron Howard that was released after 9-26-2000?",
+      "gold": [
+        "The First Nudie Musical",
+        "American Graffiti",
+        "Dr. Seuss' How the Grinch Stole Christmas",
+        "Osmosis Jones",
+        "A Beautiful Mind",
+        "The Shootist",
+        "Night Shift",
+        "The Music Man",
+        "More American Graffiti",
+        "Village of the Giants"
+      ],
+      "prediction": "It seems there is an issue retrieving data from the knowledge graph. However, I can provide information based on what I know.\n\nRon Howard directed several movies after September 26, 2000. One notable film is \"A Beautiful Mind,\" which was released in 2001.",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 1.0,
+      "f1": 0.09523809523809523
+    },
+    {
+      "sample_id": "WebQTrn-493_954cefa79c7c375f90c888f5eebf1cc9",
+      "question": "What region includes Belgium as well as the Lyon\u00e2\u0080\u0093Saint-Exup\u00c3\u00a9ry Airport?",
+      "gold": [
+        "Western Europe"
+      ],
+      "prediction": "It seems there is an issue with retrieving data from the knowledge graph. However, I can provide the answer based on general knowledge.\n\nThe region that includes both Belgium and the Lyon\u2013Saint-Exup\u00e9ry Airport is Europe.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.058823529411764705
+    },
+    {
+      "sample_id": "WebQTrn-1001_f45bbd572c234a35e83db6866a523348",
+      "question": "What super bowls were won by the Giants prior to February 5, 2012?",
+      "gold": [
+        "Super Bowl XXI",
+        "Super Bowl XXV",
+        "Super Bowl XLII"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-1484_00057dab165161c899484d34b59fa403",
+      "question": "What type of painting, influenced by Marquis de Sade, were done by Frida Kahlo?",
+      "gold": [
+        "Surrealism"
+      ],
+      "prediction": "It seems there is an issue with accessing the knowledge graph to retrieve the information. However, based on historical and art literature, Frida Kahlo's work was influenced by various themes, including surrealism and personal pain, but there is no widely recognized category of her paintings specifically influenced by Marquis de Sade. If you are referring to themes of pain and suffering, those are prevalent in her work, but they are not directly categorized under Marquis de Sade's influence.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 1.0,
+      "f1": 0.025641025641025647
+    },
+    {
+      "sample_id": "WebQTrn-3249_5aa3063566fca0f5ff73b2b811e3b1ab",
+      "question": "Which show starring Tamera Mowry has the longest run time?",
+      "gold": [
+        "Strong Medicine"
+      ],
+      "prediction": "It seems there is an issue with retrieving data for Tamera Mowry from the knowledge graph. However, I can provide some information based on general knowledge.\n\nTamera Mowry is well-known for starring in the TV show \"Sister, Sister,\" which ran for six seasons from 1994 to 1999. This is likely her longest-running show. If you need more detailed information or confirmation, I recommend checking a reliable entertainment database or source.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-25_a620f7d7b634a0dc6076fe3919f35c6b",
+      "question": "In what film does Taylor Lautner and the song Love Will Take You appear?",
+      "gold": [
+        "The Twilight Saga: Breaking Dawn - Part 1"
+      ],
+      "prediction": "It seems there is an issue with accessing the knowledge graph to retrieve the necessary information. However, based on external knowledge, Taylor Lautner appeared in the film \"Abduction,\" which features the song \"Love Will Take You\" by Angus & Julia Stone.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-423_b06e29db67de86515db5880e88452c1d",
+      "question": "What opened in 1982 in Laughlin, Nevada?",
+      "gold": [
+        "Edgewater Hotel and Casino"
+      ],
+      "prediction": "It seems there is an issue accessing the knowledge graph for detailed information. However, based on historical data, the Riverside Resort Hotel & Casino opened in 1982 in Laughlin, Nevada.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.13333333333333336
+    },
+    {
+      "sample_id": "WebQTest-712_67f5f717564163742ca2588b7e186fd8",
+      "question": "What are the name of the countries with territories in Oceania with an administrative department in the United States?",
+      "gold": [
+        "Guam",
+        "Marshall Islands",
+        "Northern Mariana Islands",
+        "American Samoa"
+      ],
+      "prediction": "It seems there is a technical issue preventing me from retrieving the necessary information from the knowledge graph. Unfortunately, without access to the relevant data, I am unable to provide an answer to your question at this time. Please try again later or consult another source for this information.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-1817_5e5820ae78bf808cd4682f952c2af9d7",
+      "question": "What form of government is currently used in the place where the movie \"Vietnam, Long Time Coming\" takes place?",
+      "gold": [
+        "Communist state",
+        "Socialist state",
+        "Single-party state"
+      ],
+      "prediction": "It seems there is an issue retrieving information about the location featured in the movie \"Vietnam, Long Time Coming.\" However, based on general knowledge, the movie takes place in Vietnam.\n\nVietnam is a socialist republic with a one-party system led by the Communist Party of Vietnam.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.047619047619047616
+    },
+    {
+      "sample_id": "WebQTrn-2904_9e23cfd67cc478f1dd0942be05f97881",
+      "question": "What largest GNIS feature ID is where Lauren Conrad lived?",
+      "gold": [
+        "Los Angeles"
+      ],
+      "prediction": "It seems there is an issue with retrieving data from the knowledge graph. Unfortunately, I cannot access the information about where Lauren Conrad lived or the largest GNIS feature ID associated with it at the moment.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-2047_bcfd0cb67686088ad209058b65204472",
+      "question": "What is the name of the facility where the Chicago Cubs and Mesa Solar Sox play?",
+      "gold": [
+        "Hohokam Stadium"
+      ],
+      "prediction": "It seems there is an issue accessing the knowledge graph to retrieve the information. However, I can provide the answer based on general knowledge.\n\nThe facility where both the Chicago Cubs and the Mesa Solar Sox play is called \"Sloan Park.\"",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-3084_d7a8cbddd43733cfb78c3d41af704745",
+      "question": "Which country who trades with Japan has a country calling code of 249?",
+      "gold": [
+        "Sudan"
+      ],
+      "prediction": "It seems there is an issue accessing the data directly from the knowledge graph. However, I can provide you with the information that the country with the calling code 249 is Sudan. \n\nIf you need further assistance or have another question, feel free to ask!",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.05
+    },
+    {
+      "sample_id": "WebQTest-1817_e7846c2a93c0d53265cb05ef4ed16327",
+      "question": "What university attended by J.R.R. Tolkien has the largest number of undergraduates?",
+      "gold": [
+        "University of Oxford"
+      ],
+      "prediction": "It seems there is an issue with retrieving data for J.R.R. Tolkien. Let me try a different approach to find the universities he attended.",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-124_14ad2587fc65e1bd5c44a2f0a8913d00",
+      "question": "What award winning movie was directed by angelina jolie?",
+      "gold": [
+        "In the Land of Blood and Honey"
+      ],
+      "prediction": "It seems there is an issue with accessing the knowledge graph. However, I can provide information based on what I know. Angelina Jolie directed the award-winning movie \"Unbroken.\"",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-2006_d311691159dca09b7c6d2e612f41108f",
+      "question": "The song writer for \"Oh the Last Frontier\" worked for what magazine?",
+      "gold": [
+        "Graham's Magazine",
+        "Broadway Journal",
+        "Burton's Gentleman's Magazine"
+      ],
+      "prediction": "It seems there is an issue retrieving information about \"Oh the Last Frontier\" from the knowledge graph. However, I can provide some general guidance. If you know the songwriter's name, you can search for their professional affiliations or work history to find out which magazine they worked for. Alternatively, you might find this information in music databases or articles about the song. If you have any other questions or need further assistance, feel free to ask!",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.05333333333333333
+    },
+    {
+      "sample_id": "WebQTrn-2615_969d65c3a8459c68dbf2ee96e03b87d9",
+      "question": "What instruments can the actor from Fela in Concert play?",
+      "gold": [
+        "Drums",
+        "Guitar",
+        "Keyboard",
+        "Saxophone",
+        "Trumpet"
+      ],
+      "prediction": "It seems there is an issue with retrieving data from the knowledge graph. However, Fela Kuti, the main actor in \"Fela in Concert,\" was known for playing several instruments, including the saxophone, keyboards, and trumpet.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 1.0,
+      "f1": 0.0625
+    },
+    {
+      "sample_id": "WebQTrn-124_b74a21d2b3530ff1fc1cedc0ef485e85",
+      "question": "What Angelina Jolie directed film was released on 2007-04-27?",
+      "gold": [
+        "A Place in Time"
+      ],
+      "prediction": "It seems there is an issue retrieving data from the knowledge graph. However, based on my knowledge, Angelina Jolie directed the film \"A Place in Time,\" which was released on April 27, 2007.",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 1.0,
+      "f1": 0.1875
+    },
+    {
+      "sample_id": "WebQTrn-2784_83848dc79b647efd6072c66a56c17b4b",
+      "question": "In what films featuring Tupac did Keith Brian Burns do the production design?",
+      "gold": [
+        "Poetic Justice"
+      ],
+      "prediction": "It seems there is an issue with accessing the knowledge graph. Unfortunately, I'm unable to retrieve the information at this moment. Please try again later or consult another source for this information.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-1629_9be2f843a397d4ed6abe2c74fdf864be",
+      "question": "Who was nominated for the Best Instrumental Composition Grammy and also did the voice for Jack Skellington?",
+      "gold": [
+        "Danny Elfman"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-1758_ee96ef39147e9369f0285bce0b21812e",
+      "question": "What is the form of government where the Orloff chicken comes from?",
+      "gold": [
+        "Parliamentary system",
+        "Presidential system",
+        "Islamic republic",
+        "Unitary state",
+        "Theocracy"
+      ],
+      "prediction": "It seems there is an issue accessing the knowledge graph to retrieve information about the Orloff chicken. However, I can provide information based on general knowledge.\n\nThe Orloff chicken is a breed that originated in Russia. The form of government in Russia is a federal semi-presidential constitutional republic.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.04545454545454545
+    },
+    {
+      "sample_id": "WebQTest-1337_a5443b45fd60bc5a46cdf273e2b79107",
+      "question": "What device was independently invented both by Ben Franklin and Prokop Divi\u00c5\u00a1?",
+      "gold": [
+        "Lightning rod"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 6,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-3249_ad66f99d2894fe516e522730a6cca60a",
+      "question": "In which shows does the actor who portrayed Cat Donovan appear?",
+      "gold": [
+        "Detention",
+        "Strong Medicine",
+        "Roommates",
+        "Sister, Sister",
+        "The Look for Less",
+        "The Adventures of Hyperman"
+      ],
+      "prediction": "It seems there is an issue retrieving information directly about \"Cat Donovan.\" Let's try a different approach by identifying the actor who portrayed Cat Donovan first. Could you provide more context or specify the show or movie where Cat Donovan is a character?",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-846_b2db88607e6e187c67839c81f66e708f",
+      "question": "In what location was the composer of Stop Standing there born?",
+      "gold": [
+        "Belleville"
+      ],
+      "prediction": "It seems there is an issue retrieving information about \"Stop Standing There.\" However, I can try to find the composer by using a different approach. Could you please provide more context or details about the song, such as the artist or album it belongs to?",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-1539_1ea7ee330f12280c9776f7d4af7d88c4",
+      "question": "Who is in the movie that Aaron Tourigny was also in?",
+      "gold": [
+        "Kevin James"
+      ],
+      "prediction": "It seems there is an issue retrieving information about Aaron Tourigny from the knowledge graph. Without access to the specific data, I can't directly find the movie or the cast associated with Aaron Tourigny. You might want to check a reliable movie database or try again later.",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-1405_ca6ce44d620e3ead920f09f2813da1af",
+      "question": "Which schools did the president who spoke about the Berlin Wall attend?",
+      "gold": [
+        "Harvard College",
+        "Stanford Graduate School of Business",
+        "Choate Rosemary Hall",
+        "Harvard University",
+        "Noble and Greenough School",
+        "Canterbury School",
+        "Princeton University",
+        "Riverdale Country School",
+        "Dexter School",
+        "Edward Devotion School"
+      ],
+      "prediction": "It seems there is a persistent issue with retrieving data from the knowledge graph. However, based on historical records, Ronald Reagan attended Eureka College.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.08333333333333334
+    },
+    {
+      "sample_id": "WebQTrn-2654_9b6037bb097871b8d61a8bc0138de6f3",
+      "question": "Who plays Moira on The L Word which has a theme song?",
+      "gold": [
+        "Daniela Sea"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-25_4f90f5f94af69a2631f90a59036daa1d",
+      "question": "Which movie, released on October 30, 2001, featured Taylor Lautner?",
+      "gold": [
+        "Shadow Fury"
+      ],
+      "prediction": "It seems there is an issue accessing the knowledge graph to retrieve information about Taylor Lautner's filmography. However, based on external knowledge, Taylor Lautner did not appear in any movie released on October 30, 2001. His first notable film role was in \"The Adventures of Sharkboy and Lavagirl in 3-D,\" which was released in 2005.",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-2871_98925752e1e60abb73dc775f15ee38af",
+      "question": "What is near the Grand Canyon and is where a Wide Receiver Football player was born?",
+      "gold": [
+        "Phoenix"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-1785_0f8e650edc29ff3b688f4b0f4b86992a",
+      "question": "What movie stars Donald Pleasence and Kim Richards?",
+      "gold": [
+        "Escape to Witch Mountain"
+      ],
+      "prediction": "It seems there is an issue accessing the knowledge graph. However, based on known information, the movie that stars both Donald Pleasence and Kim Richards is \"Escape to Witch Mountain.\"",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 1.0,
+      "f1": 0.25806451612903225
+    },
+    {
+      "sample_id": "WebQTrn-831_1e718eaaf2217fc00dcaac32d79a65d1",
+      "question": "What was the last movie the actor, who played Jody Marken, was in?",
+      "gold": [
+        "Something Wicked"
+      ],
+      "prediction": "It seems there is an issue retrieving information about the character \"Jody Marken\" from the knowledge graph. Could you provide more context or details about the movie or actor associated with this character?",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-2859_ed0ddfab1f5264869a9b9fc0b2fd6889",
+      "question": "What author  published editions for New Atlantis and what was his profession?",
+      "gold": [
+        "Spy",
+        "Statesman",
+        "Philosopher",
+        "Scientist",
+        "Author"
+      ],
+      "prediction": "It seems there is an issue retrieving information from the knowledge graph. However, I can provide information based on general knowledge.\n\nThe author of \"New Atlantis\" is Sir Francis Bacon. He was a philosopher, statesman, scientist, jurist, orator, and author.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 1.0,
+      "f1": 0.05405405405405406
+    },
+    {
+      "sample_id": "WebQTrn-3251_66da1b47c119995a447078dbc066867f",
+      "question": "Which college in Greeley Colorado has the largest number of undergraduates?",
+      "gold": [
+        "University of Northern Colorado"
+      ],
+      "prediction": "It seems there is an issue retrieving data from the knowledge graph. However, based on general knowledge, the University of Northern Colorado, located in Greeley, is the largest college in the area and likely has the largest number of undergraduates.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.21052631578947367
+    },
+    {
+      "sample_id": "WebQTrn-3151_42444a47c0a0b05f41eb297d05c4fd37",
+      "question": "What languages are in the location that has the second level division Cephalonia?",
+      "gold": [
+        "Albanian language",
+        "Greek Language"
+      ],
+      "prediction": "It seems there is a persistent issue with retrieving information about \"Cephalonia\" directly from the knowledge graph. However, I can provide some general information based on common knowledge.\n\nCephalonia (also spelled Kefalonia) is an island in Greece. The primary language spoken in Greece, including Cephalonia, is Greek. If you need more detailed information or specific languages spoken by communities within Cephalonia, additional resources or databases might be required.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.06060606060606061
+    },
+    {
+      "sample_id": "WebQTrn-2784_b09c00219764b4f102d325a00e808259",
+      "question": "Which movies feature the music producer of The Don Killuminati: The 7 Day Theory?",
+      "gold": [
+        "Murder Was the Case",
+        "Poetic Justice",
+        "Gridlock'd",
+        "Above the Rim",
+        "Juice",
+        "Nothing but Trouble",
+        "Gang Related",
+        "Bullet"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-124_45b1a7a291b15486d946275ec852704f",
+      "question": "What was the name of the movie where Angelina Jolie directed Gabor Piroch?",
+      "gold": [
+        "In the Land of Blood and Honey"
+      ],
+      "prediction": "It seems there is an issue retrieving data from the knowledge graph. However, based on external knowledge, Angelina Jolie directed the movie \"Unbroken,\" in which Gabor Piroch worked as a stunt coordinator.",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 0.0,
+      "f1": 0.058823529411764705
+    },
+    {
+      "sample_id": "WebQTest-1797_1f7ee4adbac76b1d1b843f0c8b106892",
+      "question": "Who is the person that fought in the Battle of Vicksburg and is buried in the General Grant National Memorial?",
+      "gold": [
+        "Ulysses S. Grant"
+      ],
+      "prediction": "It seems there is an issue accessing the information from the knowledge graph. However, based on historical knowledge, the person who fought in the Battle of Vicksburg and is buried in the General Grant National Memorial is Ulysses S. Grant.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 1.0,
+      "f1": 0.1621621621621622
+    },
+    {
+      "sample_id": "WebQTest-743_1d6c214af3c3e9fcb3689bec2a8e8336",
+      "question": "What were JFK's brother's name who held a position in the 107th United States Congress?",
+      "gold": [
+        "Ted Kennedy"
+      ],
+      "prediction": "It seems there is an issue accessing the knowledge graph. However, I can provide information based on what I know.\n\nJohn F. Kennedy had several siblings, but the brother who held a position in the 107th United States Congress was Edward \"Ted\" Kennedy.",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 1.0,
+      "f1": 0.1
+    },
+    {
+      "sample_id": "WebQTrn-683_0779bfeb76e25123df242faeca471a17",
+      "question": "Who plays Hawkeye in a movie that stars Kimberly J Mahoney?",
+      "gold": [
+        "Jeremy Renner"
+      ],
+      "prediction": "It seems there is a persistent issue with retrieving data from the knowledge graph. However, I can provide information based on general knowledge.\n\nIn the Marvel Cinematic Universe, the character Hawkeye is played by Jeremy Renner. If you have any other questions or need further assistance, feel free to ask!",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 1.0,
+      "f1": 0.08333333333333333
+    },
+    {
+      "sample_id": "WebQTrn-25_62c571c0f7c5f645e7179596b4a308d2",
+      "question": "What movies produced by the company New Line Cinema does Taylor Lautner play in?",
+      "gold": [
+        "Valentine's Day"
+      ],
+      "prediction": "It seems there is an issue with retrieving data from the knowledge graph. Unfortunately, I'm unable to access the information about movies produced by New Line Cinema or Taylor Lautner's involvement in them at the moment. You might want to try again later or consult another source for this information.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.0392156862745098
+    },
+    {
+      "sample_id": "WebQTrn-2784_3a127296c766540ac81b981024832cdc",
+      "question": "Which movie was released on January 1, 1992, and featured Tupac?",
+      "gold": [
+        "Juice"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-484_e7d8b401e84db19b4965bb23aa43871d",
+      "question": "What is the language used in Australia that is of the conlang type \"Engineered language\"?",
+      "gold": [
+        "Lojban"
+      ],
+      "prediction": "It seems there is an issue accessing the knowledge graph for information about languages spoken in Australia. However, I can provide information based on general knowledge.\n\nAn example of an engineered language (a type of constructed language or conlang) that is associated with Australia is \"Interlingua.\" However, Interlingua is not specifically tied to Australia but is an international auxiliary language. If you are looking for a specific engineered language developed or used in Australia, it might not be widely recognized or documented in common databases.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-1394_6eb4909a184ab0aac83d44471fb5bd49",
+      "question": "Which country with and ISO of 012 does Turkey trade with?",
+      "gold": [
+        "Algeria"
+      ],
+      "prediction": "It seems there is a persistent issue with retrieving data from the knowledge graph. Unfortunately, without access to the necessary data, I am unable to determine which country with an ISO code of 012 Turkey trades with. \n\nFor reference, the ISO 3166-1 numeric code 012 corresponds to Algeria. If you have any other questions or need further assistance, feel free to ask!",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.03389830508474576
+    },
+    {
+      "sample_id": "WebQTrn-857_c95460984b03c16cef45a5a40c69a9e8",
+      "question": "When the political appointer that had the title Deputy Assistant to the Press Secretary was in office, who was the Vice President?",
+      "gold": [
+        "Al Gore"
+      ],
+      "prediction": "It seems there is an issue retrieving information about the \"Deputy Assistant to the Press Secretary\" from the knowledge graph. Without this data, I can't directly determine who the Vice President was during the tenure of the political appointer with that title.\n\nIf you have any other details or a specific time frame in mind, please let me know, and I can try to assist you further!",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-1171_36be0686f0f845782d8e8d0c09704e45",
+      "question": "Which celebrity did the darth vador voice and had a relationship that ended on 12/2010?",
+      "gold": [
+        "Zac Efron"
+      ],
+      "prediction": "It seems there is an issue with accessing the knowledge graph to retrieve information about Darth Vader. However, I can provide information based on general knowledge.\n\nThe voice of Darth Vader was famously provided by James Earl Jones. To find out if he had a relationship that ended in December 2010, I would need to access the knowledge graph or another reliable source. If you have any other questions or need further assistance, feel free to ask!",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-1294_6fa0b4449abf3bc84cc7a4634355ad1e",
+      "question": "What is the real name of Vito Corleone, Executive Producer of Holiday Heart?",
+      "gold": [
+        "Robert De Niro"
+      ],
+      "prediction": "It seems there is an issue accessing the information for \"Vito Corleone\" in the knowledge graph. However, Vito Corleone is a fictional character from \"The Godfather\" series, and not an actual person who could be an executive producer. The name might be used as a pseudonym or in a fictional context. If you have any other questions or need further assistance, feel free to ask!",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-1278_d8e43a02200cfdff82052f8cc5395b27",
+      "question": "Who did the digital underground actor date?",
+      "gold": [
+        "Jada Pinkett Smith",
+        "Salli Richardson",
+        "Kidada Jones"
+      ],
+      "prediction": "It seems there is an issue retrieving information about \"Digital Underground\" from the knowledge graph. However, if you are referring to a specific actor associated with Digital Underground, such as Tupac Shakur, please specify, and I can attempt to retrieve information about their relationships.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-2748_77d7699db4694c72c125520900c105ae",
+      "question": "What language do Tyai Bangkaew Dog breeders speak?",
+      "gold": [
+        "Lao Language",
+        "Khmer language",
+        "Akha Language",
+        "Mlabri Language",
+        "Hmong language",
+        "Saek language",
+        "Malay, Pattani Language",
+        "Vietnamese Language",
+        "Nyaw Language",
+        "Phu Thai language",
+        "Cham language",
+        "Mon Language",
+        "Thai Language"
+      ],
+      "prediction": "It seems there is an issue retrieving information about the \"Tyai Bangkaew Dog\" from the knowledge graph. However, the Tyai Bangkaew Dog is a breed from Thailand, and the primary language spoken by breeders in Thailand is Thai.",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 0.0,
+      "f1": 0.11764705882352941
+    },
+    {
+      "sample_id": "WebQTrn-1294_100ee2e9f3a320efb209dff7ee05fb04",
+      "question": "Who played Vito Corleone that also passed on due to respiratory failure?",
+      "gold": [
+        "Marlon Brando"
+      ],
+      "prediction": "It seems there is an issue accessing the knowledge graph for the entity \"Vito Corleone.\" However, I can provide information based on general knowledge.\n\nVito Corleone is a fictional character from \"The Godfather\" series. The character was famously portrayed by two actors:\n\n1. Marlon Brando in \"The Godfather\" (1972).\n2. Robert De Niro in \"The Godfather Part II\" (1974).\n\nMarlon Brando passed away due to respiratory failure. Therefore, the actor who played Vito Corleone and passed away due to respiratory failure is Marlon Brando.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.05194805194805195
+    },
+    {
+      "sample_id": "WebQTrn-2570_4b96e95527317d2c2885df83058b6bf4",
+      "question": "What former President of the United States was in office during WW2 and passed away on 04/12/1945?",
+      "gold": [
+        "Franklin D. Roosevelt"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-2486_68026a3b51433920276f3dfbaec8d75d",
+      "question": "Where did the person who said \"The point is that you can't be too greedy\" graduate college from?",
+      "gold": [
+        "Wharton School of the University of Pennsylvania"
+      ],
+      "prediction": "It seems there is a persistent issue with retrieving data from the knowledge graph. However, I can provide the information based on what is commonly known.\n\nDonald Trump graduated from the Wharton School of the University of Pennsylvania.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 1.0,
+      "f1": 0.3076923076923077
+    },
+    {
+      "sample_id": "WebQTest-1513_690504fdf4005195e5ad48d4570cf03f",
+      "question": "What is there to do in downtown Sacramento in buildings with 1 floor?",
+      "gold": [
+        "California Automobile Museum"
+      ],
+      "prediction": "It seems there is an issue accessing the information about Downtown Sacramento. Unfortunately, without access to the knowledge graph, I can't provide specific details about activities in one-floor buildings in downtown Sacramento. You might want to check local guides or websites for up-to-date information on attractions and activities in that area.",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-489_2abb7de63fb029aab88ee2f6c53f491c",
+      "question": "Who plays stephanie plum in a film that Andrea Kubala was also in it.?",
+      "gold": [
+        "Katherine Heigl"
+      ],
+      "prediction": "It seems there is a persistent issue with retrieving data from the knowledge graph. Unfortunately, without access to the necessary information, I am unable to determine who plays Stephanie Plum in a film that also features Andrea Kubala. \n\nIf you have any other questions or need further assistance, feel free to ask!",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-124_1469a731c08254e6e7ed9dd689d15250",
+      "question": "Motion picture that was decorated by Anna Lynch-Robinson and directed by Angelina Jolie?",
+      "gold": [
+        "In the Land of Blood and Honey"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-2570_d27d11d03930503526d98a7acee400bd",
+      "question": "Who was the President that spoke about Liberalism in the US and was also in term during WW2?",
+      "gold": [
+        "Franklin D. Roosevelt"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-1394_f634dd018cba9f4fb4ab125b08a486bd",
+      "question": "Which country that trades with Turkey also exports to Brazil?",
+      "gold": [
+        "Algeria"
+      ],
+      "prediction": "It seems there is a persistent issue with retrieving data from the knowledge graph. Unfortunately, without access to the necessary data, I'm unable to determine which country trades with both Turkey and Brazil. \n\nIf you have any other questions or need further assistance, feel free to ask!",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-1012_42c78d192f0304e93cd18c38e81a2e82",
+      "question": "Which Hollywood, California venue has the smallest capacity?",
+      "gold": [
+        "TCL Chinese Theatre"
+      ],
+      "prediction": "It seems there is an issue retrieving data from the knowledge graph. However, I can provide some general information. In Hollywood, California, there are several venues with varying capacities. Some of the smaller venues include:\n\n1. The Hotel Caf\u00e9 - Known for its intimate setting, it has a capacity of around 165 people.\n2. The Roxy Theatre - A famous venue with a capacity of about 500 people.\n3. The Troubadour - Another iconic venue with a capacity of approximately 500 people.\n\nFor the absolute smallest, venues like The Hotel Caf\u00e9 are among the smallest in terms of capacity.",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 0.0,
+      "f1": 0.023255813953488372
+    },
+    {
+      "sample_id": "WebQTest-212_cdbbe459139ec1ce1e11542a71babd38",
+      "question": "The river that originates from the La Poudre Pass Lake runs through which states?",
+      "gold": [
+        "Colorado",
+        "California",
+        "Nevada",
+        "Arizona"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-1377_da7e9059a2eb833f216256975eef67d2",
+      "question": "Which of Shirley Temple's children works as a musician?",
+      "gold": [
+        "Lori Black"
+      ],
+      "prediction": "It seems there is an issue with accessing the knowledge graph. However, I can provide information based on what I know: Shirley Temple's daughter, Lori Black, is known to have worked as a musician.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 1.0,
+      "f1": 0.11764705882352941
+    },
+    {
+      "sample_id": "WebQTest-1817_e0caffb4c2f90b728308ee137c9b45fa",
+      "question": "Where was the writer of \"Blunt the Knives\" educated?",
+      "gold": [
+        "King Edward's School, Birmingham",
+        "University of Oxford",
+        "St. Philip's School",
+        "Exeter College, Oxford"
+      ],
+      "prediction": "It seems there is a persistent issue with accessing the knowledge graph. However, I can provide information based on my training data. J.R.R. Tolkien, the author of \"The Hobbit,\" was educated at Exeter College, Oxford.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 1.0,
+      "f1": 0.16666666666666669
+    },
+    {
+      "sample_id": "WebQTest-12_3c5c69e3800f38649fbe7828895879e8",
+      "question": "Which member of Congress was the governor of Ohio in 2011?",
+      "gold": [
+        "John Kasich"
+      ],
+      "prediction": "It seems there is an issue with accessing the knowledge graph to retrieve the information. However, based on historical records, the governor of Ohio in 2011 was John Kasich.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.14814814814814814
+    },
+    {
+      "sample_id": "WebQTrn-710_f6c8fe3608211104942c4bd00e09dacf",
+      "question": "What is the most recent World Series won by a team which participated in the 2010 Major League Baseball season?",
+      "gold": [
+        "2014 World Series"
+      ],
+      "prediction": "It seems there is an issue retrieving data from the knowledge graph. However, I can provide some information based on general knowledge.\n\nThe 2010 Major League Baseball season included teams like the San Francisco Giants, Texas Rangers, New York Yankees, and others. The San Francisco Giants won the World Series in 2010. To find the most recent World Series won by any of these teams, we would need to check the subsequent years' winners.\n\nIf you have a specific team in mind, I can try to retrieve more detailed information about their recent World Series victories.",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 0.0,
+      "f1": 0.044444444444444446
+    },
+    {
+      "sample_id": "WebQTest-989_da2b4e8fad25344138135bddb0b6812d",
+      "question": "What happened during WWII with the smallest force size in Dunkirk?",
+      "gold": [
+        "Battle of Dunkirk"
+      ],
+      "prediction": "The event you're referring to is likely the \"Dunkirk evacuation\" or \"Operation Dynamo,\" which took place during World War II. It involved the evacuation of Allied soldiers from the beaches of Dunkirk, France, between May 26 and June 4, 1940. The operation was notable for the involvement of a large number of civilian boats, known as the \"Little Ships of Dunkirk,\" which assisted in the evacuation. The smallest force size involved would have been the individual civilian boats that participated in the evacuation effort.",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 0.0,
+      "f1": 0.05263157894736842
+    },
+    {
+      "sample_id": "WebQTest-1260_a65373d6ffaa966c347087864c895897",
+      "question": "What is the year that the team whose's arena is the M&T Bank Stadium won the Superbowl?",
+      "gold": [
+        "Super Bowl XXXV"
+      ],
+      "prediction": "It seems there is an issue with retrieving data from the knowledge graph. However, I can provide the information based on what I know.\n\nThe M&T Bank Stadium is the home of the Baltimore Ravens. The Baltimore Ravens won the Super Bowl in the years 2000 (Super Bowl XXXV) and 2012 (Super Bowl XLVII).",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.12244897959183672
+    },
+    {
+      "sample_id": "WebQTrn-2569_af4a1e99ad0adc75a3ae5c4ff0ced65b",
+      "question": "What basketball venue has the largest audience capacity where the Houston Rockets also play?",
+      "gold": [
+        "Toyota Center"
+      ],
+      "prediction": "It seems there is an issue retrieving data from the knowledge graph. However, I can provide information based on general knowledge.\n\nThe Houston Rockets play their home games at the Toyota Center. To find out if it's the largest basketball venue by audience capacity where they play, you would typically compare it to other venues they might use for special events or games. The Toyota Center has a seating capacity of approximately 18,300 for basketball games.",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 1.0,
+      "f1": 0.05479452054794521
+    },
+    {
+      "sample_id": "WebQTest-1289_eea3b29de80d4fe1cf49b0bf676e4b42",
+      "question": "What type of music, featured in Shadow of the Stars, was composed by Mozart?",
+      "gold": [
+        "Opera"
+      ],
+      "prediction": "It seems there is an issue retrieving information about \"Shadow of the Stars\" from the knowledge graph. However, I can help you with general information. \n\nIf \"Shadow of the Stars\" is a work that features music by Mozart, it is likely that the type of music could be classical, as Wolfgang Amadeus Mozart was a prolific composer of classical music. If you have more specific details or another way to identify the work, please let me know!",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-3249_e06557157734dfdbc8119f4165ee9f0e",
+      "question": "What is the name of the show where Tamera Mowry performs and is the smallest on the program?",
+      "gold": [
+        "Sister, Sister"
+      ],
+      "prediction": "It seems there is an issue retrieving data for Tamera Mowry from the knowledge graph. However, based on general knowledge, Tamera Mowry is known for her role in the television show \"Sister, Sister,\" where she performed alongside her twin sister Tia Mowry. In the context of the show, she is often humorously referred to as the \"smallest\" due to her twin sister's slightly taller stature.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 1.0,
+      "f1": 0.06451612903225806
+    },
+    {
+      "sample_id": "WebQTest-1528_095fa5debd36c3c1e23980a2cb0dbe32",
+      "question": "Which Logan Lerman film had a sequel titled \"Percy Jackson:Sea of Monsters\"?",
+      "gold": [
+        "Percy Jackson & the Olympians: The Lightning Thief"
+      ],
+      "prediction": "It seems there is an issue with accessing the knowledge graph. However, I can answer your question based on my knowledge. The Logan Lerman film that had a sequel titled \"Percy Jackson: Sea of Monsters\" is \"Percy Jackson & the Olympians: The Lightning Thief\".",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.2380952380952381
+    }
+  ],
+  "em": 0.0,
+  "contains_em": 0.3,
+  "f1": 0.04260835203524112,
+  "abandoned_count": 117
+}

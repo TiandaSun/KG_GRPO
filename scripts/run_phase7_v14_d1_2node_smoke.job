@@ -1,0 +1,178 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v14d1_smoke2n
+#SBATCH --nodes=2
+#SBATCH --gpus-per-node=4
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=72
+#SBATCH --time=00:50:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# V14-D1 2-node smoke test — proves the multi-node recipe before committing 24h.
+#
+# Key deviation from first attempt: Isambard firewalls inter-node user ports
+# (net probe 4130067 confirmed: all arbitrary ports FAIL). Ray's 6379 works
+# because it's whitelisted; KG server on 18xxx does not.  Fix: run ONE KG
+# SERVER PER NODE on localhost; each node's rollout actor calls localhost.
+# RAM cost: ~2 GB/node (negligible vs 460 GB/node available).
+#
+# Success criteria:
+#   1. Ray cluster assembles across 2 nodes (already proven in prior smoke).
+#   2. KG server up on BOTH nodes, each reachable via localhost.
+#   3. FSDP shards 14B weights across all 8 GPUs.
+#   4. vLLM TP=4 within-node (2 rollout replicas).
+#   5. First training step + sleep/wake cycle succeeds (single-node died here).
+#   6. 6 training steps complete within 50 min walltime.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+module load brics/nccl 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export VLLM_USE_V1=1
+export RAY_DEDUP_LOGS=1
+export RAY_TMPDIR="/tmp/ray-${SLURM_JOB_ID}"
+export TMPDIR="/tmp"
+mkdir -p "$RAY_TMPDIR"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+export REWARD_TYPE=tool_type_bonus
+
+INIT_BASE="outputs/verl-sft-cwq-14b-from-base-merged"
+EXPERIMENT_NAME="p7-v14d1-smoke2n-${SLURM_JOB_ID}"
+
+echo "=== V14-D1 2-node smoke ==="
+echo "Date: $(date)"
+echo "Nodes: $SLURM_JOB_NODELIST"
+
+if [ ! -d "$INIT_BASE" ]; then
+    echo "ERROR: merged SFT checkpoint not found at $INIT_BASE"
+    exit 1
+fi
+
+# --- Ray cluster (Ray's own 6379 is allowed inter-node; IP from fabric iface) ---
+nodes=($(scontrol show hostnames "$SLURM_JOB_NODELIST"))
+HEAD_NODE=${nodes[0]}
+WORKER_NODE=${nodes[1]}
+# Pick the 10.242.* IP (Slingshot high-speed fabric — confirmed by probe 4130067)
+HEAD_IP=$(srun --nodes=1 --ntasks=1 -w "$HEAD_NODE" bash -c \
+    "ip -4 -o addr show hsn0 2>/dev/null | awk '{print \$4}' | cut -d/ -f1")
+RAY_PORT=6379
+
+echo "Head: $HEAD_NODE (hsn0=$HEAD_IP); Worker: $WORKER_NODE"
+
+srun --nodes=1 --ntasks=1 -w "$HEAD_NODE" --export=ALL \
+    ray start --head \
+        --node-ip-address="$HEAD_IP" \
+        --port=$RAY_PORT \
+        --num-cpus=72 \
+        --num-gpus=4 \
+        --block &
+RAY_HEAD_PID=$!
+sleep 45
+
+srun --nodes=1 --ntasks=1 -w "$WORKER_NODE" --export=ALL \
+    ray start \
+        --address="${HEAD_IP}:${RAY_PORT}" \
+        --num-cpus=72 \
+        --num-gpus=4 \
+        --block &
+RAY_WORKER_PID=$!
+sleep 30
+
+export RAY_ADDRESS="${HEAD_IP}:${RAY_PORT}"
+ray status --address="$RAY_ADDRESS" 2>&1 | head -20 || echo "WARNING: ray status failed"
+
+# --- Per-node KG servers (bind to localhost of each node; no cross-node calls) ---
+KG_PORT=$((18000 + SLURM_JOB_ID % 1000))
+echo ""
+echo "Starting KG server on HEAD $HEAD_NODE:$KG_PORT (localhost)..."
+srun --overlap --nodes=1 --ntasks=1 --cpus-per-task=4 -w "$HEAD_NODE" --export=ALL \
+    python -m src_verl.kg_server.server \
+        --kg freebase --freebase_dir data/freebase/kg \
+        --port $KG_PORT --host 127.0.0.1 --log-level warning &
+KG_HEAD_PID=$!
+
+echo "Starting KG server on WORKER $WORKER_NODE:$KG_PORT (localhost)..."
+srun --overlap --nodes=1 --ntasks=1 --cpus-per-task=4 -w "$WORKER_NODE" --export=ALL \
+    python -m src_verl.kg_server.server \
+        --kg freebase --freebase_dir data/freebase/kg \
+        --port $KG_PORT --host 127.0.0.1 --log-level warning &
+KG_WORKER_PID=$!
+
+cleanup() {
+    echo "=== cleanup ==="
+    kill $KG_HEAD_PID $KG_WORKER_PID 2>/dev/null || true
+    kill $RAY_HEAD_PID $RAY_WORKER_PID 2>/dev/null || true
+    rm -f "$TOOL_CFG" 2>/dev/null || true
+}
+trap cleanup EXIT
+
+# Wait for both servers to be healthy
+echo "Waiting for KG servers to come up (~45s for 14B triples load)..."
+sleep 45
+HEAD_OK=0; WORKER_OK=0
+for i in $(seq 1 12); do
+    h=$(srun --overlap --nodes=1 --ntasks=1 --cpus-per-task=1 -w "$HEAD_NODE" --export=ALL \
+        curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:${KG_PORT}/health" 2>/dev/null || echo FAIL)
+    w=$(srun --overlap --nodes=1 --ntasks=1 --cpus-per-task=1 -w "$WORKER_NODE" --export=ALL \
+        curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:${KG_PORT}/health" 2>/dev/null || echo FAIL)
+    [ "$h" = "200" ] && HEAD_OK=1
+    [ "$w" = "200" ] && WORKER_OK=1
+    echo "  attempt $i: HEAD=$h  WORKER=$w"
+    [ "$HEAD_OK" = "1" ] && [ "$WORKER_OK" = "1" ] && break
+    sleep 10
+done
+if [ "$HEAD_OK" != "1" ] || [ "$WORKER_OK" != "1" ]; then
+    echo "ERROR: KG servers not both healthy (HEAD=$HEAD_OK WORKER=$WORKER_OK)"
+    exit 1
+fi
+echo "Both KG servers healthy on localhost:$KG_PORT"
+
+# --- Tool config (localhost:$KG_PORT — both nodes hit their own server) ---
+TOOL_CFG="configs_verl/kg_tool_config_freebase_${SLURM_JOB_ID}.yaml"
+sed "s|http://localhost:18901|http://127.0.0.1:${KG_PORT}|" \
+    configs_verl/kg_tool_config_freebase.yaml > "$TOOL_CFG"
+echo "Tool config: $TOOL_CFG"
+grep kg_server_url "$TOOL_CFG"
+
+# --- Training (tiny: 6 steps) ---
+python -m verl.trainer.main_ppo \
+    --config-path="$PWD/configs_verl" \
+    --config-name=grpo_cwq_7b \
+    ~ray_kwargs.ray_init.num_cpus \
+    trainer.experiment_name="$EXPERIMENT_NAME" \
+    trainer.total_training_steps=6 \
+    trainer.save_freq=3 \
+    trainer.test_freq=1000 \
+    trainer.nnodes=2 \
+    trainer.n_gpus_per_node=4 \
+    actor_rollout_ref.model.path="$INIT_BASE" \
+    actor_rollout_ref.actor.use_kl_loss=true \
+    actor_rollout_ref.actor.kl_loss_coef=0.05 \
+    actor_rollout_ref.actor.kl_loss_type=low_var_kl \
+    actor_rollout_ref.actor.ppo_micro_batch_size_per_gpu=1 \
+    actor_rollout_ref.ref.log_prob_micro_batch_size_per_gpu=1 \
+    actor_rollout_ref.rollout.tensor_model_parallel_size=4 \
+    actor_rollout_ref.rollout.log_prob_micro_batch_size_per_gpu=1 \
+    actor_rollout_ref.rollout.gpu_memory_utilization=0.45 \
+    actor_rollout_ref.rollout.max_num_seqs=64 \
+    actor_rollout_ref.rollout.max_num_batched_tokens=4096 \
+    +actor_rollout_ref.rollout.enable_sleep_mode=true \
+    actor_rollout_ref.rollout.agent.default_agent_loop=tool_agent \
+    actor_rollout_ref.rollout.multi_turn.tool_config_path="$TOOL_CFG" \
+    data.dataloader_num_workers=0
+
+echo "=== Smoke test PASSED: 2-node recipe validated ==="
+echo "Date: $(date)"

@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=t14_llama
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=24:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Task 14: Full CWQ test set eval (3,531 samples) for one Llama model
+# Llama throughput ~50 samples/hr @ max_turns=3 → ~72h total per model.
+# Split into 4 chunks of ~900 samples = ~18h each (fits 24h cap with margin).
+# Uses --resume so if a chunk is re-submitted, it skips already-done samples.
+# Usage:
+#   sbatch --export=ALL,MODEL_KEY=e3_1293,CHUNK=0 scripts/run_task14_full_eval_llama.job  # samples 0-900
+#   sbatch --export=ALL,MODEL_KEY=e3_1293,CHUNK=1 scripts/run_task14_full_eval_llama.job  # samples 900-1800
+#   sbatch --export=ALL,MODEL_KEY=e3_1293,CHUNK=2 scripts/run_task14_full_eval_llama.job  # samples 1800-2700
+#   sbatch --export=ALL,MODEL_KEY=e3_1293,CHUNK=3 scripts/run_task14_full_eval_llama.job  # samples 2700-3531
+#
+# Supported MODEL_KEY values: sft, e3_1293, e5b_1293
+# CHUNK: 0, 1, 2, or 3
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+MODEL_KEY="${MODEL_KEY:?MODEL_KEY env var required}"
+CHUNK="${CHUNK:?CHUNK env var required (0 or 1)}"
+CKPT_ROOT="/projects/u6gg/KG_GRPO/checkpoints/kg-align-verl"
+BASE_MODEL="outputs/verl-sft-llama-8b-merged"
+
+case "$MODEL_KEY" in
+    sft)       CKPT_DIR="$CKPT_ROOT/grpo-cwq-llama-8b-verifiable-20260331"; STEP=0 ;;
+    e3_1293)   CKPT_DIR="$CKPT_ROOT/grpo-cwq-llama-8b-verifiable-20260331"; STEP=1293 ;;
+    e5b_1293)  CKPT_DIR="$CKPT_ROOT/grpo-cwq-llama-8b-tool-type-bonus-20260331"; STEP=1293 ;;
+    *)         echo "Unknown MODEL_KEY: $MODEL_KEY"; exit 1 ;;
+esac
+
+# Split into 4 chunks of ~900 samples each (3531 total)
+case "$CHUNK" in
+    0) START_IDX=0;    END_IDX=900  ;;
+    1) START_IDX=900;  END_IDX=1800 ;;
+    2) START_IDX=1800; END_IDX=2700 ;;
+    3) START_IDX=2700; END_IDX=3531 ;;
+    *) echo "CHUNK must be 0, 1, 2, or 3"; exit 1 ;;
+esac
+
+OUT_JSON="results/task14_full_llama_${MODEL_KEY}_chunk${CHUNK}.json"
+PER_SAMPLE_DIR="results/task14_per_sample/llama_${MODEL_KEY}"
+TRAJ_DIR="results/trajectories/task14/llama_${MODEL_KEY}"
+
+# Unique port per job
+KG_PORT=$((18000 + SLURM_JOB_ID % 1000))
+
+echo "=== Task 14: Llama Full CWQ Test Set Eval ==="
+echo "Model: llama_$MODEL_KEY  Step: $STEP  Chunk: $CHUNK"
+echo "KG port: $KG_PORT"
+echo "Date: $(date)"
+
+# Start KG server
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port $KG_PORT --log-level warning &
+KG_PID=$!
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready"
+
+mkdir -p results "$PER_SAMPLE_DIR" "$TRAJ_DIR"
+
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$CKPT_DIR" \
+    --steps "$STEP" \
+    --base_model "$BASE_MODEL" \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --output "$OUT_JSON" \
+    --kg_server_url http://localhost:$KG_PORT \
+    --max_samples 0 \
+    --max_turns 3 \
+    --start_idx "$START_IDX" \
+    --end_idx "$END_IDX" \
+    --save_per_sample "$PER_SAMPLE_DIR" \
+    --save_every 100 \
+    --resume \
+    --save_trajectories "$TRAJ_DIR" \
+    --max_trajectory_samples 100
+
+kill $KG_PID 2>/dev/null
+echo "=== Done: $(date) ==="

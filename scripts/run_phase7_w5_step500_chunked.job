@@ -1,0 +1,175 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_w5_step500_chunked
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --cpus-per-task=72
+#SBATCH --time=08:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# v15 Lane 4 W5 step 500 eval, CHUNKED across 4 GPUs.
+# Existing chained evals at single-GPU 12h walltime TIMEOUT for kl=0.001 / 0.005 / 0.25
+# (post-collapse models emit longer per-q text, ~12s × 3531 = ~12h, walltime borderline).
+# Chunking 3531 across 4 GPUs brings wall to ~3-4h.
+#
+# Usage:
+#   sbatch --export=ALL,KL=001 scripts/run_phase7_w5_step500_chunked.job
+#   sbatch --export=ALL,KL=005 scripts/run_phase7_w5_step500_chunked.job
+#   sbatch --export=ALL,KL=25  scripts/run_phase7_w5_step500_chunked.job
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+: "${KL:?KL env var required (001, 005, 01, 05, or 25)}"
+STEP=500
+
+EXPERIMENT="grpo-cwq-7b-w5-kl${KL}-20260505"
+SRC="/projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/${EXPERIMENT}/global_step_${STEP}/actor"
+DST="outputs/verl-sft-cwq-w5-kl${KL}_step${STEP}-merged"
+BASE_MODEL="outputs/verl-sft-cwq-7b-G2-from-base-sft-merged"
+KG_PORT=$((19600 + SLURM_JOB_ID % 100))
+
+[ -d "$SRC" ] || { echo "ERROR: FSDP ckpt not at $SRC"; exit 1; }
+mkdir -p results/phase7
+
+echo "=== W5 KL=${KL} step ${STEP} CHUNKED eval ==="
+echo "Date: $(date)"
+echo "Model FSDP: $SRC"
+
+# --- Merge FSDP -> HF (one time, then 4 chunks share the merged dir) ---
+if [ ! -f "$DST/config.json" ]; then
+    echo "Merging FSDP -> HF"
+    mkdir -p "$DST"
+    python -m verl.model_merger merge --backend fsdp --local_dir "$SRC" --target_dir "$DST"
+    if [ ! -f "$DST/tokenizer.json" ] && [ -d "$BASE_MODEL" ]; then
+        cp -n "$BASE_MODEL"/tokenizer* "$DST/" 2>/dev/null || true
+        cp -n "$BASE_MODEL"/chat_template.jinja "$DST/" 2>/dev/null || true
+    fi
+fi
+
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port $KG_PORT --log-level warning &
+KG_PID=$!
+trap 'kill $KG_PID 2>/dev/null; wait 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready on port $KG_PORT"
+
+run_chunk() {
+    local idx="$1"
+    local start="$2"
+    local n="$3"
+    local out_json="results/phase7/w5_kl${KL}_step${STEP}_chunk${idx}.json"
+    local ps_dir="results/phase7/w5_kl${KL}_step${STEP}_chunk${idx}_per_sample"
+    local logfile="logs/p7_w5_step500_chunked-${SLURM_JOB_ID}-kl${KL}-gpu${idx}.log"
+
+    mkdir -p "$ps_dir"
+    {
+        echo "=== GPU $idx start_idx=$start n=$n  $(date) ==="
+        CUDA_VISIBLE_DEVICES=$idx python scripts/eval_with_tools.py \
+            --checkpoint_dir "$DST" \
+            --steps 0 \
+            --base_model "$DST" \
+            --eval_data data/freebase/verl_cwq/test.parquet \
+            --output "$out_json" \
+            --kg_server_url http://localhost:$KG_PORT \
+            --start_idx $start \
+            --max_samples $n \
+            --max_turns 5 \
+            --max_new_tokens 512 \
+            --save_per_sample "$ps_dir"
+        echo "=== GPU $idx done $(date) ==="
+    } > "$logfile" 2>&1
+}
+
+run_chunk 0 0    882 &
+PID0=$!
+run_chunk 1 882  882 &
+PID1=$!
+run_chunk 2 1764 882 &
+PID2=$!
+run_chunk 3 2646 885 &
+PID3=$!
+
+fail=0
+wait $PID0 || fail=1
+wait $PID1 || fail=1
+wait $PID2 || fail=1
+wait $PID3 || fail=1
+
+# --- Merge per-sample chunks into final JSON ---
+echo "=== Merging chunks $(date) ==="
+python3 << PYEOF
+import json
+from pathlib import Path
+
+KL = "${KL}"
+STEP = ${STEP}
+
+merged_per_sample = []
+em_sum = cm_sum = f1_sum = tools_sum = 0.0
+n = 0
+
+for idx in range(4):
+    pf = Path(f"results/phase7/w5_kl{KL}_step{STEP}_chunk{idx}_per_sample/step_0_per_sample.json")
+    if not pf.exists():
+        print(f"  chunk {idx}: per_sample MISSING")
+        continue
+    with open(pf) as f:
+        data = json.load(f)
+    merged_per_sample.extend(data)
+    for r in data:
+        em_sum += r.get("em", 0)
+        cm_sum += r.get("contains_em", 0)
+        f1_sum += r.get("f1", 0)
+        tools_sum += r.get("num_tool_calls", 0)
+        n += 1
+    print(f"  chunk {idx}: {len(data)} per-sample rows")
+
+if n == 0:
+    print("ERROR: no per-sample data merged")
+    exit(1)
+
+# Write final aggregate JSON in the same schema as eval_with_tools.py
+result = {
+    "0": {
+        "em": em_sum / n,
+        "contains_em": cm_sum / n,
+        "f1": f1_sum / n,
+        "avg_tool_calls": tools_sum / n,
+        "n_samples": n,
+    }
+}
+out = Path(f"results/phase7/w5_kl{KL}_step{STEP}_full_test.json")
+with open(out, "w") as f:
+    json.dump(result, f, indent=2)
+print(f"Wrote {out}: EM={em_sum/n:.4f} ContEM={cm_sum/n:.4f} F1={f1_sum/n:.4f} Tools={tools_sum/n:.2f} (n={n})")
+
+# Also merge per_sample dir
+final_ps = Path(f"results/phase7/w5_kl{KL}_step{STEP}_full_per_sample")
+final_ps.mkdir(parents=True, exist_ok=True)
+with open(final_ps / "step_0_per_sample.json", "w") as f:
+    json.dump(merged_per_sample, f, indent=2)
+print(f"Wrote {final_ps / 'step_0_per_sample.json'}")
+PYEOF
+
+kill $KG_PID 2>/dev/null
+echo "=== Done $(date) ==="
+exit $fail

@@ -61,3 +61,30 @@ core
 *.pt
 *.bin
 *.gguf
+
+# ===== External repos (not committed) =====
+external/
+
+# ===== Bulk experiment data (archived on Zenodo, see DATA.md — NOT in git) =====
+# Derived datasets / KG dumps (large + licensed; regenerate from source, see DATA.md)
+data/freebase/
+data/wikidata/
+data/wikidata_cache/
+data/processed/verl_conceptnet_smoke/
+# Per-sample prediction dumps + full eval JSONs + raw trajectories → Zenodo
+results/trajectories/
+results/**/*_per_sample/
+results/**/*_full_test.json
+results/**/*_full.json
+results/phase7/v15_q3_entropy/
+results/phase7/_broken_q8_DO_NOT_USE/
+results/task33_l1_lexical.json
+results/task33_l2_volatility.json
+results/benchmark_*/
+# Large handoff payloads → Zenodo (keep only *.md deliverables + mode4/*.csv)
+_handoff/**/*.json
+_handoff/**/*.jsonl
+_handoff/**/trajectories/
+_handoff/**/*.png
+# Stray duplicate handoff snapshot
+kg_grpo_emnlp2026_v2/

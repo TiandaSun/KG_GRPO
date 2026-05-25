@@ -1,0 +1,313 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v16_q8_redo_sft_regen
+#SBATCH --nodes=1
+#SBATCH --gpus=0
+#SBATCH --cpus-per-task=4
+#SBATCH --time=01:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# V16-Q8-REDO Phase 1 (REGEN approach, replaces text-rewriting):
+#
+# The text-level SFT rewrite (task_v16_q8_redo_rewrite.py) timed out at the
+# 30-min walltime even with first-word indexing because per-row candidate
+# sets are too large. Instead we REGENERATE SFT trajectories from the
+# already-URI-rewritten parquet at data/freebase/verl_cwq_q8_redo/train.parquet.
+#
+# scripts/generate_cwq_sft.py builds trajectories from extra_info.kg_path +
+# extra_info.gold_answer_short + the user prompt. Since those fields in the
+# rewritten parquet are URI-rewritten, the resulting SFT trajectories will
+# naturally contain entity:// URIs in user/assistant/tool content, while
+# the system prompt comes from the constant SYSTEM_PROMPT in the script
+# (byte-identical to the canonical template, NEVER touched).
+#
+# Outputs:
+#   - data/freebase/sft_trajectories_q8_redo.jsonl
+#   - results/phase7/v16_q8_redo_sanity_report.md
+#
+# Sanity-check protocol (4 checks; runs INLINE in this allocation):
+#   (1) System-prompt preserved -- every trajectory's system message is
+#       byte-for-byte identical to the canonical SYSTEM_PROMPT constant
+#   (2) URIs in user/assistant/tool content -- 5 random trajectories show
+#       entity:// substrings outside the system message
+#   (3) No nested-corruption substrings (entity://...entity://) anywhere
+#   (4) System prompt does NOT contain entity:// (system untouched)
+#
+# Any failure -> exit non-zero so the job is flagged.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+echo "=== V16-Q8-REDO Phase 1 (SFT regen + sanity check, CPU only) ==="
+echo "Date: $(date)"
+echo "Working dir: $PWD"
+echo "Hostname: $(hostname)"
+
+mkdir -p data/freebase
+mkdir -p results/phase7
+mkdir -p logs
+
+# Pre-flight: AST-validate the generator before consuming compute
+python -c 'import ast; ast.parse(open("scripts/generate_cwq_sft.py").read())'
+echo "AST validation passed."
+
+INPUT_PARQUET="data/freebase/verl_cwq_q8_redo/train.parquet"
+OUTPUT_JSONL="data/freebase/sft_trajectories_q8_redo.jsonl"
+REPORT_PATH="results/phase7/v16_q8_redo_sanity_report.md"
+
+if [[ ! -f "$INPUT_PARQUET" ]]; then
+    echo "ERROR: input parquet missing: $INPUT_PARQUET" >&2
+    exit 3
+fi
+
+echo ""
+echo "=== Step 1: regenerate SFT trajectories from URI-rewritten parquet ==="
+python scripts/generate_cwq_sft.py \
+    --input "$INPUT_PARQUET" \
+    --output "$OUTPUT_JSONL" \
+    --max_samples 5000 \
+    --seed 42
+
+echo ""
+echo "=== Output listing ==="
+ls -la "$OUTPUT_JSONL"
+wc -l "$OUTPUT_JSONL"
+
+echo ""
+echo "=== Step 2: inline sanity check (4 checks) ==="
+python - <<'PYEOF'
+"""Inline sanity check for the regenerated SFT corpus."""
+from __future__ import annotations
+
+import json
+import random
+import sys
+from pathlib import Path
+
+# Canonical system prompt copied verbatim from scripts/generate_cwq_sft.py
+# (must stay byte-identical -- this is exactly Check 1's invariant)
+CANONICAL_SYSTEM_PROMPT = """You are a knowledge graph reasoning agent. You can query a knowledge graph to answer questions.
+
+Available tools:
+- get_tail_relations(entity): Get all relation types going out from an entity
+- get_head_relations(entity): Get all relation types coming into an entity
+- get_tail_entities(entity, relation): Get entities reachable from entity via relation
+- get_head_entities(entity, relation): Get entities that connect to entity via relation
+
+To use a tool, write: <search>tool_name(arguments)</search>
+To give your final answer, write: <answer>your answer</answer>
+
+Think step-by-step about what to query. Use <think>...</think> for reasoning."""
+
+OUT_PATH = Path("data/freebase/sft_trajectories_q8_redo.jsonl")
+REPORT_PATH = Path("results/phase7/v16_q8_redo_sanity_report.md")
+
+print(f"Loading {OUT_PATH} ...")
+trajectories: list[list[dict]] = []
+with OUT_PATH.open("r", encoding="utf-8") as fh:
+    for line in fh:
+        line = line.strip()
+        if not line:
+            continue
+        obj = json.loads(line)
+        trajectories.append(obj["trajectory"])
+print(f"Loaded {len(trajectories)} trajectories")
+
+if not trajectories:
+    print("FATAL: no trajectories -- generate step must have failed", file=sys.stderr)
+    sys.exit(4)
+
+# ---------- Check 1: system prompt is byte-identical to canonical ----------
+check1_failures: list[tuple[int, str]] = []
+for idx, traj in enumerate(trajectories):
+    if not traj or traj[0].get("role") != "system":
+        check1_failures.append((idx, "no leading system message"))
+        continue
+    sys_content = traj[0].get("content", "")
+    if sys_content != CANONICAL_SYSTEM_PROMPT:
+        check1_failures.append((idx, f"system mismatch (len={len(sys_content)})"))
+
+check1_pass = len(check1_failures) == 0
+print(f"Check 1 (system prompt byte-identical): "
+      f"{'PASS' if check1_pass else 'FAIL'}  "
+      f"({len(check1_failures)} mismatches / {len(trajectories)})")
+
+# ---------- Check 2: URIs in user/assistant/tool content ----------
+random.seed(42)
+sample_indices = random.sample(range(len(trajectories)), k=min(5, len(trajectories)))
+
+check2_examples: list[dict] = []
+check2_failures: list[int] = []
+for idx in sample_indices:
+    traj = trajectories[idx]
+    question = ""
+    first_assistant = ""
+    first_tool = ""
+    for msg in traj:
+        role = msg.get("role")
+        content = msg.get("content", "")
+        if role == "user" and not question:
+            question = content
+        elif role == "assistant" and not first_assistant:
+            first_assistant = content
+        elif role == "user" and "<tool_response>" in content and not first_tool:
+            first_tool = content
+    non_system_blob = "\n".join(
+        m.get("content", "") for m in traj if m.get("role") != "system"
+    )
+    has_uri = "entity://" in non_system_blob
+    if not has_uri:
+        check2_failures.append(idx)
+    check2_examples.append({
+        "idx": idx,
+        "question": question,
+        "first_assistant": first_assistant,
+        "first_tool": first_tool,
+        "has_uri_in_non_system": has_uri,
+    })
+
+check2_pass = len(check2_failures) == 0
+print(f"Check 2 (entity:// in user/assistant/tool content of 5 samples): "
+      f"{'PASS' if check2_pass else 'FAIL'}  "
+      f"({len(check2_failures)} of {len(sample_indices)} samples missing URIs)")
+
+# ---------- Check 3: no nested-corruption (entity://...entity://) ----------
+check3_failures: list[tuple[int, int, str]] = []  # (traj_idx, msg_idx, snippet)
+for t_idx, traj in enumerate(trajectories):
+    for m_idx, msg in enumerate(traj):
+        content = msg.get("content", "")
+        first = content.find("entity://")
+        if first == -1:
+            continue
+        # Search for a SECOND occurrence within the SAME token (no whitespace
+        # between the two). We treat occurrences separated by whitespace as
+        # legitimate (multiple URIs in a list); only "entity://...entity://"
+        # within a single contiguous run is corruption.
+        rest = content[first + len("entity://"):]
+        # Find next "entity://" before any whitespace
+        next_uri = rest.find("entity://")
+        if next_uri == -1:
+            continue
+        # Check if there's whitespace BEFORE that next occurrence
+        intervening = rest[:next_uri]
+        if not any(ch.isspace() or ch in '",]' for ch in intervening):
+            check3_failures.append((
+                t_idx, m_idx,
+                content[max(0, first - 10): first + len("entity://") + next_uri + len("entity://") + 10]
+            ))
+
+check3_pass = len(check3_failures) == 0
+print(f"Check 3 (no nested entity://...entity:// corruption): "
+      f"{'PASS' if check3_pass else 'FAIL'}  "
+      f"({len(check3_failures)} corrupted occurrences)")
+
+# ---------- Check 4: system prompt has no entity:// ----------
+check4_failures: list[int] = []
+for idx, traj in enumerate(trajectories):
+    if traj and traj[0].get("role") == "system":
+        if "entity://" in traj[0].get("content", ""):
+            check4_failures.append(idx)
+
+check4_pass = len(check4_failures) == 0
+print(f"Check 4 (no entity:// in system prompt): "
+      f"{'PASS' if check4_pass else 'FAIL'}  "
+      f"({len(check4_failures)} contaminated systems)")
+
+# ---------- Write markdown report ----------
+lines: list[str] = []
+lines.append("# V16-Q8-REDO Phase 1 sanity report (REGEN approach)")
+lines.append("")
+lines.append(f"- Source parquet: `data/freebase/verl_cwq_q8_redo/train.parquet`")
+lines.append(f"- Generated SFT JSONL: `{OUT_PATH}`")
+lines.append(f"- Trajectory count: {len(trajectories)}")
+lines.append("")
+lines.append("## Check summary")
+lines.append("")
+lines.append("| # | Check | Result | Failures |")
+lines.append("|---|-------|--------|----------|")
+lines.append(f"| 1 | system prompt byte-identical to canonical | {'PASS' if check1_pass else 'FAIL'} | {len(check1_failures)} / {len(trajectories)} |")
+lines.append(f"| 2 | entity:// in user/asst/tool content of 5 samples | {'PASS' if check2_pass else 'FAIL'} | {len(check2_failures)} / {len(sample_indices)} |")
+lines.append(f"| 3 | no nested entity://...entity:// corruption | {'PASS' if check3_pass else 'FAIL'} | {len(check3_failures)} |")
+lines.append(f"| 4 | no entity:// in system prompt | {'PASS' if check4_pass else 'FAIL'} | {len(check4_failures)} |")
+lines.append("")
+
+if check1_failures:
+    lines.append("## Check 1 failures (first 5)")
+    lines.append("")
+    for idx, reason in check1_failures[:5]:
+        lines.append(f"- traj {idx}: {reason}")
+    lines.append("")
+
+lines.append("## Check 2: 5 random trajectories (question + first assistant turn + first tool response)")
+lines.append("")
+for ex in check2_examples:
+    lines.append(f"### Trajectory {ex['idx']}  (URIs in non-system content: {ex['has_uri_in_non_system']})")
+    lines.append("")
+    lines.append("**Question:**")
+    lines.append("")
+    lines.append("```")
+    lines.append(ex["question"][:1000])
+    lines.append("```")
+    lines.append("")
+    lines.append("**First assistant turn:**")
+    lines.append("")
+    lines.append("```")
+    lines.append(ex["first_assistant"][:1000])
+    lines.append("```")
+    lines.append("")
+    lines.append("**First tool response (user-role w/ <tool_response>):**")
+    lines.append("")
+    lines.append("```")
+    lines.append(ex["first_tool"][:1000])
+    lines.append("```")
+    lines.append("")
+
+if check3_failures:
+    lines.append("## Check 3 corruption snippets (first 5)")
+    lines.append("")
+    for t_idx, m_idx, snip in check3_failures[:5]:
+        lines.append(f"- traj {t_idx} msg {m_idx}: `{snip}`")
+    lines.append("")
+
+if check4_failures:
+    lines.append("## Check 4 contaminated systems (first 5)")
+    lines.append("")
+    for idx in check4_failures[:5]:
+        lines.append(f"- traj {idx}")
+    lines.append("")
+
+overall_pass = check1_pass and check2_pass and check3_pass and check4_pass
+lines.append("## Overall verdict")
+lines.append("")
+lines.append(f"**{'ALL CHECKS PASS' if overall_pass else 'AT LEAST ONE CHECK FAILED'}**")
+lines.append("")
+
+REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
+REPORT_PATH.write_text("\n".join(lines), encoding="utf-8")
+print(f"Wrote report -> {REPORT_PATH}")
+
+if not overall_pass:
+    print("OVERALL: FAIL", file=sys.stderr)
+    sys.exit(2)
+print("OVERALL: PASS")
+PYEOF
+
+echo ""
+echo "=== Sanity report HEAD ==="
+head -40 results/phase7/v16_q8_redo_sanity_report.md
+
+echo ""
+echo "=== Sanity report TAIL ==="
+tail -10 results/phase7/v16_q8_redo_sanity_report.md
+
+echo ""
+echo "=== Done: $(date) ==="

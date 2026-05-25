@@ -1,0 +1,243 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=e2_diag4
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --time=02:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# DIAGNOSTIC 4: Debug save — add timing prints to checkpoint save
+# to identify EXACTLY which operation hangs (barrier? state_dict? torch.save?)
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+module load brics/nccl 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export VLLM_USE_V1=1
+export RAY_DEDUP_LOGS=0
+export RAY_TMPDIR="/tmp/ray-${SLURM_JOB_ID}"
+mkdir -p "$RAY_TMPDIR"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+export REWARD_TYPE=heuristic
+EXPERIMENT_NAME="grpo-cwq-7b-heuristic-diag4-debugsave"
+
+echo "=== E2 DIAG 4: Debug checkpoint save ==="
+echo "Date: $(date)"
+echo "Node: $(hostname)"
+echo "RAY_DEDUP_LOGS=0 (show all rank outputs)"
+echo ""
+
+# Patch the checkpoint manager with debug prints
+python3 -c "
+# Monkey-patch FSDPCheckpointManager to add timing debug prints
+import verl.utils.checkpoint.fsdp_checkpoint_manager as ckpt_mod
+import time, os, warnings
+import torch
+import torch.distributed as dist
+from torch.distributed.fsdp import StateDictType, ShardedStateDictConfig, ShardedOptimStateDictConfig
+from verl.utils.fsdp_utils import get_fsdp_state_ctx, fsdp_version
+from verl.utils.fs import local_mkdir_safe
+
+original_save = ckpt_mod.FSDPCheckpointManager.save_checkpoint
+
+def debug_save(self, local_path, hdfs_path=None, global_step=0, max_ckpt_to_keep=None):
+    rank = dist.get_rank() if dist.is_initialized() else -1
+    print(f'[SAVE rank={rank}] === START step={global_step} ===', flush=True)
+    t0 = time.time()
+    try:
+        original_save(self, local_path, hdfs_path, global_step, max_ckpt_to_keep)
+        print(f'[SAVE rank={rank}] === DONE ({time.time()-t0:.1f}s) ===', flush=True)
+    except Exception as e:
+        print(f'[SAVE rank={rank}] === FAILED ({time.time()-t0:.1f}s): {e} ===', flush=True)
+        raise
+
+ckpt_mod.FSDPCheckpointManager.save_checkpoint = debug_save
+
+# Also patch dist.barrier to track where it hangs
+original_barrier = dist.barrier
+def debug_barrier(*args, **kwargs):
+    rank = dist.get_rank() if dist.is_initialized() else -1
+    import traceback
+    caller = traceback.extract_stack()[-2]
+    print(f'[BARRIER rank={rank}] ENTER from {caller.filename}:{caller.lineno}', flush=True)
+    t = time.time()
+    original_barrier(*args, **kwargs)
+    print(f'[BARRIER rank={rank}] EXIT ({time.time()-t:.1f}s)', flush=True)
+dist.barrier = debug_barrier
+
+print('[DEBUG] Patched save_checkpoint and dist.barrier', flush=True)
+"
+
+# Write the patch as a sitecustomize so it loads in every worker
+cat > /tmp/verl_debug_patch.py << 'PATCH'
+import atexit
+def apply_debug_patches():
+    try:
+        import torch.distributed as dist
+        import verl.utils.checkpoint.fsdp_checkpoint_manager as ckpt_mod
+        import time, traceback
+
+        original_save = ckpt_mod.FSDPCheckpointManager.save_checkpoint
+        def debug_save(self, local_path, hdfs_path=None, global_step=0, max_ckpt_to_keep=None):
+            rank = dist.get_rank() if dist.is_initialized() else -1
+            print(f'[SAVE rank={rank}] === START step={global_step} ===', flush=True)
+            t0 = time.time()
+            original_save(self, local_path, hdfs_path, global_step, max_ckpt_to_keep)
+            print(f'[SAVE rank={rank}] === DONE ({time.time()-t0:.1f}s) ===', flush=True)
+        ckpt_mod.FSDPCheckpointManager.save_checkpoint = debug_save
+
+        original_barrier = dist.barrier
+        def debug_barrier(*args, **kwargs):
+            rank = dist.get_rank() if dist.is_initialized() else -1
+            caller = traceback.extract_stack()[-2]
+            loc = f'{caller.filename.split("/")[-1]}:{caller.lineno}'
+            print(f'[BARRIER rank={rank}] ENTER {loc}', flush=True)
+            t = time.time()
+            original_barrier(*args, **kwargs)
+            print(f'[BARRIER rank={rank}] EXIT ({time.time()-t:.1f}s) {loc}', flush=True)
+        dist.barrier = debug_barrier
+        print('[DEBUG] Patches applied in worker', flush=True)
+    except Exception:
+        pass
+PATCH
+
+# --- Start KG server ---
+python -m src_verl.kg_server.server \
+    --kg freebase --freebase_dir data/freebase/kg --port 18901 --log-level warning > /dev/null 2>&1 &
+KG_PID=$!
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:18901/health 2>/dev/null | grep -q "200" && echo "KG healthy" && break
+    sleep 10
+done
+
+ray stop 2>/dev/null || true
+
+echo "=== Launching GRPO with debug patches ==="
+echo "Start: $(date)"
+
+# Inject the debug patch via PYTHONSTARTUP won't work for Ray workers.
+# Instead, we patch the fsdp_workers.py directly (temporarily)
+FSDP_WORKERS="$HOME/miniforge3/envs/kg_verl/lib/python3.10/site-packages/verl/workers/fsdp_workers.py"
+
+# Add debug prints around save_checkpoint and dist.barrier in fsdp_workers
+python3 << 'INJECT'
+import re
+
+fpath = "/home/u6gg/ts1201.u6gg/miniforge3/envs/kg_verl/lib/python3.10/site-packages/verl/workers/fsdp_workers.py"
+with open(fpath) as f:
+    content = f.read()
+
+# Check if already patched
+if '[SAVE-DBG]' not in content:
+    # Patch save_checkpoint to add prints before/after each key operation
+    old = '''    def save_checkpoint(self, local_path, hdfs_path=None, global_step=0, max_ckpt_to_keep=None):
+        from verl.utils.logger import log_with_rank
+
+        # only support save and load ckpt for actor
+        assert self._is_actor
+
+        if self._is_offload_param:
+            load_fsdp_model_to_gpu(self.actor_module_fsdp)
+
+        self.checkpoint_manager.save_checkpoint(
+            local_path=local_path, hdfs_path=hdfs_path, global_step=global_step, max_ckpt_to_keep=max_ckpt_to_keep
+        )
+        dist.barrier()'''
+
+    new = '''    def save_checkpoint(self, local_path, hdfs_path=None, global_step=0, max_ckpt_to_keep=None):
+        from verl.utils.logger import log_with_rank
+        import time as _time
+
+        # only support save and load ckpt for actor
+        assert self._is_actor
+        _r = dist.get_rank() if dist.is_initialized() else -1
+        print(f'[SAVE-DBG rank={_r}] save_checkpoint ENTER step={global_step}', flush=True)
+        _t0 = _time.time()
+
+        if self._is_offload_param:
+            load_fsdp_model_to_gpu(self.actor_module_fsdp)
+
+        print(f'[SAVE-DBG rank={_r}] calling checkpoint_manager.save_checkpoint...', flush=True)
+        self.checkpoint_manager.save_checkpoint(
+            local_path=local_path, hdfs_path=hdfs_path, global_step=global_step, max_ckpt_to_keep=max_ckpt_to_keep
+        )
+        print(f'[SAVE-DBG rank={_r}] checkpoint_manager.save done ({_time.time()-_t0:.1f}s), entering barrier...', flush=True)
+        dist.barrier()
+        print(f'[SAVE-DBG rank={_r}] barrier done ({_time.time()-_t0:.1f}s)', flush=True)'''
+
+    content = content.replace(old, new)
+    with open(fpath, 'w') as f:
+        f.write(content)
+    print("Patched fsdp_workers.py with debug prints")
+else:
+    print("Already patched")
+INJECT
+
+set +e
+python -m verl.trainer.main_ppo \
+    --config-path="$PWD/configs_verl" \
+    --config-name=grpo_cwq_7b \
+    trainer.experiment_name="$EXPERIMENT_NAME" \
+    trainer.save_freq=50 \
+    trainer.test_freq=200 \
+    trainer.val_before_train=false \
+    +actor_rollout_ref.rollout.enable_sleep_mode=true \
+    actor_rollout_ref.rollout.agent.default_agent_loop=tool_agent \
+    data.dataloader_num_workers=0
+set -e
+
+echo ""
+echo "=== SAVE DEBUG OUTPUT ==="
+grep "SAVE-DBG" logs/e2_diag4-${SLURM_JOB_ID}.log 2>/dev/null
+echo ""
+
+# Restore fsdp_workers.py
+python3 << 'RESTORE'
+fpath = "/home/u6gg/ts1201.u6gg/miniforge3/envs/kg_verl/lib/python3.10/site-packages/verl/workers/fsdp_workers.py"
+with open(fpath) as f:
+    content = f.read()
+if '[SAVE-DBG' in content:
+    content = content.replace(
+        """        import time as _time
+
+        # only support save and load ckpt for actor
+        assert self._is_actor
+        _r = dist.get_rank() if dist.is_initialized() else -1
+        print(f'[SAVE-DBG rank={_r}] save_checkpoint ENTER step={global_step}', flush=True)
+        _t0 = _time.time()""",
+        """        # only support save and load ckpt for actor
+        assert self._is_actor"""
+    )
+    content = content.replace(
+        """        print(f'[SAVE-DBG rank={_r}] calling checkpoint_manager.save_checkpoint...', flush=True)""",
+        ""
+    )
+    content = content.replace(
+        """        print(f'[SAVE-DBG rank={_r}] checkpoint_manager.save done ({_time.time()-_t0:.1f}s), entering barrier...', flush=True)""",
+        ""
+    )
+    content = content.replace(
+        """        print(f'[SAVE-DBG rank={_r}] barrier done ({_time.time()-_t0:.1f}s)', flush=True)""",
+        ""
+    )
+    with open(fpath, 'w') as f:
+        f.write(content)
+    print("Restored fsdp_workers.py")
+RESTORE
+
+kill $KG_PID 2>/dev/null
+echo "=== Done ==="

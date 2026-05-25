@@ -1,0 +1,177 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=eval_e3_balanced
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=12:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Task 23 Eval: 0.5/0.5 balanced reward split
+# Eval at steps 500, 750, 1000, 1250 + trajectory classification
+# Key questions: Is Goodhart onset delayed? Does tool behavior change?
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+CKPT_DIR="/projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/grpo-cwq-7b-verifiable-balanced-20260330"
+TRAJ_DIR="results/trajectories/e3_balanced"
+
+echo "=== Task 23: E3 Balanced 0.5/0.5 Evaluation (with tools) ==="
+echo "Date: $(date)"
+echo "Checkpoints available:"
+ls "$CKPT_DIR" | grep global_step | sort -t_ -k3 -n
+echo ""
+
+# Start KG server
+echo "Starting Freebase KG server..."
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port 18901 --log-level warning &
+KG_PID=$!
+sleep 30
+for i in $(seq 1 12); do
+    if curl -s -o /dev/null -w "%{http_code}" http://localhost:18901/health 2>/dev/null | grep -q "200"; then
+        echo "KG server healthy after ${i}0+30 seconds"
+        break
+    fi
+    echo "  Still loading... (${i}0+30s)"
+    sleep 10
+done
+echo ""
+
+mkdir -p results "$TRAJ_DIR"
+
+# Part 1: Goodhart curve — eval at key steps
+echo "=== E3-balanced Goodhart curve: steps 250,350,500,750,1000,1250 ==="
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$CKPT_DIR" \
+    --steps 250 350 500 750 1000 1250 \
+    --eval_data data/freebase/verl_cwq/val.parquet \
+    --output results/eval_e3_balanced_goodhart_curve.json \
+    --kg_server_url http://localhost:18901 \
+    --max_samples 500 \
+    --max_turns 5
+echo ""
+
+# Part 2: Trajectories at steps 500, 750, 1000, 1250
+for step in 500 750 1000 1250; do
+    echo "=== E3-balanced trajectories: step $step ==="
+    python scripts/eval_with_tools.py \
+        --checkpoint_dir "$CKPT_DIR" \
+        --steps "$step" \
+        --eval_data data/freebase/verl_cwq/val.parquet \
+        --output "results/eval_e3_balanced_traj_${step}.json" \
+        --kg_server_url http://localhost:18901 \
+        --max_samples 500 \
+        --max_turns 5 \
+        --save_trajectories "$TRAJ_DIR" \
+        --max_trajectory_samples 100
+    echo ""
+done
+
+kill $KG_PID 2>/dev/null
+
+# Part 3: Trajectory classification
+echo "=== Trajectory Classification ==="
+python3 << 'PYEOF'
+import json
+import re
+from collections import Counter
+from pathlib import Path
+
+TRAJ_DIR = Path("results/trajectories/e3_balanced")
+
+for step in [500, 750, 1000, 1250]:
+    traj_file = TRAJ_DIR / f"step_{step}" / "trajectories.json"
+    if not traj_file.exists():
+        print(f"\n--- Step {step}: file not found ---")
+        continue
+
+    trajs = json.loads(traj_file.read_text())
+    print(f"\n{'='*60}")
+    print(f"E3-balanced Step {step}: {len(trajs)} trajectories")
+    print(f"{'='*60}")
+
+    ems = [t.get("em", 0) for t in trajs]
+    tool_counts = [t.get("num_tool_calls", 0) for t in trajs]
+    print(f"  EM: {sum(ems)/len(ems):.3f} ({sum(1 for e in ems if e > 0)}/{len(ems)} correct)")
+    print(f"  Tool calls: mean={sum(tool_counts)/len(tool_counts):.2f}, "
+          f"0-calls={sum(1 for t in tool_counts if t==0)}, "
+          f"1-call={sum(1 for t in tool_counts if t==1)}, "
+          f"2+calls={sum(1 for t in tool_counts if t>=2)}")
+
+    # Tool action distribution
+    action_counts = Counter()
+    for t in trajs:
+        resp = t.get("full_response", "")
+        for m in re.finditer(r"<search>\s*(\w+)\(", resp):
+            action_counts[m.group(1)] += 1
+    if action_counts:
+        total_actions = sum(action_counts.values())
+        print(f"  Tool actions ({total_actions} total):")
+        for action, cnt in action_counts.most_common():
+            print(f"    {action}: {cnt} ({100*cnt/total_actions:.1f}%)")
+
+    # Classification: correct-via-tool vs correct-via-memory
+    correct_via_tool = 0
+    correct_via_memory = 0
+    correct_no_tool = 0
+    wrong_no_tool = 0
+    kg_incomplete = 0
+    wrong_answer = 0
+
+    for t in trajs:
+        em = t.get("em", 0) > 0
+        n_tools = t.get("num_tool_calls", 0)
+        gold = str(t.get("gold_answer", "")).lower()
+        resp = t.get("full_response", "").lower()
+        tool_responses = re.findall(r"<tool_response>(.*?)</tool_response>", resp, re.DOTALL)
+        answer_in_kg = any(gold in tr for tr in tool_responses) if gold else False
+
+        if n_tools == 0:
+            if em:
+                correct_no_tool += 1
+            else:
+                wrong_no_tool += 1
+        elif em:
+            if answer_in_kg:
+                correct_via_tool += 1
+            else:
+                correct_via_memory += 1
+        else:
+            all_empty = all(
+                tr.strip() in ("[]", "", "no results found")
+                for tr in tool_responses
+            )
+            if all_empty:
+                kg_incomplete += 1
+            else:
+                wrong_answer += 1
+
+    total = len(trajs)
+    print(f"\n  Classification:")
+    print(f"    correct-via-tool:   {correct_via_tool:3d} ({100*correct_via_tool/total:.1f}%)")
+    print(f"    correct-via-memory: {correct_via_memory:3d} ({100*correct_via_memory/total:.1f}%)")
+    print(f"    correct-no-tool:    {correct_no_tool:3d} ({100*correct_no_tool/total:.1f}%)")
+    print(f"    wrong-no-tool:      {wrong_no_tool:3d} ({100*wrong_no_tool/total:.1f}%)")
+    print(f"    kg-incomplete:      {kg_incomplete:3d} ({100*kg_incomplete/total:.1f}%)")
+    print(f"    wrong-answer:       {wrong_answer:3d} ({100*wrong_answer/total:.1f}%)")
+
+    # Compare with E3 baseline
+    print(f"\n  E3 comparison (reference: EM=53.8% @500, correct-via-tool=0%)")
+
+PYEOF
+
+echo ""
+echo "=== Done ==="
+echo "End: $(date)"

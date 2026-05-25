@@ -1,0 +1,27 @@
+{
+  "50": {
+    "n": 3531,
+    "has_answer_tag": 3499,
+    "format_valid_pct": 99.09374114981591
+  },
+  "100": {
+    "n": 3531,
+    "has_answer_tag": 3522,
+    "format_valid_pct": 99.74511469838572
+  },
+  "150": {
+    "n": 3531,
+    "has_answer_tag": 3514,
+    "format_valid_pct": 99.51854998583971
+  },
+  "200": {
+    "n": 3531,
+    "has_answer_tag": 3528,
+    "format_valid_pct": 99.91503823279524
+  },
+  "250": {
+    "n": 3531,
+    "has_answer_tag": 3521,
+    "format_valid_pct": 99.71679410931748
+  }
+}

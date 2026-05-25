@@ -130,6 +130,7 @@ def generate_with_tools(
     kg_server_url: str,
     max_turns: int = 5,
     max_new_tokens: int = 512,
+    repetition_penalty: float = 1.0,
     device: str = "cuda",
 ) -> tuple[str, int]:
     """Multi-turn generation with KG tool calls.
@@ -153,6 +154,7 @@ def generate_with_tools(
                 **inputs,
                 max_new_tokens=max_new_tokens,
                 do_sample=False,
+                repetition_penalty=repetition_penalty,
                 pad_token_id=tokenizer.pad_token_id,
             )
 
@@ -215,13 +217,30 @@ def main() -> None:
     parser.add_argument("--base_model", type=str, default="outputs/verl-sft-cwq-7b-merged")
     parser.add_argument("--output", type=Path, default=Path("results/eval_with_tools.json"))
     parser.add_argument("--kg_server_url", type=str, default="http://localhost:18901")
-    parser.add_argument("--max_samples", type=int, default=500)
+    parser.add_argument("--max_samples", type=int, default=500,
+                        help="Max samples to evaluate. 0 = all samples in eval_data.")
     parser.add_argument("--max_turns", type=int, default=5)
+    parser.add_argument("--max_new_tokens", type=int, default=512,
+                        help="Max new tokens per generation turn")
+    parser.add_argument("--repetition_penalty", type=float, default=1.0,
+                        help="Repetition penalty for generation (1.0 = no penalty)")
     parser.add_argument("--device", type=str, default="cuda")
     parser.add_argument("--save_trajectories", type=Path, default=None,
                         help="Directory to save full trajectories (one JSON per step)")
     parser.add_argument("--max_trajectory_samples", type=int, default=100,
                         help="Max trajectories to save per checkpoint")
+    parser.add_argument("--filter_ids", type=Path, default=None,
+                        help="JSON file with 'filter_ids' or 'category_b_ids' list to filter questions")
+    parser.add_argument("--save_per_sample", type=Path, default=None,
+                        help="Directory to save per-sample results JSON (for bootstrap CIs / McNemar's test)")
+    parser.add_argument("--start_idx", type=int, default=0,
+                        help="Start at this sample index (for splitting across jobs)")
+    parser.add_argument("--end_idx", type=int, default=-1,
+                        help="End at this sample index (-1 = no limit). For splitting across jobs.")
+    parser.add_argument("--save_every", type=int, default=200,
+                        help="Save per-sample + partial results every N samples (for resume on timeout)")
+    parser.add_argument("--resume", action="store_true",
+                        help="Skip sample_ids already present in the per-sample output file")
     args = parser.parse_args()
 
     # Verify KG server is reachable
@@ -238,6 +257,16 @@ def main() -> None:
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
     system_prompt = df.iloc[0]["prompt"][0]["content"]
+
+    # Optional: filter to specific question IDs (e.g., Category B from Task 26)
+    filter_id_set = None
+    if args.filter_ids:
+        with open(args.filter_ids) as fid:
+            filter_data = json.load(fid)
+        filter_id_set = set(
+            filter_data.get("filter_ids", filter_data.get("category_b_ids", []))
+        )
+        logger.info("Filtering to %d question IDs", len(filter_id_set))
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     results = {}
@@ -257,22 +286,72 @@ def main() -> None:
 
         ems, cms, f1s, tool_counts = [], [], [], []
         trajectories: list[dict] = []
+        per_sample: list[dict] = []
 
+        # max_samples=0 means evaluate all
+        max_samples = args.max_samples if args.max_samples > 0 else len(df)
+        end_idx = args.end_idx if args.end_idx > 0 else len(df)
+
+        # Determine per-sample output file path (for periodic saves + resume)
+        ps_file = None
+        if args.save_per_sample is not None:
+            ps_dir = args.save_per_sample
+            ps_dir.mkdir(parents=True, exist_ok=True)
+            if args.start_idx > 0 or args.end_idx > 0:
+                ps_file = ps_dir / f"step_{step}_chunk_{args.start_idx}_{end_idx}.json"
+            else:
+                ps_file = ps_dir / f"step_{step}_per_sample.json"
+
+        # Resume: load already-processed records
+        already_done: set[str] = set()
+        if args.resume and ps_file is not None and ps_file.exists():
+            try:
+                with open(ps_file) as psf_in:
+                    prior = json.load(psf_in)
+                for rec in prior:
+                    already_done.add(str(rec["sample_id"]))
+                    per_sample.append(rec)
+                    ems.append(float(rec.get("em", 0)))
+                    cms.append(float(rec.get("contains_em", 0)))
+                    f1s.append(float(rec.get("f1", 0)))
+                    tool_counts.append(int(rec.get("num_tool_calls", 0)))
+                logger.info("Resumed: loaded %d already-processed samples", len(already_done))
+            except Exception as e:
+                logger.warning("Could not resume from %s: %s", ps_file, e)
+
+        n_evaluated = len(per_sample)
         for i, (_, row) in enumerate(df.iterrows()):
-            if i >= args.max_samples:
+            if i < args.start_idx:
+                continue
+            if i >= end_idx:
                 break
+            if n_evaluated >= max_samples:
+                break
+
+            sample_id = row["extra_info"].get("sample_id", str(i))
+
+            # Skip questions not in filter set (if filtering enabled)
+            if filter_id_set is not None and sample_id not in filter_id_set:
+                continue
+
+            # Resume: skip already-processed samples
+            if str(sample_id) in already_done:
+                continue
 
             question = row["prompt"][1]["content"]
             gold = row["reward_model"]["ground_truth"]
             all_answers = row["extra_info"].get("all_answers", [gold])
             if hasattr(all_answers, "tolist"):
                 all_answers = all_answers.tolist()
-            sample_id = row["extra_info"].get("sample_id", str(i))
             hops = int(row["extra_info"].get("hops", 0))
+            n_evaluated += 1
 
             full_response, n_tools = generate_with_tools(
                 model, tokenizer, question, system_prompt,
-                args.kg_server_url, args.max_turns, device=args.device,
+                args.kg_server_url, args.max_turns,
+                max_new_tokens=args.max_new_tokens,
+                repetition_penalty=args.repetition_penalty,
+                device=args.device,
             )
 
             predicted = extract_answer(full_response)
@@ -284,7 +363,17 @@ def main() -> None:
             f1s.append(f1_score)
             tool_counts.append(n_tools)
 
-            if args.save_trajectories and i < args.max_trajectory_samples:
+            if args.save_per_sample is not None:
+                per_sample.append({
+                    "sample_id": str(sample_id),
+                    "em": float(em_score),
+                    "contains_em": float(cm_score),
+                    "f1": float(f1_score),
+                    "num_tool_calls": int(n_tools),
+                    "hops": hops,
+                })
+
+            if args.save_trajectories and n_evaluated <= args.max_trajectory_samples:
                 trajectories.append({
                     "sample_id": str(sample_id),
                     "question": question,
@@ -298,13 +387,18 @@ def main() -> None:
                     "f1": f1_score,
                 })
 
-            if (i + 1) % 50 == 0:
+            if n_evaluated % 50 == 0:
                 logger.info(
                     "  %d/%d EM=%.3f ContEM=%.3f F1=%.3f ToolCalls=%.1f",
-                    i + 1, args.max_samples,
+                    n_evaluated, max_samples,
                     sum(ems) / len(ems), sum(cms) / len(cms),
                     sum(f1s) / len(f1s), sum(tool_counts) / len(tool_counts),
                 )
+
+            # Periodic per-sample save (so timeouts don't waste compute)
+            if ps_file is not None and n_evaluated % args.save_every == 0:
+                with open(ps_file, "w") as psf_out:
+                    json.dump(per_sample, psf_out, indent=2)
 
         elapsed = time.time() - start
         r = {
@@ -326,6 +420,11 @@ def main() -> None:
             with open(traj_file, "w") as tf:
                 json.dump(trajectories, tf, indent=2, ensure_ascii=False)
             logger.info("Saved %d trajectories to %s", len(trajectories), traj_file)
+
+        if ps_file is not None and per_sample:
+            with open(ps_file, "w") as psf:
+                json.dump(per_sample, psf, indent=2)
+            logger.info("Saved %d per-sample records to %s", len(per_sample), ps_file)
 
         del model
         torch.cuda.empty_cache()

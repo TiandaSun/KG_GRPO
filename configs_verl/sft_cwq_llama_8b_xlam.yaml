@@ -1,0 +1,45 @@
+# v17 W17.1c-xLAM — Llama-3.1-8B-Instruct SFT mirroring xLAM cookbook recipe.
+# Used as the BACKUP config if W17.1b (200 steps, original Qwen-style recipe)
+# also fails the format-emission gate.
+#
+# Key deltas from sft_cwq_llama_8b_w6.yaml (Qwen-inherited):
+#   - LR        2.0e-5  ->  5.0e-5     (5x higher; xLAM uses 1e-4 with batch 128)
+#   - LoRA r    64      ->  16
+#   - LoRA alpha 128    ->  32         (xLAM uses alpha = 2*r)
+#   - DoRA      true    ->  false      (xLAM does NOT use DoRA)
+#   - rsLoRA    true    ->  false      (xLAM does NOT use rsLoRA)
+#   - Sched     cosine  ->  cosine     (kept; xLAM uses linear but cosine is fine)
+#
+# Source: HF cookbook "function_calling_fine_tuning_llms_on_xlam"; Salesforce xLAM repo.
+model:
+  model_name: "meta-llama/Llama-3.1-8B-Instruct"
+  torch_dtype: "bfloat16"
+  attn_implementation: "eager"  # ARM GH200, no flash_attn
+
+lora:
+  lora_r: 16
+  lora_alpha: 32
+  lora_target_modules: "all-linear"
+  lora_dropout: 0.05
+  use_dora: false
+  use_rslora: false
+
+training:
+  num_train_epochs: 3
+  per_device_train_batch_size: 2
+  gradient_accumulation_steps: 8
+  learning_rate: 5.0e-5
+  gradient_checkpointing: true
+  max_seq_length: 2048
+  logging_steps: 10
+  save_strategy: "epoch"
+  warmup_ratio: 0.10
+  optim: "adamw_torch"
+
+data:
+  train_file: "data/freebase/sft_trajectories.jsonl"
+  output_dir: "outputs/v17_llama_w17_1c_xlam"
+
+wandb:
+  wandb_project: "kg-align-verl"
+  wandb_run_name: "v17-llama-w17_1c-xlam-20260509"

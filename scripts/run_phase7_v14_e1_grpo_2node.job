@@ -1,0 +1,164 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v14e1_grpo2n
+#SBATCH --nodes=2
+#SBATCH --gpus-per-node=4
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=72
+#SBATCH --time=24:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# V14-E1 Qwen2.5-32B E5b GRPO on 2 nodes × 4 GH200 = 8 GPUs.
+#
+# Single-node (1×4 GH200) OOMed twice at vLLM wake_up after weight sync
+# (jobs 4027464, 4105590). 2 nodes doubles memory and shards FSDP across 8 GPUs,
+# giving enough headroom for both actor-training and vLLM-rollout resident states.
+#
+# Recipe mirrors the smoke test (run_phase7_v14_d1_2node_smoke.job) which must
+# pass first.  Multi-node layout:
+#   - Ray head on node 0, worker on node 1 (ray start --block &).
+#   - FSDP shards 14B across all 8 GPUs (~3.5GB weight + ~14GB optim per GPU).
+#   - vLLM TP=4 within-node → 2 rollout replicas (one per node, NVLink-local).
+#   - KG server on node 0, bound to 0.0.0.0 so node-1 rollout workers can reach.
+#   - A per-job tool config YAML rewrites the URL from localhost to HEAD_IP.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+module load brics/nccl 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export VLLM_USE_V1=1
+export RAY_DEDUP_LOGS=1
+export RAY_TMPDIR="/tmp/ray-${SLURM_JOB_ID}"
+export TMPDIR="/tmp"
+mkdir -p "$RAY_TMPDIR"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+export REWARD_TYPE=tool_type_bonus
+
+INIT_BASE="outputs/verl-sft-cwq-32b-from-base-merged"
+EXPERIMENT_NAME="grpo-cwq-32b-e5b-2node-20260425"
+
+echo "=== V14-E1 Qwen2.5-32B 2-node GRPO (E5b-stabilized) ==="
+echo "Date: $(date)"
+echo "Nodes: $SLURM_JOB_NODELIST"
+echo "Init: $INIT_BASE"
+echo "Experiment: $EXPERIMENT_NAME"
+
+if [ ! -d "$INIT_BASE" ]; then
+    echo "ERROR: merged SFT checkpoint not found at $INIT_BASE"
+    exit 1
+fi
+
+# --- Ray cluster (Slingshot hsn0 IP; Ray's 6379 is whitelisted inter-node) ---
+nodes=($(scontrol show hostnames "$SLURM_JOB_NODELIST"))
+HEAD_NODE=${nodes[0]}
+WORKER_NODE=${nodes[1]}
+HEAD_IP=$(srun --nodes=1 --ntasks=1 -w "$HEAD_NODE" bash -c \
+    "ip -4 -o addr show hsn0 2>/dev/null | awk '{print \$4}' | cut -d/ -f1")
+RAY_PORT=6379
+
+echo "Head: $HEAD_NODE (hsn0=$HEAD_IP); Worker: $WORKER_NODE"
+
+srun --nodes=1 --ntasks=1 -w "$HEAD_NODE" --export=ALL \
+    ray start --head \
+        --node-ip-address="$HEAD_IP" \
+        --port=$RAY_PORT \
+        --num-cpus=72 \
+        --num-gpus=4 \
+        --block &
+RAY_HEAD_PID=$!
+sleep 45
+
+srun --nodes=1 --ntasks=1 -w "$WORKER_NODE" --export=ALL \
+    ray start \
+        --address="${HEAD_IP}:${RAY_PORT}" \
+        --num-cpus=72 \
+        --num-gpus=4 \
+        --block &
+RAY_WORKER_PID=$!
+sleep 30
+
+export RAY_ADDRESS="${HEAD_IP}:${RAY_PORT}"
+ray status --address="$RAY_ADDRESS" 2>&1 | head -20 || true
+
+# --- Per-node KG servers (Isambard firewalls arbitrary inter-node ports, so
+#     each node binds its own KG server on localhost; ~2 GB RAM/node, trivial) ---
+KG_PORT=$((18000 + SLURM_JOB_ID % 1000))
+srun --overlap --nodes=1 --ntasks=1 --cpus-per-task=4 -w "$HEAD_NODE" --export=ALL \
+    python -m src_verl.kg_server.server \
+        --kg freebase --freebase_dir data/freebase/kg \
+        --port $KG_PORT --host 127.0.0.1 --log-level warning &
+KG_HEAD_PID=$!
+srun --overlap --nodes=1 --ntasks=1 --cpus-per-task=4 -w "$WORKER_NODE" --export=ALL \
+    python -m src_verl.kg_server.server \
+        --kg freebase --freebase_dir data/freebase/kg \
+        --port $KG_PORT --host 127.0.0.1 --log-level warning &
+KG_WORKER_PID=$!
+
+cleanup() {
+    kill $KG_HEAD_PID $KG_WORKER_PID 2>/dev/null || true
+    kill $RAY_HEAD_PID $RAY_WORKER_PID 2>/dev/null || true
+    rm -f "$TOOL_CFG" 2>/dev/null || true
+}
+trap cleanup EXIT
+
+sleep 45
+HEAD_OK=0; WORKER_OK=0
+for i in $(seq 1 12); do
+    h=$(srun --overlap --nodes=1 --ntasks=1 --cpus-per-task=1 -w "$HEAD_NODE" --export=ALL \
+        curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:${KG_PORT}/health" 2>/dev/null || echo FAIL)
+    w=$(srun --overlap --nodes=1 --ntasks=1 --cpus-per-task=1 -w "$WORKER_NODE" --export=ALL \
+        curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:${KG_PORT}/health" 2>/dev/null || echo FAIL)
+    [ "$h" = "200" ] && HEAD_OK=1
+    [ "$w" = "200" ] && WORKER_OK=1
+    [ "$HEAD_OK" = "1" ] && [ "$WORKER_OK" = "1" ] && break
+    sleep 10
+done
+[ "$HEAD_OK" = "1" ] && [ "$WORKER_OK" = "1" ] || { echo "ERROR: KG servers not healthy"; exit 1; }
+echo "Both KG servers healthy on localhost:$KG_PORT"
+
+# --- Per-job tool config (localhost rewrite) ---
+TOOL_CFG="configs_verl/kg_tool_config_freebase_${SLURM_JOB_ID}.yaml"
+sed "s|http://localhost:18901|http://127.0.0.1:${KG_PORT}|" \
+    configs_verl/kg_tool_config_freebase.yaml > "$TOOL_CFG"
+echo "Tool config: $TOOL_CFG"
+grep kg_server_url "$TOOL_CFG"
+
+# --- Training (500 steps, save every 50) ---
+python -m verl.trainer.main_ppo \
+    --config-path="$PWD/configs_verl" \
+    --config-name=grpo_cwq_7b \
+    ~ray_kwargs.ray_init.num_cpus \
+    trainer.experiment_name="$EXPERIMENT_NAME" \
+    trainer.total_training_steps=500 \
+    trainer.nnodes=2 \
+    trainer.n_gpus_per_node=4 \
+    actor_rollout_ref.model.path="$INIT_BASE" \
+    actor_rollout_ref.actor.use_kl_loss=true \
+    actor_rollout_ref.actor.kl_loss_coef=0.05 \
+    actor_rollout_ref.actor.kl_loss_type=low_var_kl \
+    actor_rollout_ref.actor.ppo_micro_batch_size_per_gpu=1 \
+    actor_rollout_ref.ref.log_prob_micro_batch_size_per_gpu=1 \
+    actor_rollout_ref.rollout.tensor_model_parallel_size=4 \
+    actor_rollout_ref.rollout.log_prob_micro_batch_size_per_gpu=1 \
+    actor_rollout_ref.rollout.gpu_memory_utilization=0.45 \
+    actor_rollout_ref.rollout.max_num_seqs=64 \
+    actor_rollout_ref.rollout.max_num_batched_tokens=4096 \
+    +actor_rollout_ref.rollout.enable_sleep_mode=true \
+    actor_rollout_ref.rollout.agent.default_agent_loop=tool_agent \
+    actor_rollout_ref.rollout.multi_turn.tool_config_path="$TOOL_CFG" \
+    data.dataloader_num_workers=0
+
+echo "=== Done: $(date) ==="

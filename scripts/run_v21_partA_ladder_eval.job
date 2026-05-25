@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=v21_ladder_eval
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --cpus-per-task=72
+#SBATCH --time=04:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# v20 W21 Part A eval — pack-4: evaluate one ladder run's diagnostic checkpoints
+# {100,200,300,400} in parallel (one step per GPU) on the 200-Q seed-42 subset
+# (results/task37_sample_ids.json — matches pass@16 + fig protocol). Saves
+# per-sample + trajectories for 7-cat mode-signature classification.
+#
+# Usage: sbatch --export=ALL,RUNG=e3,SEED=2 scripts/run_v21_partA_ladder_eval.job
+
+set -eo pipefail
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+: "${RUNG:?RUNG required (e3/e5b/e5bkl)}"
+: "${SEED:?SEED required (2/3)}"
+
+EXP="grpo-cwq-7b-w21-${RUNG}-seed${SEED}-20260522"
+CKPT_ROOT="/projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/${EXP}"
+BASE_MODEL="outputs/verl-sft-cwq-7b-merged"   # tokenizer source
+EVAL_DATA="data/freebase/verl_cwq/test.parquet"
+FILTER_IDS="results/task37_sample_ids.json"
+OUT_DIR="_handoff/data/w21/ladder_eval/${RUNG}_seed${SEED}"
+KG_PORT_BASE=$((18300 + SLURM_JOB_ID % 80))
+
+mkdir -p "$OUT_DIR" logs
+[ -d "$CKPT_ROOT" ] || { echo "ERROR: $CKPT_ROOT missing"; exit 1; }
+
+# Steps to evaluate (only those that exist)
+WANT_STEPS="100 200 300 400"
+STEPS=""
+for s in $WANT_STEPS; do
+    [ -d "$CKPT_ROOT/global_step_${s}/actor" ] && STEPS="$STEPS $s"
+done
+echo "=== v21 ladder eval $RUNG seed$SEED ==="
+echo "Date: $(date)  steps: [$STEPS]"
+
+# Spawn 4 KG servers (one per GPU)
+KG_PIDS=()
+for k in 0 1 2 3; do
+    python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg \
+        --port $((KG_PORT_BASE + k)) --log-level warning &
+    KG_PIDS+=($!)
+done
+trap 'for pid in "${KG_PIDS[@]}"; do kill $pid 2>/dev/null; done; wait 2>/dev/null' EXIT
+sleep 45
+for k in 0 1 2 3; do
+    for i in $(seq 1 12); do
+        curl -s -o /dev/null -w "%{http_code}" http://localhost:$((KG_PORT_BASE+k))/health 2>/dev/null | grep -q 200 && break
+        sleep 5
+    done
+done
+echo "4 KG servers ready at $KG_PORT_BASE-$((KG_PORT_BASE+3))"
+
+eval_step() {
+    local idx="$1"; local step="$2"
+    local src="$CKPT_ROOT/global_step_${step}/actor"
+    local dst="outputs/v21_${RUNG}_seed${SEED}_step${step}-merged"
+    local kg_port=$((KG_PORT_BASE + idx))
+    local out_json="${OUT_DIR}/step${step}.json"
+    local ps_dir="${OUT_DIR}/step${step}_per_sample"
+    local traj_dir="${OUT_DIR}/step${step}_traj"
+    local logf="logs/v21_ladder_eval-${SLURM_JOB_ID}-${RUNG}s${SEED}-step${step}.log"
+    mkdir -p "$ps_dir" "$traj_dir"
+    {
+        if [ ! -f "$dst/config.json" ]; then
+            mkdir -p "$dst"
+            CUDA_VISIBLE_DEVICES=$idx python -m verl.model_merger merge --backend fsdp \
+                --local_dir "$src" --target_dir "$dst"
+            [ -f "$dst/tokenizer.json" ] || cp -n "$BASE_MODEL"/tokenizer* "$dst/" 2>/dev/null || true
+            [ -f "$dst/chat_template.jinja" ] || cp -n "$BASE_MODEL"/chat_template.jinja "$dst/" 2>/dev/null || true
+        fi
+        CUDA_VISIBLE_DEVICES=$idx python scripts/eval_with_tools.py \
+            --checkpoint_dir "$dst" --steps 0 --base_model "$dst" \
+            --eval_data "$EVAL_DATA" --output "$out_json" \
+            --kg_server_url http://localhost:$kg_port \
+            --filter_ids "$FILTER_IDS" --max_samples 0 \
+            --max_turns 5 --max_new_tokens 512 \
+            --save_per_sample "$ps_dir" \
+            --save_trajectories "$traj_dir" --max_trajectory_samples 9999
+    } > "$logf" 2>&1
+}
+
+idx=0
+PIDS=()
+for s in $STEPS; do
+    eval_step $idx $s &
+    PIDS+=($!)
+    idx=$((idx + 1))
+done
+fail=0
+for p in "${PIDS[@]}"; do wait $p || fail=1; done
+
+for pid in "${KG_PIDS[@]}"; do kill $pid 2>/dev/null; done
+echo "=== Done $(date) (fail=$fail) ==="
+exit $fail

@@ -1,0 +1,150 @@
+{
+  "trajectory_file": "/lus/lfs1aip2/scratch/u6gg/ts1201.u6gg/Project/KG_GRPO/results/trajectories/phase7/39g2_step500_full/step_0/trajectories.json",
+  "parquet_file": "/lus/lfs1aip2/scratch/u6gg/ts1201.u6gg/Project/KG_GRPO/data/freebase/verl_cwq/test.parquet",
+  "sft_file": "/lus/lfs1aip2/scratch/u6gg/ts1201.u6gg/Project/KG_GRPO/data/freebase/sft_trajectories.jsonl",
+  "definition": "seen = every gold relation in this question's kg_path appears in R_SFT (argument set); unseen = at least one gold relation NOT in R_SFT.",
+  "sft_stats": {
+    "n_sft_trajectories": 5000,
+    "n_calls_with_relation_arg": 24713,
+    "n_relation_listing_calls": 4975,
+    "n_r_sft_args": 1454,
+    "n_r_sft_exposed": 1460
+  },
+  "overall": {
+    "n_g2_trajectories": 3531,
+    "category_counts": {
+      "wrong-answer": 1140,
+      "correct-via-memory": 1203,
+      "kg-incomplete": 818,
+      "tool-misuse": 165,
+      "correct-via-tool": 205
+    },
+    "n_kg_incomplete": 818,
+    "bucket_counts": {
+      "relation_typo": 576,
+      "correct_entity_wrong_relation": 153,
+      "wrong_entity": 70,
+      "completely_off": 19
+    },
+    "bucket_pct": {
+      "relation_typo": 70.42,
+      "correct_entity_wrong_relation": 18.7,
+      "wrong_entity": 8.56,
+      "completely_off": 2.32
+    }
+  },
+  "split_question_counts_argument_def": {
+    "seen": 860,
+    "unseen": 2671
+  },
+  "split_question_counts_exposed_def": {
+    "seen": 876,
+    "unseen": 2655
+  },
+  "splits_argument_def": {
+    "seen": {
+      "n_questions": 860,
+      "n_g2_trajectories": 860,
+      "n_kg_incomplete": 167,
+      "bucket_counts": {
+        "relation_typo": 70,
+        "correct_entity_wrong_relation": 61,
+        "wrong_entity": 29,
+        "completely_off": 7
+      },
+      "bucket_pct": {
+        "relation_typo": 41.92,
+        "correct_entity_wrong_relation": 36.53,
+        "wrong_entity": 17.37,
+        "completely_off": 4.19
+      }
+    },
+    "unseen": {
+      "n_questions": 2671,
+      "n_g2_trajectories": 2671,
+      "n_kg_incomplete": 651,
+      "bucket_counts": {
+        "relation_typo": 506,
+        "correct_entity_wrong_relation": 92,
+        "wrong_entity": 41,
+        "completely_off": 12
+      },
+      "bucket_pct": {
+        "relation_typo": 77.73,
+        "correct_entity_wrong_relation": 14.13,
+        "wrong_entity": 6.3,
+        "completely_off": 1.84
+      }
+    },
+    "no_gold": {
+      "n_questions": 0,
+      "n_g2_trajectories": 0,
+      "n_kg_incomplete": 0,
+      "bucket_counts": {
+        "relation_typo": 0,
+        "correct_entity_wrong_relation": 0,
+        "wrong_entity": 0,
+        "completely_off": 0
+      },
+      "bucket_pct": {
+        "relation_typo": 0.0,
+        "correct_entity_wrong_relation": 0.0,
+        "wrong_entity": 0.0,
+        "completely_off": 0.0
+      }
+    }
+  },
+  "splits_exposed_def": {
+    "seen": {
+      "n_questions": 876,
+      "n_g2_trajectories": 876,
+      "n_kg_incomplete": 169,
+      "bucket_counts": {
+        "relation_typo": 70,
+        "correct_entity_wrong_relation": 63,
+        "wrong_entity": 29,
+        "completely_off": 7
+      },
+      "bucket_pct": {
+        "relation_typo": 41.42,
+        "correct_entity_wrong_relation": 37.28,
+        "wrong_entity": 17.16,
+        "completely_off": 4.14
+      }
+    },
+    "unseen": {
+      "n_questions": 2655,
+      "n_g2_trajectories": 2655,
+      "n_kg_incomplete": 649,
+      "bucket_counts": {
+        "relation_typo": 506,
+        "correct_entity_wrong_relation": 90,
+        "wrong_entity": 41,
+        "completely_off": 12
+      },
+      "bucket_pct": {
+        "relation_typo": 77.97,
+        "correct_entity_wrong_relation": 13.87,
+        "wrong_entity": 6.32,
+        "completely_off": 1.85
+      }
+    },
+    "no_gold": {
+      "n_questions": 0,
+      "n_g2_trajectories": 0,
+      "n_kg_incomplete": 0,
+      "bucket_counts": {
+        "relation_typo": 0,
+        "correct_entity_wrong_relation": 0,
+        "wrong_entity": 0,
+        "completely_off": 0
+      },
+      "bucket_pct": {
+        "relation_typo": 0.0,
+        "correct_entity_wrong_relation": 0.0,
+        "wrong_entity": 0.0,
+        "completely_off": 0.0
+      }
+    }
+  }
+}

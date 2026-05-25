@@ -1,0 +1,261 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v16q8r_eval
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --cpus-per-task=72
+#SBATCH --time=12:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# V16-Q8-REDO Phase 3 step-eval: packed-4 eval on bug-fixed Q8 test parquet.
+#
+# Mirrors run_phase7_v15_q8_eval_pack.job but:
+#   - data points to data/freebase/verl_cwq_q8_redo/test.parquet
+#   - q8 mapping points to data/freebase/verl_cwq_q8_redo/entity_mapping.json
+#   - EXPERIMENT = grpo-cwq-7b-q8-redo-20260507
+#   - BASE_MODEL = outputs/verl-sft-cwq-7b-q8-redo-merged
+#   - Slot tuples accept either "<step>" (legacy) or "q8:<step>" — the prefix is
+#     parsed off so the caller can disambiguate from S0.1 paths.
+#   - Step 300 ALSO writes a trajectory dump to results/trajectories/phase7/v16_q8_redo_step300_full
+#
+# Usage:
+#   sbatch --export=ALL,P0=q8:50,P1=q8:100,P2=q8:150,P3=q8:200 scripts/run_phase7_v16_q8_redo_eval_pack.job
+#   sbatch --export=ALL,P0=q8:250,P1=q8:300,P2=q8:350,P3=q8:400 scripts/run_phase7_v16_q8_redo_eval_pack.job
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+P0="${P0:-skip}"
+P1="${P1:-skip}"
+P2="${P2:-skip}"
+P3="${P3:-skip}"
+
+EXPERIMENT="grpo-cwq-7b-q8-redo-20260507"
+BASE_MODEL="outputs/verl-sft-cwq-7b-q8-redo-merged"
+EVAL_DATA="data/freebase/verl_cwq_q8_redo/test.parquet"
+Q8_MAPPING="data/freebase/verl_cwq_q8_redo/entity_mapping.json"
+KG_PORT=$((19400 + SLURM_JOB_ID % 100))
+TRAJ_STEP="300"
+TRAJ_DIR_BASE="results/trajectories/phase7/v16_q8_redo_step${TRAJ_STEP}_full"
+
+echo "=== V16-Q8-REDO packed-4 eval ==="
+echo "Date: $(date)"
+echo "Slots: P0=$P0 P1=$P1 P2=$P2 P3=$P3"
+echo "Experiment: $EXPERIMENT"
+echo "Eval data: $EVAL_DATA"
+echo "Q8 mapping: $Q8_MAPPING"
+
+mkdir -p results/phase7 results/trajectories/phase7
+
+# --- ONE shared KG server for all 4 evals (q8_synthetic mode) ---
+python -m src_verl.kg_server.server \
+    --kg q8_synthetic \
+    --freebase_dir data/freebase/kg \
+    --q8_mapping_path "$Q8_MAPPING" \
+    --port $KG_PORT \
+    --log-level warning &
+KG_PID=$!
+trap 'kill $KG_PID 2>/dev/null; wait 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server (q8_synthetic) ready on port $KG_PORT"
+
+# Strip optional "q8:" prefix from a slot tuple. Accepts "skip", "<step>", or "q8:<step>".
+parse_step() {
+    local raw="$1"
+    if [ "$raw" = "skip" ]; then
+        echo "skip"
+        return
+    fi
+    if [[ "$raw" == q8:* ]]; then
+        echo "${raw#q8:}"
+        return
+    fi
+    echo "$raw"
+}
+
+run_eval() {
+    local idx="$1"   # CUDA device index (0..3)
+    local raw="$2"   # slot tuple ("skip", "<step>", or "q8:<step>")
+    local step
+    step=$(parse_step "$raw")
+    if [ "$step" = "skip" ]; then
+        echo "[GPU $idx] skipped"
+        return 0
+    fi
+    local src="/projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/${EXPERIMENT}/global_step_${step}/actor"
+    local dst="outputs/verl-q8-redo_step${step}-merged"
+    local out_json="results/phase7/v16_q8_redo_step${step}_full_test.json"
+    local ps_dir="results/phase7/v16_q8_redo_step${step}_full_per_sample"
+    local logfile="logs/p7_v16q8r_eval-${SLURM_JOB_ID}-gpu${idx}-step${step}.log"
+
+    mkdir -p "$ps_dir" results/phase7
+
+    echo "[GPU $idx] step=$step (raw=$raw)  ->  $logfile"
+
+    if [ ! -d "$src" ]; then
+        echo "[GPU $idx] ERROR: FSDP ckpt not at $src" | tee -a "$logfile"
+        return 1
+    fi
+
+    # Step 300 also writes a trajectory dump (post-collapse window).
+    local extra_args=""
+    if [ "$step" = "$TRAJ_STEP" ]; then
+        mkdir -p "$TRAJ_DIR_BASE"
+        extra_args="--save_trajectories $TRAJ_DIR_BASE"
+        echo "[GPU $idx] step=$step trajectory dump -> $TRAJ_DIR_BASE"
+    fi
+
+    {
+        echo "=== GPU $idx step=$step  $(date) ==="
+        if [ ! -f "$dst/config.json" ]; then
+            echo "Merging FSDP -> HF"
+            mkdir -p "$dst"
+            CUDA_VISIBLE_DEVICES=$idx python -m verl.model_merger merge --backend fsdp --local_dir "$src" --target_dir "$dst"
+            if [ ! -f "$dst/tokenizer.json" ]; then
+                cp -n "$BASE_MODEL"/tokenizer* "$dst/" 2>/dev/null || true
+                cp -n "$BASE_MODEL"/chat_template.jinja "$dst/" 2>/dev/null || true
+            fi
+        else
+            echo "[skip] merged ckpt already at $dst"
+        fi
+        # shellcheck disable=SC2086
+        CUDA_VISIBLE_DEVICES=$idx python scripts/eval_with_tools.py \
+            --checkpoint_dir "$dst" \
+            --steps 0 \
+            --base_model "$dst" \
+            --eval_data "$EVAL_DATA" \
+            --output "$out_json" \
+            --kg_server_url http://localhost:$KG_PORT \
+            --max_samples 0 \
+            --max_turns 5 \
+            --max_new_tokens 512 \
+            --save_per_sample "$ps_dir" \
+            $extra_args
+        echo "=== GPU $idx done $(date) ==="
+    } > "$logfile" 2>&1
+}
+
+# --- Launch 4 in parallel ---
+run_eval 0 "$P0" &
+PID0=$!
+run_eval 1 "$P1" &
+PID1=$!
+run_eval 2 "$P2" &
+PID2=$!
+run_eval 3 "$P3" &
+PID3=$!
+
+fail=0
+wait $PID0 || { echo "GPU 0 failed"; fail=1; }
+wait $PID1 || { echo "GPU 1 failed"; fail=1; }
+wait $PID2 || { echo "GPU 2 failed"; fail=1; }
+wait $PID3 || { echo "GPU 3 failed"; fail=1; }
+
+kill $KG_PID 2>/dev/null
+echo ""
+echo "=== All slots done $(date) ==="
+echo "Output JSONs:"
+for raw in "$P0" "$P1" "$P2" "$P3"; do
+    [ "$raw" = "skip" ] && continue
+    step=$(parse_step "$raw")
+    f="results/phase7/v16_q8_redo_step${step}_full_test.json"
+    if [ -f "$f" ]; then
+        echo "  ok $f"
+        python3 -c "import json; d=json.load(open('$f')); s=d['0']; print(f'    step=$step EM={s[\"em\"]:.4f} ContEM={s[\"contains_em\"]:.4f} F1={s[\"f1\"]:.4f} Tools={s[\"avg_tool_calls\"]:.2f}')" 2>/dev/null || true
+    else
+        echo "  missing: $f"
+    fi
+done
+
+# --- Aggregation epilogue: only run on the LAST eval pack (i.e. when step 400
+#     output exists). Idempotent — overwrites the summary on each call.
+if [ -f "results/phase7/v16_q8_redo_step400_full_test.json" ]; then
+    echo ""
+    echo "=== Aggregating v16-Q8-REDO summary ==="
+    python3 - <<'PY' || echo "Aggregation script failed (non-fatal)"
+import json
+from pathlib import Path
+
+results_dir = Path("results/phase7")
+steps = [50, 100, 150, 200, 250, 300, 350, 400]
+rows = []
+for step in steps:
+    f = results_dir / f"v16_q8_redo_step{step}_full_test.json"
+    if not f.exists():
+        rows.append((step, None, None, None, None))
+        continue
+    d = json.loads(f.read_text())
+    s = d["0"]
+    rows.append((step, s.get("em"), s.get("contains_em"), s.get("f1"), s.get("avg_tool_calls")))
+
+# Collapse onset: smallest step where EM <= 5% of peak EM.
+em_values = [r[1] for r in rows if r[1] is not None]
+peak_em = max(em_values) if em_values else 0.0
+collapse_step = None
+for step, em, _, _, _ in rows:
+    if em is None or peak_em == 0:
+        continue
+    if em <= 0.05 * peak_em and step >= 50:
+        # The peak must have come before this step
+        prior_max = max((r[1] or 0.0) for r in rows if r[0] < step)
+        if prior_max > peak_em * 0.5:
+            collapse_step = step
+            break
+
+summary_md = results_dir / "v16_q8_redo_summary.md"
+lines = ["# V16-Q8-REDO step-eval summary", ""]
+lines.append(f"- Peak EM: {peak_em:.4f}")
+lines.append(f"- Collapse onset (EM <= 5% of peak, after a >50%-of-peak step): {collapse_step}")
+lines.append("")
+lines.append("| step | EM | ContEM | F1 | Tools/Q |")
+lines.append("|------|------|------|------|------|")
+for step, em, cem, f1, tools in rows:
+    fmt = lambda v: f"{v:.4f}" if v is not None else "-"
+    fmt_t = lambda v: f"{v:.2f}" if v is not None else "-"
+    lines.append(f"| {step} | {fmt(em)} | {fmt(cem)} | {fmt(f1)} | {fmt_t(tools)} |")
+summary_md.write_text("\n".join(lines) + "\n")
+print(f"Wrote {summary_md}")
+
+# Optional plot — only if matplotlib is importable. Skipped silently otherwise.
+try:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    xs = [r[0] for r in rows if r[1] is not None]
+    ys = [r[1] for r in rows if r[1] is not None]
+    if xs:
+        fig, ax = plt.subplots(figsize=(6, 4))
+        ax.plot(xs, ys, "o-", label="EM")
+        ax.set_xlabel("GRPO step")
+        ax.set_ylabel("EM (full test, n=3531)")
+        ax.set_title("V16-Q8-REDO EM vs step")
+        ax.grid(True, alpha=0.3)
+        out = results_dir / "v16_q8_redo_curve.png"
+        fig.tight_layout()
+        fig.savefig(out, dpi=120)
+        print(f"Wrote {out}")
+except Exception as exc:
+    print(f"Plot skipped: {exc}")
+PY
+fi
+
+exit $fail

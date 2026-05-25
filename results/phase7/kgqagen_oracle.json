@@ -1,0 +1,8663 @@
+{
+  "summary": {
+    "total": 1079,
+    "counts": {
+      "SOLVABLE": 746,
+      "PARTIAL": 303,
+      "UNREACHABLE": 30
+    },
+    "solvable_rate": 0.6913809082483782,
+    "partial_rate": 0.2808155699721965,
+    "unreachable_rate": 0.027803521779425393,
+    "hop_distribution": {
+      "1": 5,
+      "2": 151,
+      "3": 216,
+      "4": 131,
+      "5": 90,
+      "6": 314,
+      "7": 84,
+      "8": 55,
+      "9": 16,
+      "10": 8,
+      "11": 3,
+      "12": 4,
+      "13": 1,
+      "16": 1
+    }
+  },
+  "per_question": [
+    {
+      "sample_id": "KGQAGen-8",
+      "seed_qid": "Q37159",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10",
+      "seed_qid": "Q704472",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-20",
+      "seed_qid": "Q235470",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-41",
+      "seed_qid": "Q262945",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-45",
+      "seed_qid": "Q848539",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-54",
+      "seed_qid": "Q1185939",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-60",
+      "seed_qid": "Q82999",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-75",
+      "seed_qid": "Q553240",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 7,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-76",
+      "seed_qid": "Q1400720",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-77",
+      "seed_qid": "Q1079826",
+      "hops": 4,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-82",
+      "seed_qid": "Q57085",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-104",
+      "seed_qid": "Q1450796",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-107",
+      "seed_qid": "Q5512324",
+      "hops": 7,
+      "triple_count": 8,
+      "hits": 6,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-111",
+      "seed_qid": "Q255945",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-131",
+      "seed_qid": "Q163310",
+      "hops": 3,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-166",
+      "seed_qid": "Q573949",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 7,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-180",
+      "seed_qid": "Q193518",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-184",
+      "seed_qid": "Q232874",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-205",
+      "seed_qid": "Q2014922",
+      "hops": 11,
+      "triple_count": 11,
+      "hits": 11,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-218",
+      "seed_qid": "Q187780",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 7,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-221",
+      "seed_qid": "Q219035",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-223",
+      "seed_qid": "Q160066",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-241",
+      "seed_qid": "Q667419",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-244",
+      "seed_qid": "Q1164566",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-285",
+      "seed_qid": "Q140575",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-301",
+      "seed_qid": "Q333928",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-363",
+      "seed_qid": "Q131092",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-370",
+      "seed_qid": "Q188886",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-378",
+      "seed_qid": "Q3360620",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-389",
+      "seed_qid": "Q238564",
+      "hops": 6,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-391",
+      "seed_qid": "Q6056000",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-392",
+      "seed_qid": "Q19829485",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-424",
+      "seed_qid": "Q526709",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-446",
+      "seed_qid": "Q509662",
+      "hops": 9,
+      "triple_count": 9,
+      "hits": 9,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-449",
+      "seed_qid": "Q379239",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-460",
+      "seed_qid": "Q719395",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-467",
+      "seed_qid": "Q3374711",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-473",
+      "seed_qid": "Q446602",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-478",
+      "seed_qid": "Q130822",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-489",
+      "seed_qid": "Q5062",
+      "hops": 4,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-493",
+      "seed_qid": "Q310178",
+      "hops": 12,
+      "triple_count": 12,
+      "hits": 12,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-515",
+      "seed_qid": "Q120200",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-516",
+      "seed_qid": "Q969758",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-523",
+      "seed_qid": "Q203396",
+      "hops": 4,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-538",
+      "seed_qid": "Q363413",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-552",
+      "seed_qid": "Q3275141",
+      "hops": 4,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-554",
+      "seed_qid": "Q356395",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-575",
+      "seed_qid": "Q191767",
+      "hops": 6,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-578",
+      "seed_qid": "Q88480",
+      "hops": 9,
+      "triple_count": 10,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-584",
+      "seed_qid": "Q7224880",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-591",
+      "seed_qid": "Q2044035",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-596",
+      "seed_qid": "Q3231442",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-610",
+      "seed_qid": "Q76474",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-626",
+      "seed_qid": "Q502113",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-639",
+      "seed_qid": "Q217119",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-672",
+      "seed_qid": "Q2145886",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-675",
+      "seed_qid": "Q193432",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-680",
+      "seed_qid": "Q4924758",
+      "hops": 10,
+      "triple_count": 10,
+      "hits": 10,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-707",
+      "seed_qid": "Q2460416",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-739",
+      "seed_qid": "Q162269",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-743",
+      "seed_qid": "Q3446152",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-754",
+      "seed_qid": "Q1249008",
+      "hops": 5,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-755",
+      "seed_qid": "Q206499",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-761",
+      "seed_qid": "Q221620",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-768",
+      "seed_qid": "Q18529918",
+      "hops": 5,
+      "triple_count": 7,
+      "hits": 6,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-771",
+      "seed_qid": "Q108169",
+      "hops": 4,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-785",
+      "seed_qid": "Q42869",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-810",
+      "seed_qid": "Q193106",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-811",
+      "seed_qid": "Q2829270",
+      "hops": 4,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-816",
+      "seed_qid": "Q969804",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-859",
+      "seed_qid": "Q537498",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-864",
+      "seed_qid": "Q41213",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-881",
+      "seed_qid": "Q1143513",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-882",
+      "seed_qid": "Q1068408",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-887",
+      "seed_qid": "Q214514",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-890",
+      "seed_qid": "Q110304",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-892",
+      "seed_qid": "Q766723",
+      "hops": 9,
+      "triple_count": 9,
+      "hits": 9,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-897",
+      "seed_qid": "Q207712",
+      "hops": 10,
+      "triple_count": 12,
+      "hits": 12,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-905",
+      "seed_qid": "Q3132741",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-908",
+      "seed_qid": "Q132744",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-909",
+      "seed_qid": "Q431518",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-910",
+      "seed_qid": "Q755011",
+      "hops": 7,
+      "triple_count": 8,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-916",
+      "seed_qid": "Q628491",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-929",
+      "seed_qid": "Q436017",
+      "hops": 9,
+      "triple_count": 9,
+      "hits": 9,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-934",
+      "seed_qid": "Q193155",
+      "hops": 4,
+      "triple_count": 6,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-937",
+      "seed_qid": "Q2993039",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-943",
+      "seed_qid": "Q9584",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-947",
+      "seed_qid": "Q201843",
+      "hops": 3,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-957",
+      "seed_qid": "Q4391924",
+      "hops": 9,
+      "triple_count": 9,
+      "hits": 9,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-960",
+      "seed_qid": "Q320",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-963",
+      "seed_qid": "Q131569",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-1017",
+      "seed_qid": "Q570103",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1039",
+      "seed_qid": "Q3136960",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-1043",
+      "seed_qid": "Q7530198",
+      "hops": 3,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1048",
+      "seed_qid": "Q918376",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1095",
+      "seed_qid": "Q251836",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1100",
+      "seed_qid": "Q462644",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1115",
+      "seed_qid": "Q1527",
+      "hops": 6,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1120",
+      "seed_qid": "Q16731768",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1130",
+      "seed_qid": "Q3179273",
+      "hops": 4,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1163",
+      "seed_qid": "Q3234036",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-1166",
+      "seed_qid": "Q384593",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-1173",
+      "seed_qid": "Q4247694",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 6,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-1186",
+      "seed_qid": "Q318471",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1193",
+      "seed_qid": "Q6151736",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1194",
+      "seed_qid": "Q1332088",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-1211",
+      "seed_qid": "Q365326",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1215",
+      "seed_qid": "Q56725368",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1224",
+      "seed_qid": "Q1453180",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1226",
+      "seed_qid": "Q885836",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 7,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-1227",
+      "seed_qid": "Q2283372",
+      "hops": 6,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1229",
+      "seed_qid": "Q7096397",
+      "hops": 2,
+      "triple_count": 6,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-1230",
+      "seed_qid": "Q47755",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1235",
+      "seed_qid": "Q2834666",
+      "hops": 6,
+      "triple_count": 7,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1236",
+      "seed_qid": "Q245133",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1238",
+      "seed_qid": "Q906529",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-1241",
+      "seed_qid": "Q2266429",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1253",
+      "seed_qid": "Q188130",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-1254",
+      "seed_qid": "Q271674",
+      "hops": 4,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1257",
+      "seed_qid": "Q337716",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-1272",
+      "seed_qid": "Q344838",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1287",
+      "seed_qid": "Q310781",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1296",
+      "seed_qid": "Q455365",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1298",
+      "seed_qid": "Q101254",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1303",
+      "seed_qid": "Q311431",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1322",
+      "seed_qid": "Q2341602",
+      "hops": 6,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1326",
+      "seed_qid": "Q431085",
+      "hops": 4,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1341",
+      "seed_qid": "Q3914781",
+      "hops": 11,
+      "triple_count": 13,
+      "hits": 13,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1344",
+      "seed_qid": "Q515657",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1353",
+      "seed_qid": "Q1544012",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1358",
+      "seed_qid": "Q213369",
+      "hops": 12,
+      "triple_count": 12,
+      "hits": 12,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1369",
+      "seed_qid": "Q19662918",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1383",
+      "seed_qid": "Q3370723",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-1387",
+      "seed_qid": "Q1065848",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1405",
+      "seed_qid": "Q34414",
+      "hops": 4,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1416",
+      "seed_qid": "Q123029",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-1419",
+      "seed_qid": "Q2606989",
+      "hops": 9,
+      "triple_count": 9,
+      "hits": 9,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1421",
+      "seed_qid": "Q3481777",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1446",
+      "seed_qid": "Q213579",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1463",
+      "seed_qid": "Q45957",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1465",
+      "seed_qid": "Q114403",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1470",
+      "seed_qid": "Q190091",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1483",
+      "seed_qid": "Q258949",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1500",
+      "seed_qid": "Q949416",
+      "hops": 5,
+      "triple_count": 8,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-1515",
+      "seed_qid": "Q736776",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-1529",
+      "seed_qid": "Q247899",
+      "hops": 4,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1541",
+      "seed_qid": "Q242002",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-1547",
+      "seed_qid": "Q104285",
+      "hops": 7,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1551",
+      "seed_qid": "Q701321",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1557",
+      "seed_qid": "Q469314",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1571",
+      "seed_qid": "Q318734",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1574",
+      "seed_qid": "Q353451",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1601",
+      "seed_qid": "Q175057",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-1640",
+      "seed_qid": "Q712848",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1651",
+      "seed_qid": "Q749811",
+      "hops": 4,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1665",
+      "seed_qid": "Q5380796",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-1676",
+      "seed_qid": "Q220008",
+      "hops": 10,
+      "triple_count": 10,
+      "hits": 10,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1715",
+      "seed_qid": "Q466654",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-1720",
+      "seed_qid": "Q185002",
+      "hops": 7,
+      "triple_count": 9,
+      "hits": 8,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-1739",
+      "seed_qid": "Q2509902",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-1740",
+      "seed_qid": "Q796140",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-1744",
+      "seed_qid": "Q2496351",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-1777",
+      "seed_qid": "Q557910",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1805",
+      "seed_qid": "Q178521",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1845",
+      "seed_qid": "Q76521",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-1862",
+      "seed_qid": "Q225193",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1869",
+      "seed_qid": "Q379396",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1879",
+      "seed_qid": "Q2916247",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1885",
+      "seed_qid": "Q411362",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-1900",
+      "seed_qid": "Q16766",
+      "hops": 7,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1904",
+      "seed_qid": "Q99200",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-1921",
+      "seed_qid": "Q2272069",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1953",
+      "seed_qid": "Q223687",
+      "hops": 5,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1967",
+      "seed_qid": "Q719855",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1972",
+      "seed_qid": "Q1501943",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-1974",
+      "seed_qid": "Q133151",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1995",
+      "seed_qid": "Q188199",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-1996",
+      "seed_qid": "Q313907",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2000",
+      "seed_qid": "Q44220",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2002",
+      "seed_qid": "Q2639403",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2009",
+      "seed_qid": "Q215231",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2015",
+      "seed_qid": "Q419978",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2024",
+      "seed_qid": "Q2474259",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2050",
+      "seed_qid": "Q231106",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2054",
+      "seed_qid": "Q1052692",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2077",
+      "seed_qid": "Q608183",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2087",
+      "seed_qid": "Q2154519",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2098",
+      "seed_qid": "Q1527413",
+      "hops": 2,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2131",
+      "seed_qid": "Q4320318",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2141",
+      "seed_qid": "Q742302",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2149",
+      "seed_qid": "Q183349",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2157",
+      "seed_qid": "Q829250",
+      "hops": 3,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2162",
+      "seed_qid": "Q441870",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2168",
+      "seed_qid": "Q15075",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2179",
+      "seed_qid": "Q131208654",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2229",
+      "seed_qid": "Q453883",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2284",
+      "seed_qid": "Q828581",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2294",
+      "seed_qid": "Q203782",
+      "hops": 15,
+      "triple_count": 16,
+      "hits": 14,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2299",
+      "seed_qid": "Q4069",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2302",
+      "seed_qid": "Q9189390",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2307",
+      "seed_qid": "Q1868",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2309",
+      "seed_qid": "Q863534",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2337",
+      "seed_qid": "Q827525",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2339",
+      "seed_qid": "Q3898003",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 7,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2350",
+      "seed_qid": "Q1139197",
+      "hops": 4,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2352",
+      "seed_qid": "Q347953",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2354",
+      "seed_qid": "Q1346713",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2363",
+      "seed_qid": "Q757764",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2367",
+      "seed_qid": "Q31356",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2372",
+      "seed_qid": "Q3270179",
+      "hops": 7,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2387",
+      "seed_qid": "Q2423312",
+      "hops": 6,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2399",
+      "seed_qid": "Q52607",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2400",
+      "seed_qid": "Q273704",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2402",
+      "seed_qid": "Q3505826",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2403",
+      "seed_qid": "Q259516",
+      "hops": 4,
+      "triple_count": 5,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2427",
+      "seed_qid": "Q49216",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2429",
+      "seed_qid": "Q295257",
+      "hops": 9,
+      "triple_count": 9,
+      "hits": 9,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2442",
+      "seed_qid": "Q3234484",
+      "hops": 6,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2447",
+      "seed_qid": "Q71500435",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2450",
+      "seed_qid": "Q31058",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2461",
+      "seed_qid": "Q716816",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2480",
+      "seed_qid": "Q1631899",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2484",
+      "seed_qid": "Q913170",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2490",
+      "seed_qid": "Q623031",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2501",
+      "seed_qid": "Q849699",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2503",
+      "seed_qid": "Q3818",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2514",
+      "seed_qid": "Q176786",
+      "hops": 2,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2564",
+      "seed_qid": "Q234601",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2578",
+      "seed_qid": "Q1544340",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2581",
+      "seed_qid": "Q235918",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2585",
+      "seed_qid": "Q890356",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2594",
+      "seed_qid": "Q1356498",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2600",
+      "seed_qid": "Q12955949",
+      "hops": 4,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2605",
+      "seed_qid": "Q159542",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2612",
+      "seed_qid": "Q146110",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2614",
+      "seed_qid": "Q1338879",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2624",
+      "seed_qid": "Q1417809",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2630",
+      "seed_qid": "Q805735",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2636",
+      "seed_qid": "Q833475",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2638",
+      "seed_qid": "Q191924",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2639",
+      "seed_qid": "Q1073138",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2658",
+      "seed_qid": "Q724817",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2662",
+      "seed_qid": "Q452127",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2666",
+      "seed_qid": "Q467699",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2673",
+      "seed_qid": "Q4701206",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2683",
+      "seed_qid": "Q333691",
+      "hops": 7,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2687",
+      "seed_qid": "Q1370527",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2698",
+      "seed_qid": "Q232621",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2704",
+      "seed_qid": "Q87620",
+      "hops": 6,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2708",
+      "seed_qid": "Q188475",
+      "hops": 3,
+      "triple_count": 4,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2714",
+      "seed_qid": "Q2383867",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 6,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2723",
+      "seed_qid": "Q901446",
+      "hops": 4,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2730",
+      "seed_qid": "Q5875916",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2743",
+      "seed_qid": "Q536558",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2748",
+      "seed_qid": "Q356696",
+      "hops": 6,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2775",
+      "seed_qid": "Q312545",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2788",
+      "seed_qid": "Q366261",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2823",
+      "seed_qid": "Q478422",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2825",
+      "seed_qid": "Q1707608",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2831",
+      "seed_qid": "Q23115",
+      "hops": 5,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2833",
+      "seed_qid": "Q4973304",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2843",
+      "seed_qid": "Q34424",
+      "hops": 4,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2853",
+      "seed_qid": "Q4292",
+      "hops": 5,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2862",
+      "seed_qid": "Q244429",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2879",
+      "seed_qid": "Q189710",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2893",
+      "seed_qid": "Q13628",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2921",
+      "seed_qid": "Q36449705",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2929",
+      "seed_qid": "Q174396",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2937",
+      "seed_qid": "Q6273216",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2943",
+      "seed_qid": "Q773",
+      "hops": 4,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2959",
+      "seed_qid": "Q303598",
+      "hops": 6,
+      "triple_count": 7,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-2965",
+      "seed_qid": "Q5466",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2968",
+      "seed_qid": "Q6811383",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-2971",
+      "seed_qid": "Q4163672",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3000",
+      "seed_qid": "Q757669",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3011",
+      "seed_qid": "Q12857502",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3012",
+      "seed_qid": "Q154269",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3013",
+      "seed_qid": "Q185532",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3020",
+      "seed_qid": "Q653015",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3030",
+      "seed_qid": "Q320524",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3038",
+      "seed_qid": "Q1128871",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3039",
+      "seed_qid": "Q210868",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3043",
+      "seed_qid": "Q1158891",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3047",
+      "seed_qid": "Q351704",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3050",
+      "seed_qid": "Q269247",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3067",
+      "seed_qid": "Q164745",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3095",
+      "seed_qid": "Q557378",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3128",
+      "seed_qid": "Q8273156",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 7,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3129",
+      "seed_qid": "Q383702",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3134",
+      "seed_qid": "Q57558",
+      "hops": 1,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3147",
+      "seed_qid": "Q990890",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3154",
+      "seed_qid": "Q1963621",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3161",
+      "seed_qid": "Q560642",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3175",
+      "seed_qid": "Q1935194",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3194",
+      "seed_qid": "Q2617109",
+      "hops": 10,
+      "triple_count": 10,
+      "hits": 10,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3221",
+      "seed_qid": "Q232054",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3249",
+      "seed_qid": "Q1533033",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3271",
+      "seed_qid": "Q1189737",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3278",
+      "seed_qid": "Q21822",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3285",
+      "seed_qid": "Q538904",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3304",
+      "seed_qid": "Q1637085",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3312",
+      "seed_qid": "Q6566971",
+      "hops": 4,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3318",
+      "seed_qid": "Q57809",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3324",
+      "seed_qid": "Q1475933",
+      "hops": 6,
+      "triple_count": 7,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3326",
+      "seed_qid": "Q17003349",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3334",
+      "seed_qid": "Q1193988",
+      "hops": 4,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3338",
+      "seed_qid": "Q256388",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3346",
+      "seed_qid": "Q189970",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3354",
+      "seed_qid": "Q201721",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3363",
+      "seed_qid": "Q142031",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3390",
+      "seed_qid": "Q3299198",
+      "hops": 5,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3393",
+      "seed_qid": "Q1193377",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3402",
+      "seed_qid": "Q1702091",
+      "hops": 8,
+      "triple_count": 10,
+      "hits": 8,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3431",
+      "seed_qid": "Q425150",
+      "hops": 6,
+      "triple_count": 7,
+      "hits": 6,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3432",
+      "seed_qid": "Q279525",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3443",
+      "seed_qid": "Q2050534",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3445",
+      "seed_qid": "Q61971654",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3449",
+      "seed_qid": "Q40035",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3454",
+      "seed_qid": "Q430936",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3468",
+      "seed_qid": "Q80908",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3470",
+      "seed_qid": "Q34105",
+      "hops": 11,
+      "triple_count": 11,
+      "hits": 10,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3478",
+      "seed_qid": "Q47739",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3479",
+      "seed_qid": "Q174957",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3485",
+      "seed_qid": "Q348719",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3493",
+      "seed_qid": "Q76579",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3512",
+      "seed_qid": "Q1154790",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3519",
+      "seed_qid": "Q4115152",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3555",
+      "seed_qid": "Q12552047",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 6,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3576",
+      "seed_qid": "Q232235",
+      "hops": 4,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3582",
+      "seed_qid": "Q161424",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3592",
+      "seed_qid": "Q1370325",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3636",
+      "seed_qid": "Q51482",
+      "hops": 4,
+      "triple_count": 6,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3637",
+      "seed_qid": "Q400",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3655",
+      "seed_qid": "Q51541",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3676",
+      "seed_qid": "Q593774",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3687",
+      "seed_qid": "Q44105",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3691",
+      "seed_qid": "Q795090",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3713",
+      "seed_qid": "Q122181",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3745",
+      "seed_qid": "Q153770",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3747",
+      "seed_qid": "Q358505",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3771",
+      "seed_qid": "Q696228",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3823",
+      "seed_qid": "Q844495",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3826",
+      "seed_qid": "Q315637",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3830",
+      "seed_qid": "Q3934800",
+      "hops": 9,
+      "triple_count": 9,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3846",
+      "seed_qid": "Q1152283",
+      "hops": 4,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3847",
+      "seed_qid": "Q170376",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3891",
+      "seed_qid": "Q345641",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3905",
+      "seed_qid": "Q3423313",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3910",
+      "seed_qid": "Q333419",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3916",
+      "seed_qid": "Q2487696",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3926",
+      "seed_qid": "Q699904",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3933",
+      "seed_qid": "Q185407",
+      "hops": 12,
+      "triple_count": 12,
+      "hits": 10,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3939",
+      "seed_qid": "Q28996",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3954",
+      "seed_qid": "Q376087",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3973",
+      "seed_qid": "Q464535",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-3978",
+      "seed_qid": "Q740086",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-3989",
+      "seed_qid": "Q218673",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4003",
+      "seed_qid": "Q3797509",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4006",
+      "seed_qid": "Q1413777",
+      "hops": 4,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4015",
+      "seed_qid": "Q4955540",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4017",
+      "seed_qid": "Q188691",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4025",
+      "seed_qid": "Q826591",
+      "hops": 3,
+      "triple_count": 6,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4027",
+      "seed_qid": "Q55956238",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4028",
+      "seed_qid": "Q356031",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4032",
+      "seed_qid": "Q82918",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4034",
+      "seed_qid": "Q1552306",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4054",
+      "seed_qid": "Q162667",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4061",
+      "seed_qid": "Q43063",
+      "hops": 3,
+      "triple_count": 6,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4063",
+      "seed_qid": "Q2712762",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4064",
+      "seed_qid": "Q60960",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4065",
+      "seed_qid": "Q57246",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4081",
+      "seed_qid": "Q2442109",
+      "hops": 4,
+      "triple_count": 6,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4102",
+      "seed_qid": "Q461282",
+      "hops": 9,
+      "triple_count": 9,
+      "hits": 9,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4117",
+      "seed_qid": "Q11722724",
+      "hops": 9,
+      "triple_count": 9,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4127",
+      "seed_qid": "Q469860",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4139",
+      "seed_qid": "Q631147",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4181",
+      "seed_qid": "Q298430",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4183",
+      "seed_qid": "Q12446041",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 7,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4184",
+      "seed_qid": "Q468478",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4191",
+      "seed_qid": "Q2498921",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4194",
+      "seed_qid": "Q204601",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4199",
+      "seed_qid": "Q841249",
+      "hops": 4,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4204",
+      "seed_qid": "Q27175",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4206",
+      "seed_qid": "Q557758",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4211",
+      "seed_qid": "Q2032035",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4212",
+      "seed_qid": "Q309100",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4217",
+      "seed_qid": "Q170586",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4228",
+      "seed_qid": "Q39666",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4241",
+      "seed_qid": "Q159846",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4245",
+      "seed_qid": "Q170400",
+      "hops": 9,
+      "triple_count": 9,
+      "hits": 9,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4251",
+      "seed_qid": "Q6530",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4270",
+      "seed_qid": "Q310681",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4275",
+      "seed_qid": "Q899731",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4280",
+      "seed_qid": "Q711073",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4284",
+      "seed_qid": "Q470182",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4288",
+      "seed_qid": "Q358491",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4297",
+      "seed_qid": "Q6585",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4301",
+      "seed_qid": "Q1359006",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4304",
+      "seed_qid": "Q920450",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4326",
+      "seed_qid": "Q2403674",
+      "hops": 6,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4329",
+      "seed_qid": "Q66107",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4331",
+      "seed_qid": "Q2246553",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4343",
+      "seed_qid": "Q178124",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4347",
+      "seed_qid": "Q72157355",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4363",
+      "seed_qid": "Q1518347",
+      "hops": 2,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4365",
+      "seed_qid": "Q233987",
+      "hops": 6,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4371",
+      "seed_qid": "Q215601",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4391",
+      "seed_qid": "Q448778",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4407",
+      "seed_qid": "Q160640",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4417",
+      "seed_qid": "Q387405",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4426",
+      "seed_qid": "Q184743",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4445",
+      "seed_qid": "Q932368",
+      "hops": 6,
+      "triple_count": 8,
+      "hits": 6,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4450",
+      "seed_qid": "Q646518",
+      "hops": 4,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4457",
+      "seed_qid": "Q380313",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4462",
+      "seed_qid": "Q2392284",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4466",
+      "seed_qid": "Q335838",
+      "hops": 9,
+      "triple_count": 9,
+      "hits": 9,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4470",
+      "seed_qid": "Q2883930",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4496",
+      "seed_qid": "Q76956",
+      "hops": 8,
+      "triple_count": 9,
+      "hits": 9,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4503",
+      "seed_qid": "Q118291",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4504",
+      "seed_qid": "Q315377",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4513",
+      "seed_qid": "Q506894",
+      "hops": 4,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4544",
+      "seed_qid": "Q182661",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4547",
+      "seed_qid": "Q1571949",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4552",
+      "seed_qid": "Q862203",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4555",
+      "seed_qid": "Q208511",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4561",
+      "seed_qid": "Q62558",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4574",
+      "seed_qid": "Q43653",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4579",
+      "seed_qid": "Q1057464",
+      "hops": 4,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4594",
+      "seed_qid": "Q186437",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4596",
+      "seed_qid": "Q11485",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4597",
+      "seed_qid": "Q76754",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4603",
+      "seed_qid": "Q439314",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4617",
+      "seed_qid": "Q465022",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4623",
+      "seed_qid": "Q25386",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4627",
+      "seed_qid": "Q1062180",
+      "hops": 4,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4630",
+      "seed_qid": "Q137475",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 7,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4641",
+      "seed_qid": "Q129967",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4659",
+      "seed_qid": "Q483828",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4667",
+      "seed_qid": "Q1232197",
+      "hops": 6,
+      "triple_count": 9,
+      "hits": 9,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4688",
+      "seed_qid": "Q108155",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4707",
+      "seed_qid": "Q211837",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4717",
+      "seed_qid": "Q1200918",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4720",
+      "seed_qid": "Q248484",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4726",
+      "seed_qid": "Q171334",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4759",
+      "seed_qid": "Q160518",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4781",
+      "seed_qid": "Q60974",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4787",
+      "seed_qid": "Q68060",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4797",
+      "seed_qid": "Q3350154",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4801",
+      "seed_qid": "Q3772521",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4838",
+      "seed_qid": "Q303216",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4885",
+      "seed_qid": "Q298156",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4900",
+      "seed_qid": "Q1032190",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4902",
+      "seed_qid": "Q338729",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4906",
+      "seed_qid": "Q335063",
+      "hops": 1,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4911",
+      "seed_qid": "Q378088",
+      "hops": 3,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4923",
+      "seed_qid": "Q209563",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4926",
+      "seed_qid": "Q887447",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4927",
+      "seed_qid": "Q192839",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4929",
+      "seed_qid": "Q25043",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4939",
+      "seed_qid": "Q58190302",
+      "hops": 3,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4948",
+      "seed_qid": "Q2321196",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4957",
+      "seed_qid": "Q3238797",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4965",
+      "seed_qid": "Q2743587",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-4969",
+      "seed_qid": "Q151321",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-4985",
+      "seed_qid": "Q5318966",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5003",
+      "seed_qid": "Q19609193",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5005",
+      "seed_qid": "Q297173",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5029",
+      "seed_qid": "Q2705230",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-5031",
+      "seed_qid": "Q332806",
+      "hops": 6,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5032",
+      "seed_qid": "Q886597",
+      "hops": 2,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5062",
+      "seed_qid": "Q875573",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5079",
+      "seed_qid": "Q4000130",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5084",
+      "seed_qid": "Q1450796",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5090",
+      "seed_qid": "Q935079",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5105",
+      "seed_qid": "Q1370527",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5121",
+      "seed_qid": "Q911233",
+      "hops": 1,
+      "triple_count": 2,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5126",
+      "seed_qid": "Q313662",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5130",
+      "seed_qid": "Q150665",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5146",
+      "seed_qid": "Q2830529",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5149",
+      "seed_qid": "Q83179",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5196",
+      "seed_qid": "Q980175",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5204",
+      "seed_qid": "Q74457482",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-5216",
+      "seed_qid": "Q2145130",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5223",
+      "seed_qid": "Q220228",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-5249",
+      "seed_qid": "Q1112277",
+      "hops": 1,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5250",
+      "seed_qid": "Q3135880",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5252",
+      "seed_qid": "Q623318",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5253",
+      "seed_qid": "Q16147495",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-5256",
+      "seed_qid": "Q212606",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5270",
+      "seed_qid": "Q945926",
+      "hops": 4,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5277",
+      "seed_qid": "Q6674724",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5286",
+      "seed_qid": "Q1372290",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5288",
+      "seed_qid": "Q2268542",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5296",
+      "seed_qid": "Q693552",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5310",
+      "seed_qid": "Q1361825",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-5315",
+      "seed_qid": "Q374911",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5326",
+      "seed_qid": "Q145863",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5335",
+      "seed_qid": "Q116123",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5344",
+      "seed_qid": "Q336198",
+      "hops": 4,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5356",
+      "seed_qid": "Q285924",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-5371",
+      "seed_qid": "Q7448174",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5390",
+      "seed_qid": "Q54188",
+      "hops": 1,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5392",
+      "seed_qid": "Q677864",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-5403",
+      "seed_qid": "Q3436149",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5429",
+      "seed_qid": "Q609104",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5431",
+      "seed_qid": "Q41931",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5440",
+      "seed_qid": "Q6002",
+      "hops": 1,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5462",
+      "seed_qid": "Q782543",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-5467",
+      "seed_qid": "Q154741",
+      "hops": 2,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5468",
+      "seed_qid": "Q259516",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5469",
+      "seed_qid": "Q215128",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5472",
+      "seed_qid": "Q775325",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5473",
+      "seed_qid": "Q849335",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-5502",
+      "seed_qid": "Q461761",
+      "hops": 11,
+      "triple_count": 11,
+      "hits": 11,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5511",
+      "seed_qid": "Q308535",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-5512",
+      "seed_qid": "Q128608",
+      "hops": 9,
+      "triple_count": 9,
+      "hits": 9,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5526",
+      "seed_qid": "Q2480745",
+      "hops": 2,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5537",
+      "seed_qid": "Q32678288",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5538",
+      "seed_qid": "Q574109",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-5546",
+      "seed_qid": "Q606930",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-5558",
+      "seed_qid": "Q1070563",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5564",
+      "seed_qid": "Q29282",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5572",
+      "seed_qid": "Q399482",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5588",
+      "seed_qid": "Q784094",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5594",
+      "seed_qid": "Q315163",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5598",
+      "seed_qid": "Q8065468",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5632",
+      "seed_qid": "Q505981",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5635",
+      "seed_qid": "Q279022",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5637",
+      "seed_qid": "Q131462",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5645",
+      "seed_qid": "Q2235125",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5669",
+      "seed_qid": "Q210997",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5683",
+      "seed_qid": "Q293679",
+      "hops": 2,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5685",
+      "seed_qid": "Q60661815",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5686",
+      "seed_qid": "Q192095",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5688",
+      "seed_qid": "Q274506",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5719",
+      "seed_qid": "Q1503716",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5739",
+      "seed_qid": "Q217785",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5747",
+      "seed_qid": "Q3310872",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5801",
+      "seed_qid": "Q1141078",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-5824",
+      "seed_qid": "Q250763",
+      "hops": 2,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5857",
+      "seed_qid": "Q274041",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5867",
+      "seed_qid": "Q708251",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5886",
+      "seed_qid": "Q204324",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5887",
+      "seed_qid": "Q2918589",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-5893",
+      "seed_qid": "Q770666",
+      "hops": 3,
+      "triple_count": 4,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-5896",
+      "seed_qid": "Q929821",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 6,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-5897",
+      "seed_qid": "Q251922",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-5906",
+      "seed_qid": "Q207367",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5912",
+      "seed_qid": "Q815",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5913",
+      "seed_qid": "Q66076",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5941",
+      "seed_qid": "Q92647",
+      "hops": 3,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5945",
+      "seed_qid": "Q255184",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5955",
+      "seed_qid": "Q28455761",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5956",
+      "seed_qid": "Q64611",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-5957",
+      "seed_qid": "Q4817850",
+      "hops": 10,
+      "triple_count": 10,
+      "hits": 8,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-5968",
+      "seed_qid": "Q5113988",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-5972",
+      "seed_qid": "Q2075125",
+      "hops": 1,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5973",
+      "seed_qid": "Q2746952",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-5989",
+      "seed_qid": "Q385750",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-6003",
+      "seed_qid": "Q423220",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6008",
+      "seed_qid": "Q1057093",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-6010",
+      "seed_qid": "Q898628",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6011",
+      "seed_qid": "Q1051182",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-6016",
+      "seed_qid": "Q103896",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6019",
+      "seed_qid": "Q1487593",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6035",
+      "seed_qid": "Q618430",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6040",
+      "seed_qid": "Q170068",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6066",
+      "seed_qid": "Q4738026",
+      "hops": 4,
+      "triple_count": 5,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-6067",
+      "seed_qid": "Q4070862",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6081",
+      "seed_qid": "Q933664",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6086",
+      "seed_qid": "Q206451",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6119",
+      "seed_qid": "Q928801",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6120",
+      "seed_qid": "Q2001756",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6137",
+      "seed_qid": "Q316780",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6139",
+      "seed_qid": "Q128097",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6143",
+      "seed_qid": "Q65088751",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6178",
+      "seed_qid": "Q43600",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6181",
+      "seed_qid": "Q2993039",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-6192",
+      "seed_qid": "Q1349144",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6195",
+      "seed_qid": "Q218636",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-6204",
+      "seed_qid": "Q195724",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6215",
+      "seed_qid": "Q118525",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6222",
+      "seed_qid": "Q15043671",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6228",
+      "seed_qid": "Q178351",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6241",
+      "seed_qid": "Q315989",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6244",
+      "seed_qid": "Q76039",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6252",
+      "seed_qid": "Q22570310",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6259",
+      "seed_qid": "Q300602",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6274",
+      "seed_qid": "Q686980",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6285",
+      "seed_qid": "Q328782",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6297",
+      "seed_qid": "Q234535",
+      "hops": 2,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6298",
+      "seed_qid": "Q5946123",
+      "hops": 6,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6303",
+      "seed_qid": "Q133888",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6309",
+      "seed_qid": "Q133898",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6321",
+      "seed_qid": "Q414394",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6322",
+      "seed_qid": "Q192931",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6329",
+      "seed_qid": "Q538774",
+      "hops": 1,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6337",
+      "seed_qid": "Q3595247",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6341",
+      "seed_qid": "Q451929",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6360",
+      "seed_qid": "Q840810",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-6368",
+      "seed_qid": "Q294599",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6376",
+      "seed_qid": "Q660488",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6378",
+      "seed_qid": "Q51513",
+      "hops": 2,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6389",
+      "seed_qid": "Q774233",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6405",
+      "seed_qid": "Q4753650",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6407",
+      "seed_qid": "Q181404",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6413",
+      "seed_qid": "Q336751",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6430",
+      "seed_qid": "Q2454958",
+      "hops": 2,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6432",
+      "seed_qid": "Q1274101",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6434",
+      "seed_qid": "Q2277578",
+      "hops": 3,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6446",
+      "seed_qid": "Q1050425",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6450",
+      "seed_qid": "Q981443",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-6466",
+      "seed_qid": "Q333703",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6469",
+      "seed_qid": "Q4681673",
+      "hops": 4,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6476",
+      "seed_qid": "Q213214",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6483",
+      "seed_qid": "Q326896",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6486",
+      "seed_qid": "Q236503",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6494",
+      "seed_qid": "Q54069441",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6495",
+      "seed_qid": "Q907385",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-6497",
+      "seed_qid": "Q898351",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6502",
+      "seed_qid": "Q1049950",
+      "hops": 1,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6521",
+      "seed_qid": "Q314797",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6533",
+      "seed_qid": "Q19635",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-6539",
+      "seed_qid": "Q2235380",
+      "hops": 1,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6548",
+      "seed_qid": "Q1792537",
+      "hops": 1,
+      "triple_count": 1,
+      "hits": 1,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6550",
+      "seed_qid": "Q732729",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6557",
+      "seed_qid": "Q57558",
+      "hops": 3,
+      "triple_count": 4,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-6587",
+      "seed_qid": "Q3295867",
+      "hops": 2,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6590",
+      "seed_qid": "Q449670",
+      "hops": 3,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6594",
+      "seed_qid": "Q705564",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6604",
+      "seed_qid": "Q234909",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6618",
+      "seed_qid": "Q939364",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6623",
+      "seed_qid": "Q237220",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6653",
+      "seed_qid": "Q57313",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6662",
+      "seed_qid": "Q1132755",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-6673",
+      "seed_qid": "Q92853",
+      "hops": 4,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6676",
+      "seed_qid": "Q1513261",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-6682",
+      "seed_qid": "Q191816",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-6699",
+      "seed_qid": "Q18325885",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-6706",
+      "seed_qid": "Q956310",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-6722",
+      "seed_qid": "Q159323",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-6730",
+      "seed_qid": "Q486250",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6739",
+      "seed_qid": "Q77511",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6747",
+      "seed_qid": "Q474868",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6762",
+      "seed_qid": "Q207259",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6767",
+      "seed_qid": "Q31070",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6771",
+      "seed_qid": "Q4948340",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-6772",
+      "seed_qid": "Q1384940",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-6780",
+      "seed_qid": "Q217405",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6781",
+      "seed_qid": "Q212798",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6785",
+      "seed_qid": "Q50018",
+      "hops": 1,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6789",
+      "seed_qid": "Q437526",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6795",
+      "seed_qid": "Q2177",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6808",
+      "seed_qid": "Q295984",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6811",
+      "seed_qid": "Q461761",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6813",
+      "seed_qid": "Q380723",
+      "hops": 2,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-6882",
+      "seed_qid": "Q1272",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6905",
+      "seed_qid": "Q310062",
+      "hops": 4,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6907",
+      "seed_qid": "Q919550",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6909",
+      "seed_qid": "Q128998",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6923",
+      "seed_qid": "Q425773",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-6948",
+      "seed_qid": "Q1721",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6949",
+      "seed_qid": "Q730920",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6957",
+      "seed_qid": "Q841090",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6963",
+      "seed_qid": "Q33491",
+      "hops": 2,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6966",
+      "seed_qid": "Q192105",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-6978",
+      "seed_qid": "Q160609",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6980",
+      "seed_qid": "Q192124",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-6994",
+      "seed_qid": "Q380583",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7047",
+      "seed_qid": "Q650483",
+      "hops": 1,
+      "triple_count": 1,
+      "hits": 1,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7051",
+      "seed_qid": "Q167894",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7065",
+      "seed_qid": "Q127998",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7071",
+      "seed_qid": "Q315963",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7072",
+      "seed_qid": "Q933583",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-7094",
+      "seed_qid": "Q65898",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7098",
+      "seed_qid": "Q408032",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7102",
+      "seed_qid": "Q57306",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7104",
+      "seed_qid": "Q134949",
+      "hops": 3,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7105",
+      "seed_qid": "Q7876678",
+      "hops": 2,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7106",
+      "seed_qid": "Q820",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7130",
+      "seed_qid": "Q179785",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7132",
+      "seed_qid": "Q1362308",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7134",
+      "seed_qid": "Q177549",
+      "hops": 3,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7141",
+      "seed_qid": "Q4533629",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-7144",
+      "seed_qid": "Q279662",
+      "hops": 1,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7148",
+      "seed_qid": "Q728959",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7151",
+      "seed_qid": "Q12177156",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7188",
+      "seed_qid": "Q948709",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7199",
+      "seed_qid": "Q50825725",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7203",
+      "seed_qid": "Q911437",
+      "hops": 3,
+      "triple_count": 4,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-7218",
+      "seed_qid": "Q500857",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7228",
+      "seed_qid": "Q713540",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7240",
+      "seed_qid": "Q127349",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7242",
+      "seed_qid": "Q180656",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7246",
+      "seed_qid": "Q2838427",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7247",
+      "seed_qid": "Q867394",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7267",
+      "seed_qid": "Q14659",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-7268",
+      "seed_qid": "Q309243",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7274",
+      "seed_qid": "Q388646",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7275",
+      "seed_qid": "Q1934105",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-7291",
+      "seed_qid": "Q19009",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7299",
+      "seed_qid": "Q4460",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7301",
+      "seed_qid": "Q1515577",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7329",
+      "seed_qid": "Q165219",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7340",
+      "seed_qid": "Q178528",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7352",
+      "seed_qid": "Q705999",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7370",
+      "seed_qid": "Q239901",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 6,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-7379",
+      "seed_qid": "Q16835935",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-7381",
+      "seed_qid": "Q5358168",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-7384",
+      "seed_qid": "Q2115507",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-7386",
+      "seed_qid": "Q179359",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7392",
+      "seed_qid": "Q284619",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7398",
+      "seed_qid": "Q1989744",
+      "hops": 4,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7399",
+      "seed_qid": "Q192060",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-7411",
+      "seed_qid": "Q5152545",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7414",
+      "seed_qid": "Q2309808",
+      "hops": 4,
+      "triple_count": 10,
+      "hits": 10,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7436",
+      "seed_qid": "Q5532453",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7450",
+      "seed_qid": "Q7440129",
+      "hops": 1,
+      "triple_count": 2,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7458",
+      "seed_qid": "Q318508",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7459",
+      "seed_qid": "Q1141252",
+      "hops": 2,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7466",
+      "seed_qid": "Q143874",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7490",
+      "seed_qid": "Q16567",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7523",
+      "seed_qid": "Q338021",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7545",
+      "seed_qid": "Q668789",
+      "hops": 2,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7548",
+      "seed_qid": "Q470098",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7552",
+      "seed_qid": "Q12927",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7558",
+      "seed_qid": "Q319557",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7559",
+      "seed_qid": "Q1399079",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7566",
+      "seed_qid": "Q313603",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7571",
+      "seed_qid": "Q22672074",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7573",
+      "seed_qid": "Q887812",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7574",
+      "seed_qid": "Q134627",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7583",
+      "seed_qid": "Q254333",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7611",
+      "seed_qid": "Q1052692",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7620",
+      "seed_qid": "Q31617",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-7640",
+      "seed_qid": "Q1061598",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7652",
+      "seed_qid": "Q175566",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-7653",
+      "seed_qid": "Q83857",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7664",
+      "seed_qid": "Q21010270",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7682",
+      "seed_qid": "Q576530",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7691",
+      "seed_qid": "Q1369318",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7703",
+      "seed_qid": "Q356261",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7705",
+      "seed_qid": "Q910678",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7719",
+      "seed_qid": "Q490938",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-7726",
+      "seed_qid": "Q435056",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7735",
+      "seed_qid": "Q2157757",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7740",
+      "seed_qid": "Q316083",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7769",
+      "seed_qid": "Q41628",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7781",
+      "seed_qid": "Q917295",
+      "hops": 3,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7809",
+      "seed_qid": "Q627543",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7812",
+      "seed_qid": "Q1124833",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7828",
+      "seed_qid": "Q1353040",
+      "hops": 2,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7832",
+      "seed_qid": "Q2885072",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-7838",
+      "seed_qid": "Q7813355",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-7851",
+      "seed_qid": "Q295345",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7879",
+      "seed_qid": "Q1066028",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7884",
+      "seed_qid": "Q1400515",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7898",
+      "seed_qid": "Q14634037",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7906",
+      "seed_qid": "Q159619",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7909",
+      "seed_qid": "Q2354223",
+      "hops": 1,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7931",
+      "seed_qid": "Q13222579",
+      "hops": 2,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7950",
+      "seed_qid": "Q911881",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-7957",
+      "seed_qid": "Q43887939",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7961",
+      "seed_qid": "Q1434315",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7967",
+      "seed_qid": "Q158283",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-7998",
+      "seed_qid": "Q6275981",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8012",
+      "seed_qid": "Q1065592",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8019",
+      "seed_qid": "Q1190600",
+      "hops": 2,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8027",
+      "seed_qid": "Q4115724",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8039",
+      "seed_qid": "Q244968",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8045",
+      "seed_qid": "Q1339916",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8053",
+      "seed_qid": "Q770033",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8060",
+      "seed_qid": "Q729950",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8069",
+      "seed_qid": "Q92062",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8070",
+      "seed_qid": "Q1936841",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8071",
+      "seed_qid": "Q679150",
+      "hops": 10,
+      "triple_count": 10,
+      "hits": 9,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8098",
+      "seed_qid": "Q212890",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8099",
+      "seed_qid": "Q3361814",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8107",
+      "seed_qid": "Q6718887",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8108",
+      "seed_qid": "Q125057",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8130",
+      "seed_qid": "Q36262",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8137",
+      "seed_qid": "Q2376564",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8140",
+      "seed_qid": "Q57180",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8141",
+      "seed_qid": "Q47664",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8142",
+      "seed_qid": "Q366580",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8164",
+      "seed_qid": "Q1709487",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8176",
+      "seed_qid": "Q7789920",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8183",
+      "seed_qid": "Q3299198",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8187",
+      "seed_qid": "Q314679",
+      "hops": 5,
+      "triple_count": 8,
+      "hits": 7,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8196",
+      "seed_qid": "Q740898",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8212",
+      "seed_qid": "Q16950",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8220",
+      "seed_qid": "Q1058694",
+      "hops": 4,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8239",
+      "seed_qid": "Q752171",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8242",
+      "seed_qid": "Q875738",
+      "hops": 2,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8244",
+      "seed_qid": "Q365581",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8250",
+      "seed_qid": "Q561205",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8251",
+      "seed_qid": "Q382433",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8253",
+      "seed_qid": "Q579488",
+      "hops": 1,
+      "triple_count": 1,
+      "hits": 1,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8273",
+      "seed_qid": "Q726082",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8278",
+      "seed_qid": "Q360164",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8292",
+      "seed_qid": "Q1361233",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8294",
+      "seed_qid": "Q4759583",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8305",
+      "seed_qid": "Q265414",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8312",
+      "seed_qid": "Q284695",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8315",
+      "seed_qid": "Q827291",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8317",
+      "seed_qid": "Q59981",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8319",
+      "seed_qid": "Q720315",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8321",
+      "seed_qid": "Q183499",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8323",
+      "seed_qid": "Q1066776",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 7,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8334",
+      "seed_qid": "Q16553",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8346",
+      "seed_qid": "Q182491",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8371",
+      "seed_qid": "Q207436",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8373",
+      "seed_qid": "Q2021626",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8386",
+      "seed_qid": "Q507083",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8423",
+      "seed_qid": "Q1077925",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8425",
+      "seed_qid": "Q629208",
+      "hops": 2,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8433",
+      "seed_qid": "Q78521",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8436",
+      "seed_qid": "Q272436",
+      "hops": 9,
+      "triple_count": 9,
+      "hits": 9,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8442",
+      "seed_qid": "Q670489",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8475",
+      "seed_qid": "Q8795",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8477",
+      "seed_qid": "Q517287",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8480",
+      "seed_qid": "Q752075",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8483",
+      "seed_qid": "Q201346",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8499",
+      "seed_qid": "Q1390162",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8517",
+      "seed_qid": "Q619762",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8522",
+      "seed_qid": "Q4298922",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8523",
+      "seed_qid": "Q1426632",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8536",
+      "seed_qid": "Q78474",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8553",
+      "seed_qid": "Q4088447",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8558",
+      "seed_qid": "Q41547",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8561",
+      "seed_qid": "Q1192436",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8565",
+      "seed_qid": "Q1850543",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8572",
+      "seed_qid": "Q1194",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8575",
+      "seed_qid": "Q738292",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8580",
+      "seed_qid": "Q50076",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8601",
+      "seed_qid": "Q242256",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8607",
+      "seed_qid": "Q27863",
+      "hops": 3,
+      "triple_count": 4,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8626",
+      "seed_qid": "Q226868",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8640",
+      "seed_qid": "Q365982",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8645",
+      "seed_qid": "Q31883493",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8661",
+      "seed_qid": "Q2477062",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8664",
+      "seed_qid": "Q569170",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8675",
+      "seed_qid": "Q252785",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8679",
+      "seed_qid": "Q3396184",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8682",
+      "seed_qid": "Q7939179",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8708",
+      "seed_qid": "Q19957244",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8717",
+      "seed_qid": "Q1317763",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8722",
+      "seed_qid": "Q128347",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8734",
+      "seed_qid": "Q9051832",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 6,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8742",
+      "seed_qid": "Q423261",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8749",
+      "seed_qid": "Q159707",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8760",
+      "seed_qid": "Q227022",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8772",
+      "seed_qid": "Q133730",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8779",
+      "seed_qid": "Q47131",
+      "hops": 1,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8782",
+      "seed_qid": "Q775126",
+      "hops": 1,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8787",
+      "seed_qid": "Q162935",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8807",
+      "seed_qid": "Q306246",
+      "hops": 2,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8822",
+      "seed_qid": "Q271710",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8830",
+      "seed_qid": "Q320603",
+      "hops": 1,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8856",
+      "seed_qid": "Q532111",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8859",
+      "seed_qid": "Q204019",
+      "hops": 3,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8861",
+      "seed_qid": "Q747779",
+      "hops": 4,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8875",
+      "seed_qid": "Q197615",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8878",
+      "seed_qid": "Q1331304",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8887",
+      "seed_qid": "Q360804",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 6,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8889",
+      "seed_qid": "Q309465",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8894",
+      "seed_qid": "Q117571",
+      "hops": 1,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8903",
+      "seed_qid": "Q49256",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8904",
+      "seed_qid": "Q178915",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8906",
+      "seed_qid": "Q607588",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8913",
+      "seed_qid": "Q133730",
+      "hops": 4,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8914",
+      "seed_qid": "Q250437",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8917",
+      "seed_qid": "Q154287",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8922",
+      "seed_qid": "Q934309",
+      "hops": 1,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8928",
+      "seed_qid": "Q734221",
+      "hops": 4,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8932",
+      "seed_qid": "Q313711",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8935",
+      "seed_qid": "Q852989",
+      "hops": 1,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8937",
+      "seed_qid": "Q1077753",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8945",
+      "seed_qid": "Q233286",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8946",
+      "seed_qid": "Q318657",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8949",
+      "seed_qid": "Q1059021",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8950",
+      "seed_qid": "Q914114",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8954",
+      "seed_qid": "Q40479",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8959",
+      "seed_qid": "Q2245635",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8960",
+      "seed_qid": "Q270632",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8968",
+      "seed_qid": "Q948008",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8982",
+      "seed_qid": "Q6770566",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-8992",
+      "seed_qid": "Q155516",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-8994",
+      "seed_qid": "Q57701",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9007",
+      "seed_qid": "Q1260331",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9020",
+      "seed_qid": "Q193752",
+      "hops": 2,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9023",
+      "seed_qid": "Q1370895",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9024",
+      "seed_qid": "Q5617",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9034",
+      "seed_qid": "Q242823",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9035",
+      "seed_qid": "Q154882",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9041",
+      "seed_qid": "Q1067802",
+      "hops": 4,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9051",
+      "seed_qid": "Q1388010",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9060",
+      "seed_qid": "Q15029",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9091",
+      "seed_qid": "Q310111",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9117",
+      "seed_qid": "Q506249",
+      "hops": 1,
+      "triple_count": 1,
+      "hits": 1,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9134",
+      "seed_qid": "Q4195595",
+      "hops": 8,
+      "triple_count": 7,
+      "hits": 6,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-9137",
+      "seed_qid": "Q485009",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9147",
+      "seed_qid": "Q1071585",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9152",
+      "seed_qid": "Q190756",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9164",
+      "seed_qid": "Q63831",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9186",
+      "seed_qid": "Q864460",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-9192",
+      "seed_qid": "Q2445443",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9193",
+      "seed_qid": "Q798367",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-9201",
+      "seed_qid": "Q192066",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9213",
+      "seed_qid": "Q156311",
+      "hops": 2,
+      "triple_count": 3,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-9233",
+      "seed_qid": "Q862207",
+      "hops": 1,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9254",
+      "seed_qid": "Q186529",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9265",
+      "seed_qid": "Q236546",
+      "hops": 6,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9268",
+      "seed_qid": "Q1756067",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9274",
+      "seed_qid": "Q19600530",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9278",
+      "seed_qid": "Q727990",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9281",
+      "seed_qid": "Q912031",
+      "hops": 4,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9299",
+      "seed_qid": "Q7750",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9310",
+      "seed_qid": "Q315734",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9312",
+      "seed_qid": "Q7060",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9325",
+      "seed_qid": "Q904201",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9350",
+      "seed_qid": "Q455395",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9357",
+      "seed_qid": "Q153417",
+      "hops": 1,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9370",
+      "seed_qid": "Q947155",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9371",
+      "seed_qid": "Q614481",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9373",
+      "seed_qid": "Q17023954",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-9381",
+      "seed_qid": "Q335109",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9393",
+      "seed_qid": "Q540626",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9411",
+      "seed_qid": "Q328523",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9416",
+      "seed_qid": "Q504483",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-9429",
+      "seed_qid": "Q312327",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9451",
+      "seed_qid": "Q967996",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9453",
+      "seed_qid": "Q834981",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9462",
+      "seed_qid": "Q156538",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9468",
+      "seed_qid": "Q2277578",
+      "hops": 1,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9470",
+      "seed_qid": "Q834456",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-9472",
+      "seed_qid": "Q3034926",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9476",
+      "seed_qid": "Q7531",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9484",
+      "seed_qid": "Q1667940",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9487",
+      "seed_qid": "Q1435874",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9491",
+      "seed_qid": "Q379835",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9504",
+      "seed_qid": "Q1343274",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-9517",
+      "seed_qid": "Q411130",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9528",
+      "seed_qid": "Q273034",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 7,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9540",
+      "seed_qid": "Q4732667",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9545",
+      "seed_qid": "Q1268865",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-9564",
+      "seed_qid": "Q474095",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9570",
+      "seed_qid": "Q279980",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-9575",
+      "seed_qid": "Q15284",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-9579",
+      "seed_qid": "Q1752963",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9593",
+      "seed_qid": "Q284352",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9633",
+      "seed_qid": "Q1568126",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-9645",
+      "seed_qid": "Q61448040",
+      "hops": 1,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9651",
+      "seed_qid": "Q2653441",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9658",
+      "seed_qid": "Q175358",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9672",
+      "seed_qid": "Q288085",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9674",
+      "seed_qid": "Q7177289",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9676",
+      "seed_qid": "Q3962",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-9679",
+      "seed_qid": "Q704747",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9681",
+      "seed_qid": "Q261139",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9722",
+      "seed_qid": "Q319072",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9729",
+      "seed_qid": "Q1951896",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9767",
+      "seed_qid": "Q104784",
+      "hops": 3,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9769",
+      "seed_qid": "Q185295",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-9792",
+      "seed_qid": "Q440636",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9797",
+      "seed_qid": "Q816321",
+      "hops": 2,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9802",
+      "seed_qid": "Q227690",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9813",
+      "seed_qid": "Q286313",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9817",
+      "seed_qid": "Q192042",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9821",
+      "seed_qid": "Q939579",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-9822",
+      "seed_qid": "Q423971",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-9825",
+      "seed_qid": "Q2720056",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9832",
+      "seed_qid": "Q7048967",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9834",
+      "seed_qid": "Q519410",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9835",
+      "seed_qid": "Q274217",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9844",
+      "seed_qid": "Q1734883",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9848",
+      "seed_qid": "Q379517",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9859",
+      "seed_qid": "Q160165",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9876",
+      "seed_qid": "Q2937950",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9877",
+      "seed_qid": "Q163945",
+      "hops": 3,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9881",
+      "seed_qid": "Q456321",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9907",
+      "seed_qid": "Q172341",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9912",
+      "seed_qid": "Q2354947",
+      "hops": 3,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9913",
+      "seed_qid": "Q310594",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9914",
+      "seed_qid": "Q583760",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-9915",
+      "seed_qid": "Q31058",
+      "hops": 1,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9916",
+      "seed_qid": "Q117879",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-9926",
+      "seed_qid": "Q475736",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9933",
+      "seed_qid": "Q629067",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9953",
+      "seed_qid": "Q720503",
+      "hops": 4,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9957",
+      "seed_qid": "Q1012556",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9958",
+      "seed_qid": "Q540840",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9961",
+      "seed_qid": "Q1465045",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9982",
+      "seed_qid": "Q68541106",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-9986",
+      "seed_qid": "Q44385",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10002",
+      "seed_qid": "Q368442",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10011",
+      "seed_qid": "Q312680",
+      "hops": 5,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10032",
+      "seed_qid": "Q124025",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10041",
+      "seed_qid": "Q1089123",
+      "hops": 3,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10042",
+      "seed_qid": "Q162981",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10048",
+      "seed_qid": "Q185213",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10050",
+      "seed_qid": "Q189797",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10053",
+      "seed_qid": "Q201117",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-10082",
+      "seed_qid": "Q36749",
+      "hops": 2,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10088",
+      "seed_qid": "Q1314091",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10096",
+      "seed_qid": "Q1025704",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10115",
+      "seed_qid": "Q751028",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-10128",
+      "seed_qid": "Q903818",
+      "hops": 1,
+      "triple_count": 1,
+      "hits": 1,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10132",
+      "seed_qid": "Q2566649",
+      "hops": 1,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10147",
+      "seed_qid": "Q372765",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10165",
+      "seed_qid": "Q1386165",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10176",
+      "seed_qid": "Q252290",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10183",
+      "seed_qid": "Q2512",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10184",
+      "seed_qid": "Q4448",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10191",
+      "seed_qid": "Q186548",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10195",
+      "seed_qid": "Q1151388",
+      "hops": 3,
+      "triple_count": 4,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-10198",
+      "seed_qid": "Q392213",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-10200",
+      "seed_qid": "Q1161288",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10201",
+      "seed_qid": "Q27885022",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10204",
+      "seed_qid": "Q611584",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-10219",
+      "seed_qid": "Q622892",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-10228",
+      "seed_qid": "Q2008189",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10233",
+      "seed_qid": "Q181713",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10235",
+      "seed_qid": "Q181417",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10257",
+      "seed_qid": "Q57689",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10259",
+      "seed_qid": "Q434200",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10264",
+      "seed_qid": "Q761414",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10268",
+      "seed_qid": "Q1321216",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-10278",
+      "seed_qid": "Q211088",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10300",
+      "seed_qid": "Q57203",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10318",
+      "seed_qid": "Q54187",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10331",
+      "seed_qid": "Q311436",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10332",
+      "seed_qid": "Q80157",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-10344",
+      "seed_qid": "Q1364131",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10351",
+      "seed_qid": "Q1484569",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-10366",
+      "seed_qid": "Q194502",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10376",
+      "seed_qid": "Q4874481",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10379",
+      "seed_qid": "Q5962",
+      "hops": 3,
+      "triple_count": 4,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-10403",
+      "seed_qid": "Q987652",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10409",
+      "seed_qid": "Q366102",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10416",
+      "seed_qid": "Q862404",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-10447",
+      "seed_qid": "Q132950",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-10456",
+      "seed_qid": "Q1404417",
+      "hops": 1,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10485",
+      "seed_qid": "Q466194",
+      "hops": 8,
+      "triple_count": 8,
+      "hits": 8,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10505",
+      "seed_qid": "Q203009",
+      "hops": 1,
+      "triple_count": 2,
+      "hits": 0,
+      "classification": "UNREACHABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10507",
+      "seed_qid": "Q645817",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-10531",
+      "seed_qid": "Q3034878",
+      "hops": 7,
+      "triple_count": 7,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-10537",
+      "seed_qid": "Q2328052",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 1,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-10541",
+      "seed_qid": "Q268897",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-10542",
+      "seed_qid": "Q157167",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10558",
+      "seed_qid": "Q535691",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10571",
+      "seed_qid": "Q193273",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10572",
+      "seed_qid": "Q1959325",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10579",
+      "seed_qid": "Q1054564",
+      "hops": 4,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10589",
+      "seed_qid": "Q886783",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10599",
+      "seed_qid": "Q5961",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10610",
+      "seed_qid": "Q3067814",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10611",
+      "seed_qid": "Q27165",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10615",
+      "seed_qid": "Q18225473",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10617",
+      "seed_qid": "Q57",
+      "hops": 3,
+      "triple_count": 4,
+      "hits": 3,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-10621",
+      "seed_qid": "Q3177456",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-10631",
+      "seed_qid": "Q5486919",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 4,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-10638",
+      "seed_qid": "Q2087869",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10653",
+      "seed_qid": "Q774967",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10660",
+      "seed_qid": "Q43922",
+      "hops": 5,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10676",
+      "seed_qid": "Q33056658",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 2,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-10692",
+      "seed_qid": "Q271580",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10696",
+      "seed_qid": "Q12314",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10702",
+      "seed_qid": "Q3496518",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 5,
+      "classification": "PARTIAL"
+    },
+    {
+      "sample_id": "KGQAGen-10706",
+      "seed_qid": "Q351265",
+      "hops": 1,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10711",
+      "seed_qid": "Q152503",
+      "hops": 4,
+      "triple_count": 5,
+      "hits": 5,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10718",
+      "seed_qid": "Q737062",
+      "hops": 3,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10738",
+      "seed_qid": "Q242657",
+      "hops": 1,
+      "triple_count": 3,
+      "hits": 3,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10759",
+      "seed_qid": "Q2999493",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10762",
+      "seed_qid": "Q41600",
+      "hops": 3,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10766",
+      "seed_qid": "Q1507654",
+      "hops": 6,
+      "triple_count": 6,
+      "hits": 6,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10769",
+      "seed_qid": "Q275982",
+      "hops": 4,
+      "triple_count": 4,
+      "hits": 4,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10781",
+      "seed_qid": "Q1516555",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    },
+    {
+      "sample_id": "KGQAGen-10782",
+      "seed_qid": "Q23505",
+      "hops": 2,
+      "triple_count": 2,
+      "hits": 2,
+      "classification": "SOLVABLE"
+    }
+  ]
+}

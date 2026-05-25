@@ -1,0 +1,1367 @@
+{
+  "setup": {
+    "g2_path": "/lus/lfs1aip2/scratch/u6gg/ts1201.u6gg/Project/KG_GRPO/results/trajectories/phase7/39g2_step500_full/step_0/trajectories.json",
+    "b39_path": "/lus/lfs1aip2/scratch/u6gg/ts1201.u6gg/Project/KG_GRPO/results/trajectories/phase7/39b_step400_full/step_400/trajectories.json",
+    "seed": 42,
+    "n_samples": 500,
+    "n_intersection": 500,
+    "sample_ids": [
+      "WebQTrn-2904_92cd88da247f06a2a19f25b5d45c8d9c",
+      "WebQTest-1785_4ae1a0927e13f623451a04265c29dc4e",
+      "WebQTest-1119_8c41904eaef9fce2d95afd27eb9150ec",
+      "WebQTrn-436_04b1f75e2e7c49a6d6b92139f6dd5a79",
+      "WebQTest-837_00790334f21ccc3d75415a56920dc691",
+      "WebQTest-654_8b3815ec57389b13892dd5abb108cc4e",
+      "WebQTest-542_9131e49190aad60dc4fbd564e78cf5d5",
+      "WebQTest-185_b96b735d1d754f27bc8986b614669f7b",
+      "WebQTrn-412_ab1bb43ab53738e4074e77d778e39129",
+      "WebQTest-1686_97d1854efab5172bdfe763781a23257e",
+      "WebQTrn-3166_cb7256fc0312551734293d80792d8d90",
+      "WebQTrn-42_619da763f8e34f498b4d7b0a97e8d5f1",
+      "WebQTrn-2569_d2aef4ecb09bef9772b1862c9853f3a9",
+      "WebQTest-1560_210d8463ee35ff65448a711c4461f122",
+      "WebQTrn-2653_e8a19b1545bda07304fa7dd15e050ea9",
+      "WebQTrn-1794_0e40770fb613032a26f9ef65dcab65be",
+      "WebQTest-1178_7df82f515bf7947c2bfdd404503b50fd",
+      "WebQTest-1171_36be0686f0f845782d8e8d0c09704e45",
+      "WebQTest-1603_0d6b6392e292cca913dc993d8fd33d93",
+      "WebQTest-538_965332eebfb0801a1c62b92f74dc1023",
+      "WebQTest-576_906ad6be7bec9d208f4dde4f7721c261",
+      "WebQTrn-2316_a459bc48bed76ae151bace77f3ff774a",
+      "WebQTrn-2738_910f8908e2d53dfb850b7b52b74e4a51",
+      "WebQTest-1120_b96b735d1d754f27bc8986b614669f7b",
+      "WebQTrn-25_33b7d857b3156faee9cb6c16741d8b6a",
+      "WebQTest-537_1b057c68c4f254574ef414fad58aa1cc",
+      "WebQTrn-3543_d7db4cdab1589b7c97a81236310a67f7",
+      "WebQTrn-303_2ee96aa7464485d80d214b61773f4a5c",
+      "WebQTrn-3384_2229eb4cf51b84c632d4f3f60c0cb8f3",
+      "WebQTrn-2569_ca21df097822ed9b83923e6e1cc4223c",
+      "WebQTrn-1770_6a7c160ace84e7908302f805739ad06d",
+      "WebQTest-538_d37989c422fef8a98e7289ca0144159c",
+      "WebQTrn-2006_9ad6769cb97331945bf8dfe52958126b",
+      "WebQTrn-2653_b98f847032635d8795209af243ad72b1",
+      "WebQTest-918_a6b0e48e01f77546d20952acdc67b396",
+      "WebQTrn-62_bce88015327268bc8f081292e2c80dcd",
+      "WebQTest-1002_ada3e07cc3c7a687601987704074b18c",
+      "WebQTrn-493_487e4f4ea07d526a8acd19ffa9c542a8",
+      "WebQTrn-60_eb316eafecdc344bf47ed701283dae60",
+      "WebQTest-1923_eaeaff16b51e52669edc90501a373c61",
+      "WebQTrn-3376_ba923c7252439706e2733b02103b7ba5",
+      "WebQTrn-1812_09b712193256ecf2e5f87ce70bd17e72",
+      "WebQTrn-1278_7df82f515bf7947c2bfdd404503b50fd",
+      "WebQTest-918_030834eb2597f0f2e2ad6712a6154451",
+      "WebQTest-1923_a90c08a839ac4d0ac22ebbf436bb578b",
+      "WebQTest-538_640cc950e66a4149ed4a37ed9ddbf51c",
+      "WebQTrn-493_fad08018efa4d5202d24f52b6d8de0c0",
+      "WebQTrn-125_0818b36d353ffb39f85b4606b1230866",
+      "WebQTest-1686_92f27159a96f716c1691371e64e5a604",
+      "WebQTest-1569_0b5333d98ef87008aa02d1fbc1554b05",
+      "WebQTrn-1577_1fad167a955dd126cc7ca38ed92d28f0",
+      "WebQTest-1603_dc77e098c55d228b443e6bb57725461e",
+      "WebQTrn-1394_f634dd018cba9f4fb4ab125b08a486bd",
+      "WebQTrn-849_eba7931ddf28af4dfa20fb099196c91f",
+      "WebQTrn-1283_b27c17c9e095dc8b429a20aeac481682",
+      "WebQTrn-2748_5394f28651892e7656afeda366a6af04",
+      "WebQTest-743_e629da56667ef31f1d0e059c5f3dff45",
+      "WebQTrn-62_1901065f16bfad63f514f48ecebd767e",
+      "WebQTest-1260_c4e06c3a9e4b4f10bd1ae97f1742c198",
+      "WebQTrn-3744_7aad0e73f9e2443786bc511f137be535",
+      "WebQTrn-2047_4f600efd4529482f0efde1064af297f6",
+      "WebQTrn-2486_bcd294e8b78226fb373c0a54e4dcba01",
+      "WebQTest-1797_68a33792b0a1e18937dcd4b3f50d941e",
+      "WebQTrn-1560_3dba296e57fcc898668201e992da8b6b",
+      "WebQTest-1528_836cde2e6cac496e51007560e3bba8d2",
+      "WebQTrn-2570_9b15b159a86627c173ebf30806efbd1f",
+      "WebQTest-998_7b6c0cc98675b4b7a6638ef625cfa860",
+      "WebQTrn-783_5e756f3a1af2788f5a1106c4a8b29c12",
+      "WebQTrn-2871_17d0953471b7ad49d21027d68fc58dcf",
+      "WebQTrn-2809_76ad44c32bce2694411c86576bbec2e7",
+      "WebQTrn-1405_6a6f87a40c194ff6dd738a6cc1838aea",
+      "WebQTrn-2615_48a6ac5681b2e67e07d84708115db614",
+      "WebQTest-484_e720f6c51fa9762bbf53cde50a3a8542",
+      "WebQTrn-3384_e83e8190540386b20d8b60496674e1d5",
+      "WebQTest-1387_c6146585b4ccc06a7cd611c93cba660c",
+      "WebQTest-12_4877288a6328203e76db788c200ae16e",
+      "WebQTrn-3084_d7a8cbddd43733cfb78c3d41af704745",
+      "WebQTest-55_350cad074495ce796cd95a9bbce0ceb4",
+      "WebQTrn-513_d3189b87ba72d77c38506fa49f4245c1",
+      "WebQTest-989_20bb2e223d83caf91ca75a04b854377c",
+      "WebQTest-1528_911cff6e81e18c2e78cb5a8423082bfa",
+      "WebQTest-576_99c43635b648023af901dc341b3bab6e",
+      "WebQTest-1686_5b0246d0bc7172511480c78134ab2e39",
+      "WebQTrn-857_c95460984b03c16cef45a5a40c69a9e8",
+      "WebQTrn-894_1f6a35e9e2350dce68b11f138e561ff0",
+      "WebQTrn-2026_0a7206e06485b4daf5f8968cec1333dc",
+      "WebQTrn-2904_0b2295cf692f73863c4d317fe2713132",
+      "WebQTrn-831_c191674d835a2284701f16d70a146360",
+      "WebQTrn-1484_00057dab165161c899484d34b59fa403",
+      "WebQTest-1965_b7c82cd0420f9f1934037e1625db4685",
+      "WebQTrn-1532_3d8b19e73c68745a462f1106bf6de17c",
+      "WebQTrn-1394_089f7b3b3a9ad4fb403d453204f7fff3",
+      "WebQTest-538_0c23f06fbbf4e8b9a5c2488c612b2536",
+      "WebQTrn-3136_b4d880aff516130a828b227d4297f270",
+      "WebQTest-759_63eab23cc30386a10b181d148547c857",
+      "WebQTrn-3384_275abff5d62790363fe8bc0387660115",
+      "WebQTrn-3249_20507e60ba33137383d2b85cb865826a",
+      "WebQTrn-3035_7e9708008ed769efea52e35cd8846649",
+      "WebQTest-1483_8520ca90bd1e650edf1dbcad90336227",
+      "WebQTrn-2784_1dc2b7729c8e70203833586f0d1bd021",
+      "WebQTrn-2875_c1bdcdad310f5bccb773c5aae3e46f20",
+      "WebQTest-213_574a8a152e35c2b935edf71c8a0f0028",
+      "WebQTrn-2478_f21576961bee318b9eaf1aa648e28e8f",
+      "WebQTrn-3744_6dcb413fa7f7fe52b9345f95bda76752",
+      "WebQTest-654_6ca8cba7511811830a04cd64a8a4cf77",
+      "WebQTest-1965_de1aeafb354b0cc40a64b7579efade3e",
+      "WebQTrn-2057_522769c85c8189a870c317c0aa940eaa",
+      "WebQTrn-1561_4799d8901e0073eaebbc2b893ab30eda",
+      "WebQTest-783_398858835267d06d629eb27d398324f7",
+      "WebQTrn-2904_99f2c6359f65cb116bf380f01af55d6b",
+      "WebQTrn-3249_af94010c3bfc3a584ffb01e553dd2e8f",
+      "WebQTrn-2576_280f6fb1deae2956230d33d29b4054ae",
+      "WebQTest-538_c606d81a0b9a8fe9f1a8a17239ebe8e2",
+      "WebQTrn-3249_5aa3063566fca0f5ff73b2b811e3b1ab",
+      "WebQTrn-124_33b7d857b3156faee9cb6c16741d8b6a",
+      "WebQTrn-513_59d4a153f9ac424bfd0d9a39a5704027",
+      "WebQTrn-567_100937abd873e4b1463ae9482ba1beb9",
+      "WebQTest-1340_872253e47dd6ddaa213ff31eeda8783b",
+      "WebQTest-561_5096e7f87655bfead420edf88c0629f0",
+      "WebQTrn-710_c334509bb5e02cacae1ba2e80c176499",
+      "WebQTest-1178_9ddd77154bbd5aa55ea6b7d543dceaac",
+      "WebQTrn-60_e91b1e0c1b1f811c7d368af2956ba4c1",
+      "WebQTrn-1155_c9539927b8e30c27bfea741ee7d15d9a",
+      "WebQTrn-1677_597ff9a00ec427e92a92cfc1ec50155c",
+      "WebQTest-759_85b64b4dea5209a2c8881109c02cb139",
+      "WebQTest-1384_744a496b907e407b16bc5d7c197dc3f0",
+      "WebQTest-538_2473cabeeab942f2a11ad812e53880a8",
+      "WebQTrn-25_70cb5f02c23208a8369c961136b54b8e",
+      "WebQTrn-3671_16a18a87b07cc1f5deb84208c7deff87",
+      "WebQTrn-1155_4ec9be4c828025d788bc5fb5ebca9e6e",
+      "WebQTest-538_3d3daf126fc550099e1207641fc4affc",
+      "WebQTrn-3057_c264a6d11d7956741926d417b94327e2",
+      "WebQTrn-2314_2e6d98fb779ac3b63a5dd2688034c0c9",
+      "WebQTrn-1677_15af244703c8dc90d1e1f3fb2ec8a259",
+      "WebQTrn-3024_af0e35c3a617f83f33d3bd482bd98e63",
+      "WebQTrn-2047_3e03ade5baaf4b484d98033ee11852d3",
+      "WebQTest-191_08ecfcbddc629f13c14ff545f0d1887c",
+      "WebQTest-743_e8f21e0f0c4375d30317d26f9b95cd91",
+      "WebQTrn-962_032f61bfcfed69da8b215bb8f058c24e",
+      "WebQTest-699_538195f1f01fd027882e6a50839e2a9b",
+      "WebQTrn-452_433757f91385148e1cd7be78e78c3f2a",
+      "WebQTrn-25_3a6f67ee41fbd7c75ce37dde61d816a7",
+      "WebQTrn-2540_cbb53a692c407d36d044d07bcd2d23ec",
+      "WebQTest-743_c4d6520c1e12c95284381591bde82c86",
+      "WebQTrn-452_7353c8c6c04ea2c5ff801a96123277cc",
+      "WebQTrn-2641_c344028c2ef7fb59dec539cb908d3214",
+      "WebQTrn-1812_93d2e88cddc04bc55b23c31bab096e16",
+      "WebQTrn-2641_73c5cf3f70ecb7e35617a190ddff860b",
+      "WebQTrn-1677_45a71163e7876e1ca8b7c88e38999705",
+      "WebQTrn-1405_8c2f62635a643ca266f8ebc837c0a1a8",
+      "WebQTest-538_c1fc211c5ac055e33c2ff78e12439fd4",
+      "WebQTest-1840_c00f449746ccac175d49bbcd8f9c7757",
+      "WebQTrn-2319_810a8c67440ad97f60ec3f0d2fbbbcb8",
+      "WebQTrn-2286_c71d414b5474d4f084cee752d678ccfd",
+      "WebQTest-1560_ac8af71653951589b9f019f502b6afa3",
+      "WebQTrn-484_a7e655ba2343c8713f26f616c09aa12f",
+      "WebQTest-12_7b54b31f3e5a6273f4fd2a20e565ec6d",
+      "WebQTest-1785_26e798eb2a0fe5242b17946fe1188b74",
+      "WebQTest-1923_7fda21e9bd5453a67c7f1b983b955114",
+      "WebQTrn-2859_37bf80e89387cf09fca66eb7915a52b0",
+      "WebQTest-1923_f61568ed06e8ed92e68deb8a5ddfb717",
+      "WebQTrn-60_15526ec941b7067d506b9af5029246fb",
+      "WebQTrn-3170_bcc7cf86fe716e0c10225e1a98b719bb",
+      "WebQTrn-1812_04dbed66ba17d35bf79f72e04bbcc776",
+      "WebQTrn-2664_89b1fa4589fbe21830869bc23d6acf2a",
+      "WebQTest-1379_5d4f60d21b1a51a0e4b7f4c661219b56",
+      "WebQTrn-1597_99ae14b4f2ee3bb521e43a02ab084d0e",
+      "WebQTrn-1577_6fb4733f48e98e385b85d625ad84354f",
+      "WebQTrn-2664_7fb00bb9d7d0202408588eeef86d4eff",
+      "WebQTrn-2069_cd2a8c46c7872f3823f42c32e37aaff2",
+      "WebQTrn-2428_1a389cac92fb403d4a2f31b2833825fa",
+      "WebQTest-712_8eab5c6b79bdea85c78c813f6204a555",
+      "WebQTrn-2570_c17669dc7c892018579cd1b98df18f03",
+      "WebQTest-1012_7186c1abcae6bcdef171df1feb16997a",
+      "WebQTrn-3170_b50634fcb022c0a649341ed319148244",
+      "WebQTrn-3688_c284daeb99688802ecb73a08863d516a",
+      "WebQTest-1785_98806527b045c387792db297c407c023",
+      "WebQTrn-3226_2a2affc1ec1bd15ab22928007852d1b0",
+      "WebQTrn-2540_2c1a0de00568616e1701496dedbba8fe",
+      "WebQTrn-465_46d5d7d6aba16a10af4f4059dde155b7",
+      "WebQTest-759_4800df0becd2268912f4b6d59fc000e4",
+      "WebQTrn-513_5a15eae658cc54d81698d2e5e68e82c0",
+      "WebQTrn-2904_ebcaebb9a750c9ea0fcb2a0ec87af725",
+      "WebQTrn-894_30bf7df312187ad1f95aaaf3ed20e18d",
+      "WebQTrn-962_f0c57985929ee8b823983f6e5f104971",
+      "WebQTest-998_f693ae2cb9aa6b8ffdf0f103a6777b62",
+      "WebQTrn-1841_8df543a977cf8e7f362482a73cab35d0",
+      "WebQTest-1923_d2a47301538ff61eb47d97dcd2b65863",
+      "WebQTrn-2026_0c8bcc717d50c92c31ff802641504b43",
+      "WebQTest-1000_a1edafe051cb7bc171f2beb523d3a90c",
+      "WebQTrn-3694_73bb87158a068132f7511dc63566c924",
+      "WebQTrn-3673_bf741749b9774797cd23abc09daf6106",
+      "WebQTest-743_ca410f824ebb6a08c824377bb10b6f58",
+      "WebQTrn-2314_be3d335c63904299f0103e947254a9f7",
+      "WebQTrn-493_bdb01f7e3dce965318ee60fc713a9cb0",
+      "WebQTest-361_9a6514e92141770cd4fc2592c7768e4b",
+      "WebQTrn-2319_16bcc3dca8a1c20229f4341ad409bb04",
+      "WebQTest-1736_125140bfa1a60527bde6e40dce7fe54a",
+      "WebQTrn-2834_9e891173fd8dfbe0f6a243d47ae5808e",
+      "WebQTrn-1023_4fb2643554bf5111a245dd1d6a424106",
+      "WebQTrn-2904_7fbcc8ac696c9cb8c1b0d451cd51ce4f",
+      "WebQTrn-64_09e61020934818b85641a22821e7a455",
+      "WebQTrn-2784_1afdc65142a646a69eb7f01dce690c4b",
+      "WebQTrn-894_e8816f41e30cc619312fa050ff173448",
+      "WebQTrn-738_75d0bf8a1c2aca91051597cd3bdfb371",
+      "WebQTrn-1557_25aa66737549ccec679a88f7ec71c350",
+      "WebQTrn-493_c8b99bb380a7f157039bdf6c7b8df764",
+      "WebQTest-1941_e30e234d3055e7c20ad20d1562018910",
+      "WebQTrn-2540_e3695add07fcd52dea0a0978092c4ce1",
+      "WebQTrn-567_29ffc855d3365362b98ce3dfcd0620f3",
+      "WebQTrn-2429_4449720a6e25f3093a8065ae980f0221",
+      "WebQTest-1000_10aa3b0c992e4e6f4cf624c6c38c727f",
+      "WebQTrn-2664_d7db4cdab1589b7c97a81236310a67f7",
+      "WebQTrn-124_319032a696061079f21c55a0ec3c00de",
+      "WebQTrn-2258_7eef3253bf4eafe45e05c66e05a2c94c",
+      "WebQTest-1072_b955f51044a2123babff29671bfd4e70",
+      "WebQTest-1785_64f7f636c2ecaa51fcf62618fe76820a",
+      "WebQTrn-1405_b5513034c35cc49fda740f1a0ae5b7b9",
+      "WebQTrn-62_16d8eb52603fa2d47a3441e9a5231568",
+      "WebQTrn-1069_b526307856da0d2f8d1bf4ceecb179ad",
+      "WebQTest-626_258527684b01adb1fef0f02a9081ebe7",
+      "WebQTest-1348_5ad03d9a9f67e00b093c6da1ecde5619",
+      "WebQTest-626_652dc024fce1331f67facc4995feba18",
+      "WebQTrn-810_1315945fdcb4fad1310ab7862120be0f",
+      "WebQTrn-849_cf1f1fe5c3f63f57149e98e131b4b73c",
+      "WebQTest-1547_480b406a8cdcc33169b39cc20be2f0df",
+      "WebQTrn-3766_4ccdeac69c947afd15a0b301091498c0",
+      "WebQTrn-2250_2f9986c29a8e3086683459a4bb054123",
+      "WebQTest-1387_9bff9b3325534dae4908b820d4364101",
+      "WebQTrn-493_7889cf4cf3c3b2b2bf5e10722d096ffd",
+      "WebQTrn-2478_3e09b108c3448248556d4c34acae3cf7",
+      "WebQTrn-513_0e9dd60ce93d2a46dca0570f2c09affe",
+      "WebQTest-1797_aebafe742230b5698eca4d082679871f",
+      "WebQTest-1802_1b45dd54d7f220b2c4ce6e4f9874b64a",
+      "WebQTrn-3084_62ea63f7954eccb68d685d3695c0b84d",
+      "WebQTrn-2189_9f924908bb36bf7d331fa1b933af9f58",
+      "WebQTrn-2570_5b1b5d2f3ee779968b5c5273b1a4c6f8",
+      "WebQTest-212_605dbc84e7cc509e9dacf0b5f3e06301",
+      "WebQTest-743_f69519f4ecbf0ca9019c6b38c004e6ee",
+      "WebQTrn-241_e4ddf37f1344bc533ac60131a15569f9",
+      "WebQTrn-2754_a52b59230c3401a9e65db7fbf5acf8fa",
+      "WebQTrn-1812_184dee159bf4830393c21b516551863b",
+      "WebQTest-538_2de8034b7964e62cbfb68e23ba300615",
+      "WebQTrn-2540_d4173a263b5ca95e890a7f0704162591",
+      "WebQTrn-484_95660eb409a570c121f2dbae9c56b9c2",
+      "WebQTrn-3744_95a2f0f12b9a0a45694a398e5c944cca",
+      "WebQTrn-3251_01081659a60a9424dd32f0873cd17c3c",
+      "WebQTest-537_46a304cecca0e072121d7dc42befb590",
+      "WebQTrn-3543_358c86a9c6d41d3dd1cd7def70434e5c",
+      "WebQTrn-1077_83f43b9f4c2707c689543b33efe1d28d",
+      "WebQTrn-1677_401347365692c5a69ad4c61e03ef4caf",
+      "WebQTrn-3141_8f5580b35c972ae8382d6e04447e79a9",
+      "WebQTrn-894_de5b5b195f1bad49f616fcd8c15bfaa9",
+      "WebQTrn-1539_de8059b06640bb0b9cbe51ff95a7589a",
+      "WebQTrn-1938_1beae13077eb05db9b853a9c74e3aec8",
+      "WebQTrn-2335_eaa7a9f669e0d6d5caf732fd225ff411",
+      "WebQTrn-2023_8349bb144acf1f6bb43d68bfa35e97c1",
+      "WebQTest-1797_0a8f3340ee0c947b08068918a7bd18d6",
+      "WebQTest-712_058203c22235854bf96557ab2b7c383e",
+      "WebQTest-548_5f65f28a990726dda8b60f83eb73c80d",
+      "WebQTest-1379_8b1ff0551fb22f1d4e54d33d3656b8e8",
+      "WebQTrn-1278_0181d97710ecc26e3ba99006b2d5bf07",
+      "WebQTest-1091_5b52c9e057d0f0e6704f0b264e864dfc",
+      "WebQTrn-2653_7c505eeeebb378fcfa65dc771f8239fd",
+      "WebQTrn-2570_c5c8a98086adc140453607bc0c0e5640",
+      "WebQTest-561_f4a09a295875531887340bb4c3b57928",
+      "WebQTrn-2653_9c717662006cade1031ba7053490f214",
+      "WebQTrn-894_d2fa08c8fbe626390ddbc99de7f9cfaa",
+      "WebQTest-100_3fd000b7cbc17c620bb91588e1c3cda3",
+      "WebQTest-1473_4cab2477ddfe14ba3e1ac774680a1f75",
+      "WebQTrn-347_2489f3fd273be828f1c298a1800e50c0",
+      "WebQTrn-2871_98925752e1e60abb73dc775f15ee38af",
+      "WebQTest-1348_9cd662e0ee5c2ffbbbb0dc86053b1680",
+      "WebQTest-561_0a522fd602641e4c7acb7870908615ed",
+      "WebQTest-1384_ae0ef655e304be3e017fd9cd4955fd62",
+      "WebQTest-1178_09e61020934818b85641a22821e7a455",
+      "WebQTrn-124_aedb28ca753159f1d4fc755dcf4c04bd",
+      "WebQTrn-60_58beabafc76cc44d5cb1ed5ca2799436",
+      "WebQTrn-2331_27f6987805010183edbeba6b91a3cafd",
+      "WebQTest-61_be64d515debe3029f7c0fb2af05bfe7e",
+      "WebQTest-918_c544bd45cd8f0707031c1ae0dcf1b6f2",
+      "WebQTrn-3136_8a1b0ad7168412c2f5b0a88423a25dd9",
+      "WebQTrn-2218_dacbec08f8d31829038751934850ed95",
+      "WebQTest-538_59393fb78196abac792e5ced0021d415",
+      "WebQTrn-60_ae2a0626e306806345c62c8c4f6c53f1",
+      "WebQTest-1817_81c0ebf9fe16672cac0e64470d756f17",
+      "WebQTrn-3694_e185ea716e0dcbdf8d9ad6498b5e88f1",
+      "WebQTrn-25_a87e077f0e759349480a544bd66cfe40",
+      "WebQTrn-25_ff53089f475b9fdfec05e61e26a3fc3c",
+      "WebQTrn-2152_ec701c65a050223ccad30868c7526801",
+      "WebQTest-626_dc4e4ff90a030ea8e53031f67828217f",
+      "WebQTrn-567_9d844d6f061feef7378afae35cbb8dca",
+      "WebQTrn-2189_3a8152d581de19d1b839f3822e9392e3",
+      "WebQTrn-1677_ce04a76110500f26ec58e625cb97c0ed",
+      "WebQTest-450_aa46b5c3f817142c19f990881289b352",
+      "WebQTest-1603_5aabdab4c50d62388224ccc564a50535",
+      "WebQTest-1603_e92665e57d1cb0110944dbefb39b4684",
+      "WebQTrn-3084_3f03848605c6758ff2230a955cd92d65",
+      "WebQTrn-1817_e3cca7a9117d7c23ddfc189a49770034",
+      "WebQTrn-1392_ba1b3d8965af4c1f1127fa5219d1c2df",
+      "WebQTrn-1812_19c95ace02f0dd9b7f67de3ecc3e8f5a",
+      "WebQTrn-1706_5c700e3bff39470405f500c2f1350b51",
+      "WebQTrn-2069_9a4491f5f6a880a03bd96b8180bace4c",
+      "WebQTrn-837_9ccc591f7d669c8c5a177bbc4a1d7dd5",
+      "WebQTest-1320_2492cfb926882a4bf9c580ba4f7c700a",
+      "WebQTrn-3151_5ff5b8826574b331ba342518d1c1bb34",
+      "WebQTrn-3049_df62db039ae55ac085cf2731442925a1",
+      "WebQTrn-3034_2fd33d22c32307ac6536d5c5644a1bde",
+      "WebQTest-1686_181825fe7646c43aa5701064e8bc73d2",
+      "WebQTest-1348_c5fda963a318e2c3c33977d39d07dabb",
+      "WebQTrn-1677_813cfbca9da2283ea3fb87254bc8d55a",
+      "WebQTrn-3744_1bc38eddb1fb4d93010f232f991f8d09",
+      "WebQTrn-1278_4b7058a69c5eb71df36a89837b1e4f60",
+      "WebQTest-1785_1c178196ae53ffd4b09e5787a35c3950",
+      "WebQTest-712_11e9758e98422bc42f1d085d6723de33",
+      "WebQTest-484_91486f8ce518ad60645488b0b298ff11",
+      "WebQTrn-60_039556a866f620ae9a1a72f96c22bae1",
+      "WebQTrn-849_e07b3359e02a6d6ceb68871f1dad7072",
+      "WebQTrn-2006_8380457ea59739a01481e4908013c943",
+      "WebQTest-1875_14401f79da415edb1294256b2504a591",
+      "WebQTrn-95_0a1797c617f8e1eb87eab85b0790302e",
+      "WebQTest-389_0380511448f25dcf175b810016dc9ce5",
+      "WebQTrn-60_2ee819ba474253fdefba8cf094f02553",
+      "WebQTrn-2057_5a938fc3874043b1e130e2813ff0cf7c",
+      "WebQTest-712_6099ea03f4fd2476605c4a513318d29c",
+      "WebQTest-1528_2a2de50d3b65cc5d2c88f54e283a4b8a",
+      "WebQTrn-1939_87feb43d4b743e2f0172e00f50bfada2",
+      "WebQTrn-2570_6f059734e774504c68f628670516e72c",
+      "WebQTest-1667_00790b1fc8cab3b0beea1a08d4c633d9",
+      "WebQTest-1301_a70c7fd7ecc2aef83d0149355d69ddd1",
+      "WebQTrn-3049_549e26794f52c12e657662c92cddfb02",
+      "WebQTrn-2558_1d033cab9df7d8537c3ecd0da84d0be4",
+      "WebQTest-1014_af6b19e16eab1809f29e15c0961f90d5",
+      "WebQTest-159_bbbbf54885ccfa192f01115549bc19db",
+      "WebQTrn-484_1996c89d55923fc2ed1047b4f70d3ee7",
+      "WebQTest-61_6a27420dcf0528ae017dd74e40cfd38a",
+      "WebQTest-212_8fc460cf564c16a47877b92a7c156528",
+      "WebQTrn-1677_c102afcf51e198cb715db4a742645c25",
+      "WebQTrn-2250_06a710540c2c24122b76d789e90023a9",
+      "WebQTrn-2209_7bc37f5ea0bc419b7ee5510daff240df",
+      "WebQTest-538_49b4e9304f18a0a1cbe37bb162f61131",
+      "WebQTrn-1677_59282357ecb12eaa2c93c4580085afa4",
+      "WebQTest-1348_995227fc5dda25d790a913ba7ce06ae5",
+      "WebQTest-212_44cf19ced1757aa759b0cf200a332022",
+      "WebQTrn-1560_799804056310383bba960a7649b85b4f",
+      "WebQTest-1000_457b585da69e504ae79ae4cffde34090",
+      "WebQTrn-1646_9dd9cd027e4fb356ec7f48576c94b9a8",
+      "WebQTest-745_0a8c48e034655dbf9b49f8291fc92df3",
+      "WebQTrn-2026_b3dea5ef61d99706b52127dd45ae6149",
+      "WebQTest-983_48a9917724d61ef8fc6e8c82aa5b1a48",
+      "WebQTrn-1812_15f60e5f0f3604ea4e91cd75c8c89a85",
+      "WebQTrn-3376_3cfac4b90586c13b7348805674c750e1",
+      "WebQTrn-3744_e30f73afd36f18318093d5bc31376de4",
+      "WebQTrn-2570_f2ac2245cddd54b4cfd140b20c16d4a6",
+      "WebQTrn-3084_ec0835b1ad2d181fa3b4195d539d862a",
+      "WebQTrn-3671_fe491c425ea24501a960040ed645a049",
+      "WebQTrn-2250_98aa1c3bf990bf3d779dee7b611c33fa",
+      "WebQTest-1923_a64ef0f5ce397a5e1ef6fcd550ebfcfb",
+      "WebQTest-450_8928d9663aabbda9525d0b8cbf2e3e39",
+      "WebQTrn-1023_03dc1e51e48aaeff9d589d066eaf1140",
+      "WebQTest-538_89a6b4415493addb207777d2954c950b",
+      "WebQTest-1348_67d901eb5314fe0563f6e2602b72f478",
+      "WebQTrn-261_31035060faa30d7bd7bda3551c8cc58b",
+      "WebQTrn-412_667501b8bdc51eb2def6b0041f4bf1d0",
+      "WebQTrn-2569_49842e208a5dd584154dd0a96881bc05",
+      "WebQTest-1348_d50300a04640da2d3013e859ecdc9257",
+      "WebQTrn-452_c22a02e5a3b1ff4e7edee64d9ba8437e",
+      "WebQTrn-1077_f3866b9a2ec763921936d5aae203dcc0",
+      "WebQTest-1348_3f44e0c4fd23a8334a972ebb812e0e35",
+      "WebQTest-1301_5714a7a5f1feec1348045800b0c0c28c",
+      "WebQTrn-2641_9f4e223ee039ce1799510374ffe59428",
+      "WebQTrn-2189_f4440609f5cecb091bf8e86adb47be25",
+      "WebQTrn-2316_47b067b98845fdb2ebaf2442f5ad1298",
+      "WebQTrn-2444_8f2cd432b509e5b8fe681bb55bca2767",
+      "WebQTest-1923_c75631b641b48d193713751a4ec68699",
+      "WebQTest-1348_2ef518b6a0dd4762e72424e5739a23e6",
+      "WebQTrn-2319_1ad2d84ababa47e6d24a8dd6eb2b7943",
+      "WebQTest-1528_a2694b95163afd08c03e36c6c195cab6",
+      "WebQTest-389_b58a80f073ce333ff592cf88024eb191",
+      "WebQTest-1387_05e8d9daed68737095e3b0511502217b",
+      "WebQTrn-2664_59d8b3295daf039542637add629c038e",
+      "WebQTest-1384_fa2f7731ddb5e1a327b2e49b9fe9c9c5",
+      "WebQTrn-3151_f3cb429e64bc1706be81bc4f687a0019",
+      "WebQTest-590_ef6d9d3c6a2c1a1b2cef32193eecfa29",
+      "WebQTrn-1677_9dd205fdfa5075d2f97abec58868d9c9",
+      "WebQTest-1785_ee9df68984cde21c3be056caefd6613f",
+      "WebQTrn-25_a1d1a4796faa43a64b8b4a39c4493ef2",
+      "WebQTest-654_f4440609f5cecb091bf8e86adb47be25",
+      "WebQTrn-261_30a384ed1f686b2338e963e4a2a963d3",
+      "WebQTrn-2664_51d761aa070710bb5c4b31c8f0dc9ac7",
+      "WebQTest-1251_cb535b26088aa7a8cf49a7aba65ef3d3",
+      "WebQTrn-2815_0ab198918959e0a63172be1705632a9c",
+      "WebQTest-1528_c10f21ff1b8944c429bdb86f46cc9196",
+      "WebQTrn-1770_6325ee890e333f0d4fe222c15a95906f",
+      "WebQTrn-3083_b1f9bf9c0551430652e0ae3b98455ea6",
+      "WebQTrn-750_e02e76134732e285f2d7641ac41d5a3f",
+      "WebQTrn-25_62c571c0f7c5f645e7179596b4a308d2",
+      "WebQTrn-241_664396d62d6d576b56420b4865698e30",
+      "WebQTrn-1155_e5d58a39f71afaa19e8df8c6a01e7abe",
+      "WebQTest-743_81f7ed541ce951e30c3d90697cb83dec",
+      "WebQTest-537_a8a56da657efbba90881cce421ae6962",
+      "WebQTrn-3136_a2debf685e0c50491e35a9cf7a1e9ade",
+      "WebQTrn-3543_f47d07fb12afd1cc18d0a707a7a67fac",
+      "WebQTrn-1077_fb48d47a1d549a96bd54b8bdaf3c4be1",
+      "WebQTest-61_f3518e7c28ab856cf7e4795c229cc993",
+      "WebQTest-745_384ed622fab384974f2469ecba6710b9",
+      "WebQTrn-1677_214555bda3f8f964dacbc0fd686de014",
+      "WebQTest-1817_471b83eade9707a4dba68e201bf29d73",
+      "WebQTrn-60_93b45d085243ea5889cb7b43978ba5a3",
+      "WebQTrn-3033_e519712761951b558bb7cbf4ea39198a",
+      "WebQTrn-1023_efcc9747755b72a5f927c5ccf984d9e4",
+      "WebQTrn-2039_b61ae09585ba771e23f658ee6c136c5c",
+      "WebQTrn-497_a1739c3fe23ae1c5f93a421061ef5a1d",
+      "WebQTrn-465_d99f71857ba598c3225ef1cc718788aa",
+      "WebQTest-1513_5422fa602469c38418171ad342583759",
+      "WebQTest-100_de15ac1f762e3ec1e1261f6d9c81ebf9",
+      "WebQTrn-2047_38077debd523fe1b08b3d6e13538402b",
+      "WebQTrn-2818_5b6bc3c00ad3a3ddc3dfa8e4b440c5c9",
+      "WebQTrn-25_46aff27832b1fa971673ed54888b417e",
+      "WebQTest-1686_4e89c1dffdc379421d43840f4194ca9e",
+      "WebQTest-1513_a60bea07c81573c12c93e515b219c8b0",
+      "WebQTrn-2540_663593327611e932c87fa55af9a84152",
+      "WebQTest-538_4767846f70218c1178e6fb0c4937e547",
+      "WebQTrn-2316_c61d0b025a96bae95e5d1f9656e8f706",
+      "WebQTrn-567_1c798413a695a7bd9ca1ab5c5ee22021",
+      "WebQTest-1817_864441b0cd80bc9e5c41614404e8239b",
+      "WebQTrn-1294_c7fd890415184e0268b28e3d6079fa6c",
+      "WebQTest-1387_1f2fc1ee00d1bd5714265c4651a700ad",
+      "WebQTest-654_3a8152d581de19d1b839f3822e9392e3",
+      "WebQTrn-1532_118a81ac3fc08ca8590bf8be836d1be1",
+      "WebQTest-983_3caa263f40808e17c9c54948505772ee",
+      "WebQTest-1923_d21baa85614e41d6f4bd2cde1b90e8ad",
+      "WebQTrn-60_8bb7d66ca88065797304bb757065954e",
+      "WebQTrn-2569_91d303bf23f9a9eeb4e2fb2c28cf04b2",
+      "WebQTrn-3384_abb73f6339e6b2a1ad5cceaffa30a1f3",
+      "WebQTrn-105_8b3815ec57389b13892dd5abb108cc4e",
+      "WebQTrn-2784_4f5ae6d9ddec8a19fae8b69fbe24b6e3",
+      "WebQTrn-3057_17e973c9587cc65f8e2ea8add9f00ef2",
+      "WebQTrn-241_fa7fb367370bdcda12f06680e8b21b92",
+      "WebQTest-100_7a6ae21348065f95922affec47f394b7",
+      "WebQTrn-3136_41d970b7e6fddd9fe4cf7eaa0528fe54",
+      "WebQTrn-2570_d3158ff430d6197d9a2ec752ecae65e2",
+      "WebQTrn-1023_8aae72630c47d660704dda5e96688d1d",
+      "WebQTrn-3098_5f339cc3a7979a71dd90298c8532b71b",
+      "WebQTest-1686_a965046ceb8f96e283925e0c41abb69a",
+      "WebQTest-1817_e7846c2a93c0d53265cb05ef4ed16327",
+      "WebQTrn-849_f6e8b7149f2e422640a49beb753be4ef",
+      "WebQTest-1785_a46f6053d6c82eaf3574d4a8853999c3",
+      "WebQTest-1736_9a46ae131212bed576da6654db6d399e",
+      "WebQTrn-436_b301288f1064d4357ae5d8271061e1d1",
+      "WebQTrn-706_6032efd4798dd7c25582a0bc6cc5b4ea",
+      "WebQTrn-894_1055da5e6aeba01342af1c17439f3522",
+      "WebQTest-802_99157c72607b35d66607df042ab3af4f",
+      "WebQTest-965_00ba49818085a0ba2cec95290f1bf1fa",
+      "WebQTrn-2748_979197c30f12543d650a73d9ccb0a422",
+      "WebQTest-538_22837422e25cf0a05cb0efba9aa80402",
+      "WebQTrn-3605_dc036e6c27221c525c028b9d91296cd8",
+      "WebQTrn-1283_623b8370871966e2e8aeb301482e1558",
+      "WebQTest-537_955d6e0a1fc92093ca7adcbd82267c5b",
+      "WebQTrn-3249_9935071e94698bbdd5fd1114334a2e07",
+      "WebQTrn-2875_625df54cc64b9a3383407af99190cb04",
+      "WebQTest-743_d3eeae86c5754c57ae7e3d61ba9bc1e2",
+      "WebQTrn-2316_a8cc4703fd90aad3b1545e84b93ddba9",
+      "WebQTrn-62_e9f030de7d75661701a4cec15dd268dd",
+      "WebQTest-712_810a930318378edecdffe4b349276794",
+      "WebQTest-1301_fd1f7b01422ed781a7688691219784f8",
+      "WebQTest-1560_fd6688bbf30871641ad813fcf09d673c",
+      "WebQTrn-2875_932cb81ff1a6e44e83ffd8b835951383",
+      "WebQTrn-568_02ce61aa4afe73ccad00e588d96f46b4",
+      "WebQTest-837_b3082a96cbaeb04f7d7ea8cdf5df3181",
+      "WebQTest-1289_0418d3a7dafa31d4a8c99233f8b93fc2",
+      "WebQTest-1000_a9122e6c3ec58aea7483e18c7074128a",
+      "WebQTrn-124_f3b167daf756d47d1ecd11a01d3ab353",
+      "WebQTest-1817_1fc25f9b3bb6e06f62e89be16e31c52b",
+      "WebQTrn-2904_2e36b6986e9bd1c449bafc82caafa585",
+      "WebQTest-743_af8b975343e4098913128e9ac7d04c05",
+      "WebQTrn-634_290076b4968a6b1f5f7b5425d3a5e9f0",
+      "WebQTrn-42_c2840394b15f40ab8df1987ece34cb87",
+      "WebQTrn-1939_3dc4d094915cc69911e4edefe742a167",
+      "WebQTrn-2570_99dba9274e8d6c826fdb25827fe613b3",
+      "WebQTrn-3412_67a2142ccd0f2bc9248c5f945f0cd1ab",
+      "WebQTrn-1812_8126be584feae3f358a930823db22c4e",
+      "WebQTrn-25_2d3996ef91afc9a7038b1a4c70b83e70",
+      "WebQTest-1012_07e24dedebc51f2f7a16ea8407dc4e70",
+      "WebQTrn-62_ba20c944a6a2d8cd25ab15f106002cef",
+      "WebQTrn-567_74a31031e32cb03098f5620a01c504cb",
+      "WebQTrn-3251_acf68a88c0375f50017818448cac05ac",
+      "WebQTest-1923_3c03b909720b25c49766ef76b682c08c",
+      "WebQTrn-2569_d9a0609c1f7c61c90855edb0244d7e37",
+      "WebQTest-1234_840083e6d7f8b9c24c7893c2fa6c203a",
+      "WebQTrn-1521_ea85cbb9b031dd740882914f30533648",
+      "WebQTrn-261_dd80bf56757918c60cd1fc5ca8052f23",
+      "WebQTrn-2570_a381da44d3a6d3da928c30cebe4df1db",
+      "WebQTest-1923_2c5591f1dbe7402405004d7a0836dd3b",
+      "WebQTrn-1817_5e5820ae78bf808cd4682f952c2af9d7",
+      "WebQTest-1797_f2a2e2e91494abbc29bdf70800a5910e",
+      "WebQTest-1260_018dc0c070e53555fa37f63d4b83ca87",
+      "WebQTrn-1069_e87644944e029d31491a748a4b4c824b",
+      "WebQTrn-1436_f69da4b564ccde6d627037dc6d1057b6",
+      "WebQTest-1251_cbf2f20f6caf754bc49d672ca7b150b7"
+    ]
+  },
+  "aggregate_outcomes": {
+    "g2": {
+      "n": 500,
+      "em_count": 192,
+      "em_rate": 0.384,
+      "f1_mean": 0.4128,
+      "cvt_count": 28,
+      "cvt_rate": 0.056,
+      "kg_incomplete_count": 118,
+      "kg_incomplete_rate": 0.236
+    },
+    "b39": {
+      "n": 500,
+      "em_count": 175,
+      "em_rate": 0.35,
+      "f1_mean": 0.3825,
+      "cvt_count": 15,
+      "cvt_rate": 0.03,
+      "kg_incomplete_count": 181,
+      "kg_incomplete_rate": 0.362
+    }
+  },
+  "dim1_tool_types": {
+    "g2": {
+      "total_calls": 1500,
+      "counts": {
+        "get_tail_relations": 0,
+        "get_head_relations": 0,
+        "get_tail_entities": 1500,
+        "get_head_entities": 0,
+        "other": 0
+      },
+      "percentages": {
+        "get_tail_relations": 0.0,
+        "get_head_relations": 0.0,
+        "get_tail_entities": 100.0,
+        "get_head_entities": 0.0,
+        "other": 0.0
+      }
+    },
+    "b39": {
+      "total_calls": 1499,
+      "counts": {
+        "get_tail_relations": 0,
+        "get_head_relations": 0,
+        "get_tail_entities": 1499,
+        "get_head_entities": 0,
+        "other": 0
+      },
+      "percentages": {
+        "get_tail_relations": 0.0,
+        "get_head_relations": 0.0,
+        "get_tail_entities": 100.0,
+        "get_head_entities": 0.0,
+        "other": 0.0
+      }
+    }
+  },
+  "dim2_unique_query_diversity": {
+    "g2": {
+      "n_trajectories": 500,
+      "mean_distinct_per_traj": 2.634,
+      "frac_ge2": 0.964,
+      "frac_ge4": 0.0,
+      "pct_ge2": 96.4,
+      "pct_ge4": 0.0,
+      "distribution": {
+        "2": 147,
+        "3": 335,
+        "1": 18
+      }
+    },
+    "b39": {
+      "n_trajectories": 500,
+      "mean_distinct_per_traj": 2.368,
+      "frac_ge2": 0.898,
+      "frac_ge4": 0.0,
+      "pct_ge2": 89.8,
+      "pct_ge4": 0.0,
+      "distribution": {
+        "2": 213,
+        "3": 236,
+        "1": 50,
+        "0": 1
+      }
+    }
+  },
+  "dim3_turn_to_answer": {
+    "g2": {
+      "n_with_answer": 500,
+      "n_no_answer": 0,
+      "mean_turns_before_answer": 3.0,
+      "bucket_counts": {
+        "1": 0,
+        "2": 0,
+        "3": 500,
+        "4": 0,
+        "5+": 0
+      },
+      "bucket_percentages": {
+        "1": 0.0,
+        "2": 0.0,
+        "3": 100.0,
+        "4": 0.0,
+        "5+": 0.0
+      }
+    },
+    "b39": {
+      "n_with_answer": 499,
+      "n_no_answer": 1,
+      "mean_turns_before_answer": 3.002,
+      "bucket_counts": {
+        "1": 0,
+        "2": 0,
+        "3": 498,
+        "4": 1,
+        "5+": 0
+      },
+      "bucket_percentages": {
+        "1": 0.0,
+        "2": 0.0,
+        "3": 99.8,
+        "4": 0.2,
+        "5+": 0.0
+      }
+    }
+  },
+  "dim4_shared_kg_incomplete_overlap": {
+    "n_shared_kg_incomplete": 94,
+    "same_query": 68,
+    "same_entity_diff_rel": 17,
+    "entirely_different": 9,
+    "no_query_either": 0,
+    "examples": [
+      {
+        "sample_id": "WebQTest-542_9131e49190aad60dc4fbd564e78cf5d5",
+        "bucket": "same_entity_diff_rel",
+        "g2_first_query": [
+          "american south",
+          "organization.organization_scope.organizations_with_this_scope"
+        ],
+        "b39_first_query": [
+          "american south",
+          "type"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-2653_e8a19b1545bda07304fa7dd15e050ea9",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "france",
+          "location.administrative_divisions"
+        ],
+        "b39_first_query": [
+          "france",
+          "location.administrative_divisions"
+        ]
+      },
+      {
+        "sample_id": "WebQTest-1171_36be0686f0f845782d8e8d0c09704e45",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "darth vader",
+          "film"
+        ],
+        "b39_first_query": [
+          "darth vader",
+          "film"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-2738_910f8908e2d53dfb850b7b52b74e4a51",
+        "bucket": "entirely_different",
+        "g2_first_query": [
+          "le château-cambrésis",
+          "location.location.containedby"
+        ],
+        "b39_first_query": [
+          "le château-cambresis",
+          "architecture.building.occupant"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-3384_2229eb4cf51b84c632d4f3f60c0cb8f3",
+        "bucket": "same_entity_diff_rel",
+        "g2_first_query": [
+          "hertha pointer",
+          "animal.breed_temperament.breed"
+        ],
+        "b39_first_query": [
+          "hertha pointer",
+          "animal.breed_temperament.breeds"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-1770_6a7c160ace84e7908302f805739ad06d",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "dangerously in love 2",
+          "music.recording.artist"
+        ],
+        "b39_first_query": [
+          "dangerously in love 2",
+          "music.recording.artist"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-2653_b98f847032635d8795209af243ad72b1",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "france",
+          "location.administrative_divisions"
+        ],
+        "b39_first_query": [
+          "france",
+          "location.administrative_divisions"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-62_bce88015327268bc8f081292e2c80dcd",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "walt disney",
+          "film"
+        ],
+        "b39_first_query": [
+          "walt disney",
+          "film"
+        ]
+      },
+      {
+        "sample_id": "WebQTest-1923_eaeaff16b51e52669edc90501a373c61",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "miley cyrus",
+          "film"
+        ],
+        "b39_first_query": [
+          "miley cyrus",
+          "film"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-1278_7df82f515bf7947c2bfdd404503b50fd",
+        "bucket": "same_entity_diff_rel",
+        "g2_first_query": [
+          "because i got a girl",
+          "music.recording.artist"
+        ],
+        "b39_first_query": [
+          "because i got a girl",
+          "music.composition.composer"
+        ]
+      },
+      {
+        "sample_id": "WebQTest-1923_a90c08a839ac4d0ac22ebbf436bb578b",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "miley cyrus",
+          "film"
+        ],
+        "b39_first_query": [
+          "miley cyrus",
+          "film"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-1577_1fad167a955dd126cc7ca38ed92d28f0",
+        "bucket": "same_entity_diff_rel",
+        "g2_first_query": [
+          "james baldwin",
+          "type.type.domain"
+        ],
+        "b39_first_query": [
+          "james baldwin",
+          "type"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-1394_f634dd018cba9f4fb4ab125b08a486bd",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "turkey",
+          "location.administrative_divisions"
+        ],
+        "b39_first_query": [
+          "turkey",
+          "location.administrative_divisions"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-849_eba7931ddf28af4dfa20fb099196c91f",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "germany",
+          "location.administrative_divisions"
+        ],
+        "b39_first_query": [
+          "germany",
+          "location.administrative_divisions"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-62_1901065f16bfad63f514f48ecebd767e",
+        "bucket": "same_entity_diff_rel",
+        "g2_first_query": [
+          "lend a paw",
+          "music.recording.artist"
+        ],
+        "b39_first_query": [
+          "lend a paw",
+          "music.composition.composer"
+        ]
+      },
+      {
+        "sample_id": "WebQTest-1260_c4e06c3a9e4b4f10bd1ae97f1742c198",
+        "bucket": "entirely_different",
+        "g2_first_query": [
+          "afc championship game",
+          "sports.sports_championship_event.champion"
+        ],
+        "b39_first_query": [
+          "super bowl",
+          "type"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-2486_bcd294e8b78226fb373c0a54e4dcba01",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "forbes cover billionaire",
+          "film.film.featured_film_locations"
+        ],
+        "b39_first_query": [
+          "forbes cover billionaire",
+          "film.film.featured_film_locations"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-513_d3189b87ba72d77c38506fa49f4245c1",
+        "bucket": "same_entity_diff_rel",
+        "g2_first_query": [
+          "countries used",
+          "schema.context.schema.org"
+        ],
+        "b39_first_query": [
+          "countries used",
+          "schema.domain"
+        ]
+      },
+      {
+        "sample_id": "WebQTest-1528_911cff6e81e18c2e78cb5a8423082bfa",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "tsg entertainment",
+          "organization.organization_founder"
+        ],
+        "b39_first_query": [
+          "tsg entertainment",
+          "organization.organization_founder"
+        ]
+      },
+      {
+        "sample_id": "WebQTest-1965_b7c82cd0420f9f1934037e1625db4685",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "bafta award",
+          "type"
+        ],
+        "b39_first_query": [
+          "bafta award",
+          "type"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-1532_3d8b19e73c68745a462f1106bf6de17c",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "harry s. truman",
+          "film"
+        ],
+        "b39_first_query": [
+          "harry s. truman",
+          "film"
+        ]
+      },
+      {
+        "sample_id": "WebQTest-759_63eab23cc30386a10b181d148547c857",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "brad pitt",
+          "film.performance.actor"
+        ],
+        "b39_first_query": [
+          "brad pitt",
+          "film.performance.actor"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-3249_20507e60ba33137383d2b85cb865826a",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "tamera mowry",
+          "film"
+        ],
+        "b39_first_query": [
+          "tamera mowry",
+          "film"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-2784_1dc2b7729c8e70203833586f0d1bd021",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "tupac shakur",
+          "film"
+        ],
+        "b39_first_query": [
+          "tupac shakur",
+          "film"
+        ]
+      },
+      {
+        "sample_id": "WebQTest-783_398858835267d06d629eb27d398324f7",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "houston city council",
+          "organization.organization.headquarters"
+        ],
+        "b39_first_query": [
+          "houston city council",
+          "organization.organization.headquarters"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-3249_af94010c3bfc3a584ffb01e553dd2e8f",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "tamera mowry",
+          "film"
+        ],
+        "b39_first_query": [
+          "tamera mowry",
+          "film"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-3249_5aa3063566fca0f5ff73b2b811e3b1ab",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "tamera mowry",
+          "film"
+        ],
+        "b39_first_query": [
+          "tamera mowry",
+          "film"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-124_33b7d857b3156faee9cb6c16741d8b6a",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "angelina jolie",
+          "film.performance.actor"
+        ],
+        "b39_first_query": [
+          "angelina jolie",
+          "film.performance.actor"
+        ]
+      },
+      {
+        "sample_id": "WebQTest-759_85b64b4dea5209a2c8881109c02cb139",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "heartthrobs are a dime a dozen.",
+          "media_common.quotation.author"
+        ],
+        "b39_first_query": [
+          "heartthrobs are a dime a dozen.",
+          "media_common.quotation.author"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-25_70cb5f02c23208a8369c961136b54b8e",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "taylor lautner",
+          "film"
+        ],
+        "b39_first_query": [
+          "taylor lautner",
+          "film"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-2314_2e6d98fb779ac3b63a5dd2688034c0c9",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "nobel patria",
+          "tu hermosa"
+        ],
+        "b39_first_query": [
+          "nobel patria",
+          "tu hermosa"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-1677_15af244703c8dc90d1e1f3fb2ec8a259",
+        "bucket": "same_entity_diff_rel",
+        "g2_first_query": [
+          "adam sandler",
+          "film.performance.actor"
+        ],
+        "b39_first_query": [
+          "adam sandler",
+          "film"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-452_433757f91385148e1cd7be78e78c3f2a",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "lala anthony",
+          "film.performance.actor"
+        ],
+        "b39_first_query": [
+          "lala anthony",
+          "film.performance.actor"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-25_3a6f67ee41fbd7c75ce37dde61d816a7",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "taylor lautner",
+          "film"
+        ],
+        "b39_first_query": [
+          "taylor lautner",
+          "film"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-452_7353c8c6c04ea2c5ff801a96123277cc",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "lala anthony",
+          "film.performance.actor"
+        ],
+        "b39_first_query": [
+          "lala anthony",
+          "film.performance.actor"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-2641_73c5cf3f70ecb7e35617a190ddff860b",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "the miracle worker",
+          "film.film.featured_film_locations"
+        ],
+        "b39_first_query": [
+          "the miracle worker",
+          "film.film.featured_film_locations"
+        ]
+      },
+      {
+        "sample_id": "WebQTest-1840_c00f449746ccac175d49bbcd8f9c7757",
+        "bucket": "entirely_different",
+        "g2_first_query": [
+          "saami language",
+          "lule"
+        ],
+        "b39_first_query": [
+          "saami",
+          "lule language"
+        ]
+      },
+      {
+        "sample_id": "WebQTest-1560_ac8af71653951589b9f019f502b6afa3",
+        "bucket": "same_entity_diff_rel",
+        "g2_first_query": [
+          "washington square news",
+          "organization.organization_founder"
+        ],
+        "b39_first_query": [
+          "washington square news",
+          "organization.organization_founders"
+        ]
+      },
+      {
+        "sample_id": "WebQTest-1923_f61568ed06e8ed92e68deb8a5ddfb717",
+        "bucket": "entirely_different",
+        "g2_first_query": [
+          "blimp award for favorite movie star",
+          "type"
+        ],
+        "b39_first_query": [
+          "blindfold",
+          "film"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-3170_bcc7cf86fe716e0c10225e1a98b719bb",
+        "bucket": "same_entity_diff_rel",
+        "g2_first_query": [
+          "energy development",
+          "type"
+        ],
+        "b39_first_query": [
+          "energy development",
+          "webpage"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-1597_99ae14b4f2ee3bb521e43a02ab084d0e",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "lois cummings",
+          "film"
+        ],
+        "b39_first_query": [
+          "lois cummings",
+          "film"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-1577_6fb4733f48e98e385b85d625ad84354f",
+        "bucket": "same_entity_diff_rel",
+        "g2_first_query": [
+          "james baldwin",
+          "type.type.domain"
+        ],
+        "b39_first_query": [
+          "james baldwin",
+          "type"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-894_30bf7df312187ad1f95aaaf3ed20e18d",
+        "bucket": "entirely_different",
+        "g2_first_query": [
+          "f. scott fitzgerald",
+          "type"
+        ],
+        "b39_first_query": [
+          "scott fitzgerald",
+          "type"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-1841_8df543a977cf8e7f362482a73cab35d0",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "spain",
+          "location.administrative_divisions"
+        ],
+        "b39_first_query": [
+          "spain",
+          "location.administrative_divisions"
+        ]
+      },
+      {
+        "sample_id": "WebQTest-1923_d2a47301538ff61eb47d97dcd2b65863",
+        "bucket": "entirely_different",
+        "g2_first_query": [
+          "toby emmerich",
+          "organization.organization_founder.organizations_founded"
+        ],
+        "b39_first_query": [
+          "miley cyrus",
+          "film"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-1023_4fb2643554bf5111a245dd1d6a424106",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "l'italiano",
+          "organization.headquarters"
+        ],
+        "b39_first_query": [
+          "l'italiano",
+          "organization.headquarters"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-64_09e61020934818b85641a22821e7a455",
+        "bucket": "entirely_different",
+        "g2_first_query": [
+          "strictly 4 my n.i.g.g.a.z...",
+          "music.album.artist"
+        ],
+        "b39_first_query": [
+          "strictly 4 my n.i.g.g.a.z.... name in juice",
+          "music.recording.artist"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-738_75d0bf8a1c2aca91051597cd3bdfb371",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "jj-thomson2",
+          "common.image.appears_in_topic_gallery"
+        ],
+        "b39_first_query": [
+          "jj-thomson2",
+          "common.image.appears_in_topic_gallery"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-1405_b5513034c35cc49fda740f1a0ae5b7b9",
+        "bucket": "entirely_different",
+        "g2_first_query": [
+          "sam seaborn",
+          "film"
+        ],
+        "b39_first_query": [
+          "john f. kennedy",
+          "film"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-62_16d8eb52603fa2d47a3441e9a5231568",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "walt disney",
+          "film"
+        ],
+        "b39_first_query": [
+          "walt disney",
+          "film"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-1069_b526307856da0d2f8d1bf4ceecb179ad",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "laeso municipality",
+          "location.location.containedby"
+        ],
+        "b39_first_query": [
+          "laeso municipality",
+          "location.location.containedby"
+        ]
+      },
+      {
+        "sample_id": "WebQTest-1387_9bff9b3325534dae4908b820d4364101",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "shoot em up",
+          "film.film.featured_film_locations"
+        ],
+        "b39_first_query": [
+          "shoot em up",
+          "film.film.featured_film_locations"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-241_e4ddf37f1344bc533ac60131a15569f9",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "france",
+          "location.administrative_divisions"
+        ],
+        "b39_first_query": [
+          "france",
+          "location.administrative_divisions"
+        ]
+      },
+      {
+        "sample_id": "WebQTest-537_46a304cecca0e072121d7dc42befb590",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "germany",
+          "location.administrative_divisions"
+        ],
+        "b39_first_query": [
+          "germany",
+          "location.administrative_divisions"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-1077_83f43b9f4c2707c689543b33efe1d28d",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "afghanistan",
+          "location.administrative_divisions"
+        ],
+        "b39_first_query": [
+          "afghanistan",
+          "location.administrative_divisions"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-1539_de8059b06640bb0b9cbe51ff95a7589a",
+        "bucket": "entirely_different",
+        "g2_first_query": [
+          "commander kent",
+          "film.performance.character"
+        ],
+        "b39_first_query": [
+          "star wars",
+          "film"
+        ]
+      },
+      {
+        "sample_id": "WebQTest-1797_0a8f3340ee0c947b08068918a7bd18d6",
+        "bucket": "same_entity_diff_rel",
+        "g2_first_query": [
+          "battle of vicksburg",
+          "event.included_in_event"
+        ],
+        "b39_first_query": [
+          "battle of vicksburg",
+          "time.event.locations"
+        ]
+      },
+      {
+        "sample_id": "WebQTest-1379_8b1ff0551fb22f1d4e54d33d3656b8e8",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "franz liszt",
+          "music.composer.compositions"
+        ],
+        "b39_first_query": [
+          "franz liszt",
+          "music.composer.compositions"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-1278_0181d97710ecc26e3ba99006b2d5bf07",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "tupac shakur",
+          "film"
+        ],
+        "b39_first_query": [
+          "tupac shakur",
+          "film"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-2653_9c717662006cade1031ba7053490f214",
+        "bucket": "same_query",
+        "g2_first_query": [
+          "france",
+          "location.administrative_divisions"
+        ],
+        "b39_first_query": [
+          "france",
+          "location.administrative_divisions"
+        ]
+      }
+    ]
+  }
+}

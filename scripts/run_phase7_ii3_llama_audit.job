@@ -1,0 +1,167 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_llama_audit
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=6:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Phase 7 Action II3: Llama pipeline audit
+#
+# v10 canonical Task 14 reported Llama EM=0.000 across all configs. Earlier
+# 500-sample runs had 24.8%. A reviewer who reads the appendix will demand an
+# audit. This job runs Llama E3@1293 under four configs on 500 random test
+# samples to determine if the 0% is pipeline bug vs genuine failure.
+#
+# Arms:
+#   (a) current config          (max_turns=3, max_new_tokens=512) — matches Task 14
+#   (b) tokenizer/template diff  (just prints the chat template — no rerun)
+#   (c) max_new_tokens=1024      (catches degenerate token-loop hitting cap)
+#   (d) max_turns=5              (matches Qwen Task 14 config, hpc_tasks.md v11 (d))
+#
+# If ANY arm produces EM > 5%, the 0% result is a pipeline bug and we rerun
+# Task 14 Llama with the fix. If all arms give EM < 1%, Llama failure is genuine
+# and documented in the paper appendix.
+#
+# Output: results/phase7/llama_audit/*.json + results/phase7/llama_audit.md
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+CKPT_DIR="/projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/grpo-cwq-llama-8b-verifiable-20260331"
+BASE_MODEL="outputs/verl-sft-llama-8b-merged"
+STEP=1293
+OUT_DIR="results/phase7/llama_audit"
+KG_PORT=$((18000 + SLURM_JOB_ID % 1000))
+
+mkdir -p "$OUT_DIR"
+
+echo "=== Phase 7 II3: Llama E3@1293 pipeline audit ==="
+echo "Date: $(date)"
+echo "KG port: $KG_PORT"
+
+# Start KG server
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port $KG_PORT --log-level warning &
+KG_PID=$!
+trap 'kill $KG_PID 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready"
+
+# Arm (b) — print chat template and tokenizer diagnostics before any run
+echo ""
+echo "=== Arm (b): chat template + tokenizer diagnostics ==="
+python - <<'PY'
+import json
+from pathlib import Path
+from transformers import AutoTokenizer
+
+base = "outputs/verl-sft-llama-8b-merged"
+ckpt = "/projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/grpo-cwq-llama-8b-verifiable-20260331/global_step_1293/actor"
+
+for label, path in [("base", base), ("ckpt_actor", ckpt)]:
+    try:
+        tok = AutoTokenizer.from_pretrained(path)
+        print(f"\n--- {label} ({path}) ---")
+        print(f"  eos_token: {tok.eos_token!r} ({tok.eos_token_id})")
+        print(f"  pad_token: {tok.pad_token!r}")
+        print(f"  bos_token: {tok.bos_token!r}")
+        print(f"  chat_template (first 400 chars): {(tok.chat_template or '')[:400]!r}")
+        tmpl = tok.chat_template or ''
+        nn = "\n\n"
+        has_nn = nn in tmpl
+        has_eot = "<|eot_id|>" in tmpl
+        has_eot_text = "<|end_of_text|>" in tmpl
+        print(f"  uses double-newline between turns?  : {has_nn}")
+        print(f"  uses <|eot_id|>?                    : {has_eot}")
+        print(f"  uses <|end_of_text|>?               : {has_eot_text}")
+    except Exception as e:
+        print(f"  ERROR loading {label}: {e}")
+PY
+
+# Common args
+SAMPLE_IDS="results/phase7/llama_audit_500_ids.json"
+
+# Build a sample-id file of 500 random test ids (seed=42) if not exists
+if [ ! -f "$SAMPLE_IDS" ]; then
+    echo ""
+    echo "=== Generating 500 random test sample IDs (seed=42) ==="
+    python - <<'PY'
+import json
+import random
+import pyarrow.parquet as pq
+t = pq.read_table("data/freebase/verl_cwq/test.parquet")
+ids = [str(r["extra_info"]["sample_id"]) for r in t.to_pylist()]
+random.Random(42).shuffle(ids)
+out = {"filter_ids": ids[:500], "metadata": {"seed": 42, "n": 500, "source": "test.parquet"}}
+with open("results/phase7/llama_audit_500_ids.json", "w") as f:
+    json.dump(out, f)
+print(f"wrote 500 ids")
+PY
+fi
+
+run_arm() {
+    local arm_label="$1"
+    local max_turns="$2"
+    local max_new_tokens="$3"
+    local out_json="$OUT_DIR/arm_${arm_label}.json"
+
+    if [ -f "$out_json" ]; then
+        echo "[skip] arm $arm_label (already exists)"
+        return
+    fi
+
+    echo ""
+    echo "=== Arm ($arm_label): max_turns=$max_turns max_new_tokens=$max_new_tokens ==="
+    python scripts/eval_with_tools.py \
+        --checkpoint_dir "$CKPT_DIR" \
+        --steps "$STEP" \
+        --base_model "$BASE_MODEL" \
+        --eval_data data/freebase/verl_cwq/test.parquet \
+        --output "$out_json" \
+        --kg_server_url http://localhost:$KG_PORT \
+        --max_samples 0 \
+        --filter_ids "$SAMPLE_IDS" \
+        --max_turns "$max_turns" \
+        --max_new_tokens "$max_new_tokens" \
+        --save_trajectories "${OUT_DIR}/arm_${arm_label}_traj" \
+        --max_trajectory_samples 20
+}
+
+run_arm "a_current"     3  512
+run_arm "c_tokens_1024" 3  1024
+run_arm "d_turns_5"     5  512
+run_arm "cd_both"       5  1024
+
+echo ""
+echo "=== Summary ==="
+for arm in a_current c_tokens_1024 d_turns_5 cd_both; do
+    f="$OUT_DIR/arm_${arm}.json"
+    if [ -f "$f" ]; then
+        python -c "
+import json
+d = json.load(open('$f'))
+for step, r in d.items():
+    print(f'$arm / step {step}: EM={r.get(\"em\", 0):.3f}  tools/Q={r.get(\"avg_tool_calls\", 0):.2f}  n={r.get(\"n_samples\", 0)}')
+"
+    fi
+done
+
+kill $KG_PID 2>/dev/null
+echo ""
+echo "=== Done: $(date) ==="

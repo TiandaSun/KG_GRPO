@@ -1,0 +1,129 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_g_eval
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=12:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Phase 7 Variant G post-GRPO: merge + full-test eval + trajectory save.
+#
+# Usage:
+#   sbatch --export=ALL,ARM=G1 scripts/run_phase7_variant_g_eval.job
+#   sbatch --export=ALL,ARM=G2 scripts/run_phase7_variant_g_eval.job
+#
+# Optional: STEP (default 500, max training steps for G GRPO)
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+: "${ARM:?ARM env var required (G1 or G2)}"
+STEP="${STEP:-500}"
+
+if [ "$ARM" = "G1" ]; then
+    EXPERIMENT="grpo-cwq-7b-39g1-selfdistill-20260415"
+    MODEL_TAG="39g1_step${STEP}"
+elif [ "$ARM" = "G2" ]; then
+    EXPERIMENT="grpo-cwq-7b-39g2-restEM-20260415"
+    MODEL_TAG="39g2_step${STEP}"
+else
+    echo "ERROR: ARM must be G1 or G2, got $ARM"
+    exit 1
+fi
+
+BASE_MODEL="outputs/verl-sft-cwq-7b-merged"
+SRC="/projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/${EXPERIMENT}/global_step_${STEP}/actor"
+DST="outputs/verl-sft-cwq-${MODEL_TAG}-merged"
+OUT_JSON="results/phase7/${MODEL_TAG}_full_test.json"
+TRAJ_DIR="results/trajectories/phase7/${MODEL_TAG}_full"
+PS_DIR="results/phase7/${MODEL_TAG}_full_per_sample"
+KG_PORT=$((18000 + SLURM_JOB_ID % 1000))
+
+mkdir -p results/phase7 "$TRAJ_DIR" "$PS_DIR"
+
+echo "=== Phase 7 Variant G Eval: ${ARM} @ step ${STEP} ==="
+echo "Date: $(date)"
+echo "Source: $SRC"
+echo "Output: $OUT_JSON"
+
+if [ ! -d "$SRC" ]; then
+    echo "ERROR: FSDP checkpoint not found at $SRC"
+    # Try earlier steps
+    for s in 400 300 200; do
+        ALT="/projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/${EXPERIMENT}/global_step_${s}/actor"
+        if [ -d "$ALT" ]; then
+            echo "Found step $s instead. Re-run with STEP=$s"
+            break
+        fi
+    done
+    exit 1
+fi
+
+# --- (1) Merge ---
+if [ ! -f "$DST/config.json" ]; then
+    echo "=== Merging FSDP → HF ==="
+    mkdir -p "$DST"
+    python -m verl.model_merger merge \
+        --backend fsdp \
+        --local_dir "$SRC" \
+        --target_dir "$DST"
+    if [ ! -f "$DST/tokenizer.json" ]; then
+        cp -n "$BASE_MODEL"/tokenizer* "$DST/" 2>/dev/null || true
+        cp -n "$BASE_MODEL"/chat_template.jinja "$DST/" 2>/dev/null || true
+    fi
+    echo "Merge complete."
+else
+    echo "[skip] merged checkpoint exists"
+fi
+
+# --- (2) KG server ---
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port $KG_PORT --log-level warning &
+KG_PID=$!
+trap 'kill $KG_PID 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready"
+
+# --- (3) Eval ---
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$DST" \
+    --steps 0 \
+    --base_model "$DST" \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --output "$OUT_JSON" \
+    --kg_server_url http://localhost:$KG_PORT \
+    --max_samples 0 \
+    --max_turns 5 \
+    --max_new_tokens 512 \
+    --save_trajectories "$TRAJ_DIR" \
+    --max_trajectory_samples 3531 \
+    --save_per_sample "$PS_DIR"
+
+kill $KG_PID 2>/dev/null
+
+echo ""
+echo "=== ${MODEL_TAG} summary ==="
+python -c "
+import json
+d = json.load(open('$OUT_JSON'))
+for step, r in d.items():
+    print(f'  ${MODEL_TAG}: EM={r.get(\"em\", 0):.4f}  ContEM={r.get(\"contains_em\", 0):.4f}  F1={r.get(\"f1\", 0):.4f}  Tools={r.get(\"avg_tool_calls\", 0):.2f}')
+"
+echo "=== Done: $(date) ==="

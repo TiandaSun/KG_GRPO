@@ -1,0 +1,122 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_g3_traj_chunked
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --cpus-per-task=72
+#SBATCH --time=06:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# G3 trajectory dump at step 500, chunked across 4 GPUs.
+# Per v15 Lane 2 spec: trajectory dump on final ckpt for 7-cat classifier
+# behavioral-diff table vs G2/G1.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+DST="outputs/verl-sft-cwq-39g3_step500-merged"
+TRAJ_DIR_FINAL="results/trajectories/phase7/39g3_step500_full"
+KG_PORT=$((19700 + SLURM_JOB_ID % 100))
+
+[ -d "$DST" ] || { echo "ERROR: G3 step 500 merged ckpt missing at $DST"; exit 1; }
+mkdir -p "$TRAJ_DIR_FINAL/step_0"
+
+echo "=== G3 step 500 trajectory dump CHUNKED ==="
+echo "Date: $(date)"
+
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port $KG_PORT --log-level warning &
+KG_PID=$!
+trap 'kill $KG_PID 2>/dev/null; wait 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready on port $KG_PORT"
+
+run_chunk() {
+    local idx="$1"
+    local start="$2"
+    local n="$3"
+    local out_json="results/phase7/39g3_step500_traj_chunk${idx}.json"
+    local traj_dir="results/trajectories/phase7/39g3_step500_chunk${idx}"
+    local ps_dir="results/phase7/39g3_step500_chunk${idx}_per_sample"
+    local logfile="logs/p7_g3_traj_chunked-${SLURM_JOB_ID}-gpu${idx}.log"
+
+    mkdir -p "$traj_dir" "$ps_dir"
+
+    {
+        echo "=== GPU $idx start_idx=$start n=$n  $(date) ==="
+        CUDA_VISIBLE_DEVICES=$idx python scripts/eval_with_tools.py \
+            --checkpoint_dir "$DST" \
+            --steps 0 \
+            --base_model "$DST" \
+            --eval_data data/freebase/verl_cwq/test.parquet \
+            --output "$out_json" \
+            --kg_server_url http://localhost:$KG_PORT \
+            --start_idx $start \
+            --max_samples $n \
+            --max_turns 5 \
+            --max_new_tokens 512 \
+            --save_trajectories "$traj_dir" \
+            --max_trajectory_samples $n \
+            --save_per_sample "$ps_dir"
+        echo "=== GPU $idx done $(date) ==="
+    } > "$logfile" 2>&1
+}
+
+run_chunk 0 0    882 &
+PID0=$!
+run_chunk 1 882  882 &
+PID1=$!
+run_chunk 2 1764 882 &
+PID2=$!
+run_chunk 3 2646 885 &
+PID3=$!
+
+fail=0
+wait $PID0 || fail=1
+wait $PID1 || fail=1
+wait $PID2 || fail=1
+wait $PID3 || fail=1
+
+# --- Merge trajectory chunks ---
+echo "=== Merging $(date) ==="
+python3 << 'PYEOF'
+import json
+from pathlib import Path
+
+merged = []
+for idx in range(4):
+    cf = Path(f"results/trajectories/phase7/39g3_step500_chunk{idx}/step_0/trajectories.json")
+    if cf.exists():
+        with open(cf) as f:
+            chunk = json.load(f)
+        merged.extend(chunk)
+        print(f"  chunk {idx}: {len(chunk)} trajectories")
+
+out = Path("results/trajectories/phase7/39g3_step500_full/step_0/trajectories.json")
+out.parent.mkdir(parents=True, exist_ok=True)
+with open(out, "w") as f:
+    json.dump(merged, f, indent=2, ensure_ascii=False)
+print(f"\nWrote {out}: {len(merged)} trajectories total")
+PYEOF
+
+kill $KG_PID 2>/dev/null
+echo "=== Done $(date) ==="
+exit $fail

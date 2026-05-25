@@ -1,0 +1,261 @@
+{
+  "trajectory_file": "/lus/lfs1aip2/scratch/u6gg/ts1201.u6gg/Project/KG_GRPO/results/trajectories/phase7/39g2_step500_full/step_0/trajectories.json",
+  "parquet_file": "/lus/lfs1aip2/scratch/u6gg/ts1201.u6gg/Project/KG_GRPO/data/freebase/verl_cwq/test.parquet",
+  "n_total_g2_trajectories": 3531,
+  "category_counts": {
+    "wrong-answer": 1140,
+    "correct-via-memory": 1203,
+    "kg-incomplete": 818,
+    "tool-misuse": 165,
+    "correct-via-tool": 205
+  },
+  "n_kg_incomplete": 818,
+  "bucket_counts": {
+    "relation_typo": 576,
+    "correct_entity_wrong_relation": 153,
+    "wrong_entity": 70,
+    "completely_off": 19
+  },
+  "bucket_percentages": {
+    "relation_typo": 70.42,
+    "correct_entity_wrong_relation": 18.7,
+    "wrong_entity": 8.56,
+    "completely_off": 2.32
+  },
+  "bucket_definitions": {
+    "relation_typo": "Entity matches a gold entity AND the queried relation has Levenshtein distance <= 3 (or SequenceMatcher ratio > 0.8) to a gold relation for that entity.",
+    "correct_entity_wrong_relation": "Entity matches a gold entity but no gold relation is close (distance > 3 and ratio <= 0.8).",
+    "wrong_entity": "Entity does not match any gold path entity even after substring normalization.",
+    "completely_off": "Entity is wrong and the queried relation is not close to any gold relation (or no <search> call was parseable)."
+  },
+  "matching_rules": {
+    "entity": "lowercase + underscore/dot -> space + whitespace collapse; substring containment (>=3 char overlap) allowed.",
+    "relation": "Levenshtein on normalized full relation AND on dotted tail; close if min_dist <= 3 OR max ratio > 0.8; the dotted-tail rule also marks close if the tail appears verbatim inside the gold relation (e.g. place_of_birth in people.person.place_of_birth).",
+    "representative_call": "first <search> call per trajectory (documented in script header)."
+  },
+  "examples": {
+    "relation_typo": [
+      {
+        "sample_id": "WebQTest-1002_806620bbf6ca7cf3ced5d4ff130c714d",
+        "question": "Which actor portrayed both Dumbledore and Badger?",
+        "gold_answer": "Michael Gambon",
+        "all_answers": [
+          "Michael Gambon"
+        ],
+        "predicted": "Richard Harris",
+        "queried_entity": "Dumbledore",
+        "queried_relation": "film.performance.character",
+        "matched_gold_entity": "professor albus dumbledore",
+        "best_gold_relation": "cvg.game_performance.character",
+        "relation_best_ratio": 1.0,
+        "relation_min_edit": 0,
+        "num_search_calls": 3,
+        "note": "relation also exactly in gold path"
+      },
+      {
+        "sample_id": "WebQTest-100_3fd000b7cbc17c620bb91588e1c3cda3",
+        "question": "What is the current main speech medium in Haiti?",
+        "gold_answer": "Haitian Creole",
+        "all_answers": [
+          "Haitian Creole"
+        ],
+        "predicted": "French",
+        "queried_entity": "Haiti",
+        "queried_relation": "Location.administrative_divisions",
+        "matched_gold_entity": "haiti",
+        "best_gold_relation": "location.country.administrative_divisions",
+        "relation_best_ratio": 1.0,
+        "relation_min_edit": 0,
+        "num_search_calls": 3,
+        "note": ""
+      },
+      {
+        "sample_id": "WebQTest-100_8bd4933eb6c9c8e282e9bcc507679588",
+        "question": "What language spoken in Haiti is spoken more prevalently in Puerto Rico?",
+        "gold_answer": "Haitian Creole",
+        "all_answers": [
+          "Haitian Creole"
+        ],
+        "predicted": "French",
+        "queried_entity": "Haiti",
+        "queried_relation": "Location.administrative_divisions",
+        "matched_gold_entity": "haiti",
+        "best_gold_relation": "location.country.administrative_divisions",
+        "relation_best_ratio": 1.0,
+        "relation_min_edit": 0,
+        "num_search_calls": 3,
+        "note": ""
+      }
+    ],
+    "correct_entity_wrong_relation": [
+      {
+        "sample_id": "WebQTest-106_87ddee8816a0dd02511eb7670904d500",
+        "question": "Find the movies that had James William Visconti III as a crew member, which one featued Arnie Hammer and who did he play?",
+        "gold_answer": "Tyler Winklevoss",
+        "all_answers": [
+          "Tyler Winklevoss",
+          "Cameron Winklevoss"
+        ],
+        "predicted": "The Muppets",
+        "queried_entity": "James William Visconti III",
+        "queried_relation": "film.performance.actor",
+        "matched_gold_entity": "james william visconti iii",
+        "best_gold_relation": "people.person.gender",
+        "relation_best_ratio": 0.333,
+        "relation_min_edit": 5,
+        "num_search_calls": 3,
+        "note": ""
+      },
+      {
+        "sample_id": "WebQTest-1072_8e6dfa8822e4d4a94104aa4c25644866",
+        "question": "Who is the current governor of the governmental jurisdiction that included a governmental body called the 2010 Arizona Senate?",
+        "gold_answer": "Raúl Héctor Castro",
+        "all_answers": [
+          "Raúl Héctor Castro"
+        ],
+        "predicted": "Jan Brewer",
+        "queried_entity": "2010 Arizona Senate",
+        "queried_relation": "organization.leadership.role",
+        "matched_gold_entity": "arizona senate",
+        "best_gold_relation": "common.topic.article",
+        "relation_best_ratio": 0.545,
+        "relation_min_edit": 4,
+        "num_search_calls": 3,
+        "note": ""
+      },
+      {
+        "sample_id": "WebQTest-1120_08c0146e6ee5281e52c72f9bb9199474",
+        "question": "What currency was used prior to the Euro in the country where the legislative session of the Ayrault Government was held?",
+        "gold_answer": "Assignat",
+        "all_answers": [
+          "Assignat"
+        ],
+        "predicted": "CFP franc",
+        "queried_entity": "Ayrault Government",
+        "queried_relation": "organization.leadership.role",
+        "matched_gold_entity": "ayrault government",
+        "best_gold_relation": "common.topic.article",
+        "relation_best_ratio": 0.545,
+        "relation_min_edit": 4,
+        "num_search_calls": 3,
+        "note": ""
+      }
+    ],
+    "wrong_entity": [
+      {
+        "sample_id": "WebQTest-1171_6bdeb539174509f051a303e0ee59c246",
+        "question": "What actor played the charactor Troy Bolton and also has done the voice of Star Wars villiam Darth Vader?",
+        "gold_answer": "Zac Efron",
+        "all_answers": [
+          "Zac Efron",
+          "Zac Efron",
+          "Zac Efron"
+        ],
+        "predicted": "James Earl Jones",
+        "queried_entity": "Troy Bolton",
+        "queried_relation": "film",
+        "matched_gold_entity": null,
+        "best_gold_relation": "film.actor.film",
+        "relation_best_ratio": 1.0,
+        "relation_min_edit": 0,
+        "num_search_calls": 3,
+        "note": "relation close to a gold relation, but wrong entity"
+      },
+      {
+        "sample_id": "WebQTest-1306_1514f1e9c4973110faa2ad25559c0435",
+        "question": "What is the form of government in the country after 1979 and is where Afshar is spoken?",
+        "gold_answer": "Islamic republic",
+        "all_answers": [
+          "Islamic republic"
+        ],
+        "predicted": "Parliamentary system",
+        "queried_entity": "Afshari Language",
+        "queried_relation": "language_family",
+        "matched_gold_entity": null,
+        "best_gold_relation": "language.human_language.language_family",
+        "relation_best_ratio": 1.0,
+        "relation_min_edit": 0,
+        "num_search_calls": 3,
+        "note": "relation close to a gold relation, but wrong entity"
+      },
+      {
+        "sample_id": "WebQTest-1316_5f339cc3a7979a71dd90298c8532b71b",
+        "question": "Name the politician that was named into their position by their spouse.?",
+        "gold_answer": "Deborah Read",
+        "all_answers": [
+          "Deborah Read"
+        ],
+        "predicted": "Lyndon B. Johnson",
+        "queried_entity": "Spouse",
+        "queried_relation": "common.topic.webpage",
+        "matched_gold_entity": null,
+        "best_gold_relation": "common.topic.image",
+        "relation_best_ratio": 0.842,
+        "relation_min_edit": 4,
+        "num_search_calls": 3,
+        "note": "relation close to a gold relation, but wrong entity"
+      }
+    ],
+    "completely_off": [
+      {
+        "sample_id": "WebQTest-1178_4b7058a69c5eb71df36a89837b1e4f60",
+        "question": "What is the birthplace of the composer of \"Papa'z Song\"?",
+        "gold_answer": "East Harlem",
+        "all_answers": [
+          "East Harlem"
+        ],
+        "predicted": "Harlem",
+        "queried_entity": "Papa's Song",
+        "queried_relation": "music.composition.lyricist",
+        "matched_gold_entity": null,
+        "best_gold_relation": "music.album.artist",
+        "relation_best_ratio": 0.571,
+        "relation_min_edit": 4,
+        "num_search_calls": 3,
+        "note": ""
+      },
+      {
+        "sample_id": "WebQTest-1823_6ac48b436d99ed7cd3f2d9329d95a0c8",
+        "question": "What is the government type where \"Ardulfurataini Estan\" is the national anthem?",
+        "gold_answer": "Parliamentary system",
+        "all_answers": [
+          "Parliamentary system",
+          "Republic",
+          "Parliamentary republic",
+          "Federal republic"
+        ],
+        "predicted": "Presidential system",
+        "queried_entity": "Ardulfurataini Estan",
+        "queried_relation": "music.composition.lyricist",
+        "matched_gold_entity": null,
+        "best_gold_relation": "common.topic.article",
+        "relation_best_ratio": 0.4,
+        "relation_min_edit": 6,
+        "num_search_calls": 3,
+        "note": ""
+      },
+      {
+        "sample_id": "WebQTest-213_4206ac0a907076be177d272525fdbe68",
+        "question": "Who dated the award nominee in the Toronto Film Critics Association in 2001?",
+        "gold_answer": "nm1157013",
+        "all_answers": [
+          "nm1157013",
+          "Josh Hartnett",
+          "Topher Grace",
+          "Jared Leto",
+          "Ryan Reynolds"
+        ],
+        "predicted": "Ryan Gosling",
+        "queried_entity": "Toronto Film Critics Association Award for Best Actor",
+        "queried_relation": "organization.organization_founder",
+        "matched_gold_entity": null,
+        "best_gold_relation": "common.topic.notable_for",
+        "relation_best_ratio": 0.387,
+        "relation_min_edit": 14,
+        "num_search_calls": 3,
+        "note": ""
+      }
+    ]
+  },
+  "n_no_parseable_search": 0
+}

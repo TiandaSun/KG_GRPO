@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=v19_cliffeval
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --cpus-per-task=18
+#SBATCH --time=04:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# v19 W18/W20 per-checkpoint eval (1-GPU sequential, backfill-friendly).
+# Evaluates checkpoints 50/100/150/200/250/300(/350/400 if present) of one
+# experiment on the 200-Q seed-42 subset, saving trajectories for CvT/Tools
+# curve (W18 cliff test; W20 informative-failure effect).
+#
+# W20 arms need the informative-failure KG server (--informative_errors); set
+# INFO_ERR=1 for W20, leave unset for W18.
+#
+# Usage:
+#   sbatch --export=ALL,EXP=grpo-cwq-7b-w18-anti-quote-seed1-20260520           scripts/run_v19_cliff_eval_1gpu.job
+#   sbatch --export=ALL,EXP=grpo-cwq-7b-w20-a1-infofail-seed1-20260520,INFO_ERR=1 scripts/run_v19_cliff_eval_1gpu.job
+
+set -eo pipefail
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+: "${EXP:?EXP env var required (experiment name)}"
+INFO_ERR="${INFO_ERR:-0}"
+
+CKPT_ROOT="/projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/${EXP}"
+BASE_MODEL="outputs/verl-sft-cwq-7b-merged"
+EVAL_DATA="data/freebase/verl_cwq/test.parquet"
+FILTER_IDS="results/task37_sample_ids.json"
+OUT_DIR="_handoff/data/w19_cliff/${EXP}"
+KG_PORT=$((18500 + SLURM_JOB_ID % 90))
+
+mkdir -p "$OUT_DIR" logs
+[ -d "$CKPT_ROOT" ] || { echo "ERROR: $CKPT_ROOT missing"; exit 1; }
+
+STEPS=""
+for s in 50 100 150 200 250 300 350 400; do
+    [ -d "$CKPT_ROOT/global_step_${s}/actor" ] && STEPS="$STEPS $s"
+done
+echo "=== v19 cliff eval $EXP  INFO_ERR=$INFO_ERR  steps:[$STEPS]  $(date) ==="
+
+INFO_FLAG=""
+[ "$INFO_ERR" = "1" ] && INFO_FLAG="--informative_errors"
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg \
+    --port $KG_PORT $INFO_FLAG --log-level warning &
+KG_PID=$!
+trap 'kill $KG_PID 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q 200 && break
+    sleep 5
+done
+echo "KG ready on $KG_PORT (info_err=$INFO_ERR)"
+
+for step in $STEPS; do
+    src="$CKPT_ROOT/global_step_${step}/actor"
+    dst="outputs/v19cliff_$(echo $EXP|tr -c 'a-zA-Z0-9' '_')_step${step}-merged"
+    echo "--- step $step merge+eval $(date) ---"
+    if [ ! -f "$dst/config.json" ]; then
+        mkdir -p "$dst"
+        python -m verl.model_merger merge --backend fsdp --local_dir "$src" --target_dir "$dst"
+        [ -f "$dst/tokenizer.json" ] || cp -n "$BASE_MODEL"/tokenizer* "$dst/" 2>/dev/null || true
+        [ -f "$dst/chat_template.jinja" ] || cp -n "$BASE_MODEL"/chat_template.jinja "$dst/" 2>/dev/null || true
+    fi
+    python scripts/eval_with_tools.py \
+        --checkpoint_dir "$dst" --steps 0 --base_model "$dst" \
+        --eval_data "$EVAL_DATA" --output "${OUT_DIR}/step${step}.json" \
+        --kg_server_url http://localhost:$KG_PORT \
+        --filter_ids "$FILTER_IDS" --max_samples 0 \
+        --max_turns 5 --max_new_tokens 512 \
+        --save_per_sample "${OUT_DIR}/step${step}_per_sample" \
+        --save_trajectories "${OUT_DIR}/step${step}_traj" --max_trajectory_samples 9999
+    rm -rf "$dst"
+done
+
+kill $KG_PID 2>/dev/null
+echo "=== Done $(date) ==="

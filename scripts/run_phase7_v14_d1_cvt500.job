@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v14d1_cvt500
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=06:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# V14-D1 14B@400 CvT classification eval — 500 random seed=42 samples.
+# P0 CRITICAL: produces the trajectories needed for CvT/7-category classification
+# on the same 500-sample subset used in V14-B4 for cross-comparability.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+MODEL_TAG="v14_d1_qwen14b_e5b_step400"
+MERGED="outputs/verl-sft-cwq-14b-${MODEL_TAG}-merged"
+FILTER_IDS="results/phase7/v14_d1_cvt_500_ids.json"
+OUT_JSON="results/phase7/v14_d1_qwen14b_e5b_step400_cvt500.json"
+TRAJ_DIR="results/trajectories/phase7/v14_d1_qwen14b_e5b_step400_cvt500"
+PS_DIR="results/phase7/v14_d1_qwen14b_e5b_step400_cvt500_per_sample"
+KG_PORT=$((18000 + SLURM_JOB_ID % 1000))
+
+mkdir -p results/phase7 "$TRAJ_DIR" "$PS_DIR"
+
+echo "=== V14-D1 CvT-500 Eval ==="
+echo "Date: $(date)"
+echo "Merged model: $MERGED"
+echo "Filter IDs:  $FILTER_IDS (500 samples, seed=42)"
+
+[ -d "$MERGED" ] || { echo "ERROR: merged 14B not found at $MERGED"; exit 1; }
+[ -f "$FILTER_IDS" ] || { echo "ERROR: filter IDs not found"; exit 1; }
+
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port $KG_PORT --log-level warning &
+KG_PID=$!
+trap 'kill $KG_PID 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready"
+
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$MERGED" \
+    --steps 0 \
+    --base_model "$MERGED" \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --filter_ids "$FILTER_IDS" \
+    --output "$OUT_JSON" \
+    --kg_server_url http://localhost:$KG_PORT \
+    --max_samples 0 \
+    --max_turns 5 \
+    --max_new_tokens 512 \
+    --save_trajectories "$TRAJ_DIR" \
+    --max_trajectory_samples 500 \
+    --save_per_sample "$PS_DIR" \
+    --save_every 100
+
+kill $KG_PID 2>/dev/null
+echo "=== Done: $(date) ==="

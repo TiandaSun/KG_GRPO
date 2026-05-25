@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=t40_merge_catb
+#SBATCH --nodes=1
+#SBATCH --gpus=0
+#SBATCH --time=00:30:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Task 40 Step 1b: merge 4 pass@10 chunk outputs into
+# data/freebase/verl_cwq/train_category_b_ids.json.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+echo "=== Task 40 Step 1b: Merge Cat B chunks ==="
+echo "Date: $(date)"
+
+python scripts/task40_merge_cat_b.py \
+    --inputs results/task40_train_cat_b_chunk0.json \
+             results/task40_train_cat_b_chunk1.json \
+             results/task40_train_cat_b_chunk2.json \
+             results/task40_train_cat_b_chunk3.json \
+    --output data/freebase/verl_cwq/train_category_b_ids.json
+
+echo "=== Done: $(date) ==="

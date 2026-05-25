@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=task25_partial_prompt
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=06:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Task 25: Partial-Prompt Completion Test
+# Tests contamination: truncate question to 50% tokens, check if model can complete
+# Runs both Qwen2.5-7B-Instruct and Llama-3.1-8B-Instruct (base models)
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export HF_TOKEN=$(cat "$HOME/.cache/huggingface/token" 2>/dev/null)
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+echo "=== Task 25: Partial-Prompt Completion Test ==="
+echo "Date: $(date)"
+echo "Node: $(hostname)"
+echo "GPU: $(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null || echo 'unknown')"
+echo ""
+
+mkdir -p results logs
+
+python scripts/task25_partial_prompt.py \
+    --models Qwen/Qwen2.5-7B-Instruct meta-llama/Llama-3.1-8B-Instruct \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --truncation_ratio 0.5 \
+    --max_new_tokens 128 \
+    --output results/task25_partial_prompt.json
+
+echo ""
+echo "=== Done ==="
+echo "End: $(date)"

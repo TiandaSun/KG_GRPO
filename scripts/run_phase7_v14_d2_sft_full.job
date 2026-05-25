@@ -1,0 +1,101 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v14d2_sft
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --time=08:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# V14-D2 full SFT: Qwen3-4B-Instruct-2507, 5K primary corpus, 0.6 epoch, LR 2.5e-5.
+# Rationale (v13 Qwen3-4B row):
+#   - 5K only, NO 6K enhanced.
+#   - Epochs 0.5-0.7× of 7B's 1-epoch baseline (instruct-tuned model -> overfit risk). Midpoint 0.6.
+#   - LR 1.2-1.5× of 7B's 2e-5 (smaller model needs larger LR). Midpoint 2.5e-5.
+# Auto-merges LoRA adapter at the end.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+MODEL="Qwen/Qwen3-4B-Instruct-2507"
+TRAIN_FILE="data/freebase/sft_trajectories.jsonl"   # 5K primary (NOT enhanced 6K)
+OUTPUT_DIR="outputs/verl-sft-cwq-qwen3-4b-from-base"
+MERGED_DIR="${OUTPUT_DIR}-merged"
+
+CONFIG="configs_verl/sft_cwq.yaml"
+
+if [ ! -f "$TRAIN_FILE" ]; then
+    echo "ERROR: $TRAIN_FILE missing"
+    exit 1
+fi
+
+echo "=== V14-D2 full SFT: $(date) ==="
+echo "model       = $MODEL"
+echo "train_file  = $TRAIN_FILE (wc -l: $(wc -l < "$TRAIN_FILE"))"
+echo "output_dir  = $OUTPUT_DIR"
+echo "merged_dir  = $MERGED_DIR"
+echo "LR=2.5e-5 epochs=0.6 (per v13 Qwen3-4B row)"
+
+# Override epochs=1 path but we want 0.6 epoch — sft_multiturn.py's
+# --num_train_epochs is int. We implement 0.6 by:
+#   - forking the config to a tmp one with fractional epochs.
+# Python reads it via yaml.safe_load which happily accepts 0.6 and forwards it
+# to TRL's SFTConfig which accepts float num_train_epochs.
+
+TMP_CFG="$(mktemp --suffix=.yaml)"
+python - <<PY "$CONFIG" "$TMP_CFG"
+import sys, yaml
+src, dst = sys.argv[1], sys.argv[2]
+with open(src) as f:
+    cfg = yaml.safe_load(f)
+cfg.setdefault("training", {})
+cfg["training"]["num_train_epochs"] = 0.6
+cfg["training"]["learning_rate"]    = 2.5e-5
+cfg["wandb"] = cfg.get("wandb", {})
+cfg["wandb"]["wandb_run_name"] = "sft-cwq-qwen3-4b-v14d2"
+with open(dst, "w") as f:
+    yaml.safe_dump(cfg, f)
+print("Wrote override config to", dst)
+PY
+trap 'rm -f "$TMP_CFG"' EXIT
+
+python src_verl/training/sft_multiturn.py \
+    --config "$TMP_CFG" \
+    --model_path "$MODEL" \
+    --output_dir "$OUTPUT_DIR" \
+    --train_file "$TRAIN_FILE"
+
+echo ""
+echo "=== Merge LoRA adapter ==="
+python scripts/merge_sft_adapter.py \
+    --base_model "$MODEL" \
+    --adapter_path "$OUTPUT_DIR" \
+    --output_path "$MERGED_DIR"
+
+# Copy tokenizer + chat_template from HF cache of base (adapter save already
+# includes tokenizer, but be safe).
+python - <<'PY'
+from pathlib import Path
+from transformers import AutoTokenizer
+tok = AutoTokenizer.from_pretrained("Qwen/Qwen3-4B-Instruct-2507")
+tok.save_pretrained("outputs/verl-sft-cwq-qwen3-4b-from-base-merged")
+print("Tokenizer saved to merged dir")
+PY
+
+echo ""
+echo "=== Done: $(date) ==="
+echo "Merged checkpoint: $MERGED_DIR"

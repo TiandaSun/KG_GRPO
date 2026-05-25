@@ -1,0 +1,117 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_gpt4o
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=2:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Phase 7 II5: GPT-4o baseline on CWQ. Uses OpenAI API + local Freebase KG.
+# Runs on a compute node to avoid hammering the login node.
+#
+# Usage:
+#   sbatch --export=ALL,N_Q=50,OUTPUT_TAG=fuzzy_50q,OPENAI_API_KEY=sk-proj-... \
+#       scripts/run_phase7_ii5_gpt4o.job
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+: "${OPENAI_API_KEY:?OPENAI_API_KEY env var required}"
+N_Q="${N_Q:-50}"
+OUTPUT_TAG="${OUTPUT_TAG:-fuzzy_${N_Q}q}"
+MODEL="${MODEL:-gpt-4o}"
+
+KG_PORT=$((18000 + SLURM_JOB_ID % 1000))
+OUT_JSON="results/phase7/gpt4o_baseline_${OUTPUT_TAG}.json"
+OUT_MD="results/phase7/gpt4o_baseline_${OUTPUT_TAG}.md"
+
+echo "=== Phase 7 II5: GPT-4o $MODEL (n=$N_Q, tag=$OUTPUT_TAG) ==="
+echo "Date: $(date)  KG port: $KG_PORT"
+echo "Output: $OUT_JSON"
+
+# Start KG server on compute node
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port $KG_PORT --log-level warning &
+KG_PID=$!
+trap 'kill $KG_PID 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 15); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready"
+
+python scripts/phase7_ii5_gpt4o_baseline.py \
+    --n_questions "$N_Q" \
+    --model "$MODEL" \
+    --kg_server_url "http://localhost:$KG_PORT" \
+    --output_json "$OUT_JSON" \
+    --output_md "$OUT_MD"
+
+# Re-score with ContEM + F1 since the script only computes strict EM
+python - <<PY
+import json, re, string
+from collections import Counter
+from pathlib import Path
+
+def normalize(t):
+    t = str(t).lower()
+    t = re.sub(r'\b(a|an|the)\b', ' ', t)
+    t = re.sub(r'[^\w\s]', ' ', t)
+    return ' '.join(t.split())
+
+def em(pred, golds):
+    pn = normalize(pred)
+    if not pn: return 0.0
+    return 1.0 if any(pn == normalize(g) for g in golds) else 0.0
+
+def contains_em(pred, golds):
+    pn = normalize(pred)
+    if not pn: return 0.0
+    return 1.0 if any(normalize(g) and normalize(g) in pn for g in golds) else 0.0
+
+def token_f1(pred, gold):
+    p = normalize(pred).split(); g = normalize(gold).split()
+    if not g: return 1.0 if not p else 0.0
+    if not p: return 0.0
+    common = sum((Counter(p) & Counter(g)).values())
+    if common == 0: return 0.0
+    prec = common / len(p); rec = common / len(g)
+    return 2 * prec * rec / (prec + rec)
+
+path = Path("$OUT_JSON")
+d = json.loads(path.read_text())
+per = d["per_sample"]
+e_s = c_s = f_s = 0.0
+ab = 0
+for r in per:
+    pred = r.get("prediction", "") or ""
+    golds = r.get("gold", [])
+    if isinstance(golds, str): golds = [golds]
+    r["em"] = em(pred, golds)
+    r["contains_em"] = contains_em(pred, golds)
+    r["f1"] = max((token_f1(pred, g) for g in golds), default=0.0)
+    e_s += r["em"]; c_s += r["contains_em"]; f_s += r["f1"]
+    low = pred.lower()
+    if any(s in low for s in ("issue", "unable to", "can't", "cannot", "no information", "not able to")):
+        ab += 1
+n = len(per)
+d["em"] = e_s/n; d["contains_em"] = c_s/n; d["f1"] = f_s/n; d["abandoned_count"] = ab
+path.write_text(json.dumps(d, indent=2))
+print(f"Re-scored: EM={e_s/n:.4f} ContEM={c_s/n:.4f} F1={f_s/n:.4f} abandoned={ab}/{n}")
+PY
+
+kill $KG_PID 2>/dev/null
+echo "=== Done: $(date) ==="

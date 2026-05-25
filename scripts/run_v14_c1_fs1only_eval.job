@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v14c1_fs1eval
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=08:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# V14-C1 Part A eval — fs1-SFT-only on CWQ full-3531 test.
+# Strict EM (same as our canonical 7B evals). With tools.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+MERGED="outputs/verl-sft-cwq-7b-fs1-adapt-merged"
+OUT_JSON="results/phase7/v14_c1_fs1_sft_only_full_test.json"
+TRAJ_DIR="results/trajectories/phase7/v14_c1_fs1_sft_only_full"
+PS_DIR="results/phase7/v14_c1_fs1_sft_only_full_per_sample"
+KG_PORT=$((18000 + SLURM_JOB_ID % 1000))
+
+mkdir -p results/phase7 "$TRAJ_DIR" "$PS_DIR"
+
+echo "=== V14-C1 fs1-SFT-only eval ==="
+echo "Date: $(date)"
+[ -d "$MERGED" ] || { echo "ERROR: merged SFT not found at $MERGED"; exit 1; }
+
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port $KG_PORT --log-level warning &
+KG_PID=$!
+trap 'kill $KG_PID 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready"
+
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$MERGED" \
+    --steps 0 \
+    --base_model "$MERGED" \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --output "$OUT_JSON" \
+    --kg_server_url http://localhost:$KG_PORT \
+    --max_samples 0 \
+    --max_turns 5 \
+    --max_new_tokens 512 \
+    --save_trajectories "$TRAJ_DIR" \
+    --max_trajectory_samples 3531 \
+    --save_per_sample "$PS_DIR" \
+    --save_every 50
+
+kill $KG_PID 2>/dev/null
+
+echo ""
+python - <<PY
+import json
+from pathlib import Path
+p = Path("$OUT_JSON")
+if p.exists():
+    d = json.loads(p.read_text())
+    for step, r in d.items():
+        em = r.get("em", 0)
+        print(f"fs1-SFT-only: EM={em:.4f}  ContEM={r.get('contains_em', 0):.4f}  F1={r.get('f1', 0):.4f}  Tools={r.get('avg_tool_calls', 0):.2f}")
+        if em > 0.30:
+            print(f"*** GATE PASSED: EM={em:.3f} > 0.30 — Part B (fs1-SFT + our RL) chain will launch ***")
+        else:
+            print(f"*** Gate failed: EM={em:.3f} <= 0.30 — Part B held. ***")
+PY
+
+echo "=== Done: $(date) ==="

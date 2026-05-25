@@ -1,0 +1,574 @@
+{
+  "step_200": {
+    "n_total": 3531,
+    "n_correct": 1378,
+    "verbatim_single": 0.08127721335268505,
+    "verbatim_any": 0.20609579100145137,
+    "mean_tool_calls": 2.999433588218635,
+    "pct_one_tool": 0.0002832058906825262,
+    "examples": [
+      {
+        "sample_id": "WebQTest-576_01e2da60a2779c4ae4b5d1547499a4f8",
+        "question": "Which nation has the Alta Verapaz Department and is in Central America?",
+        "gold_answer": "Guatemala",
+        "predicted": "Guatemala",
+        "em": 1.0,
+        "f1": 1.0,
+        "num_tool_calls": 3,
+        "hops": 1,
+        "n_tool_response_blocks_containing_predicted": 2,
+        "n_tool_response_blocks": 3,
+        "full_response_excerpt": "<think>I need to find information about Central America. Let me start by checking its relations in the knowledge graph.</think>\n<search>get_tail_entities(Central America, location.location.contains)</search>\n<tool_response>[\"Belize\", \"Condominios Panorama Life Torre I\", \"Costa Rica\", \"El Salvador\", \"Gran Colombia\", \"Guatemala\", \"Honduras\", \"La Amistad International Park\", \"Panama\"]</tool_response>\n<think>I can see the relation 'location.location.contains'. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(Central America, location.location.contains)</search>\n<tool_response>[\"Belize\", \"Condominios Panorama Life Torre I\", \"Costa Rica\", \"El Salvador\", \"Gran Colombia\", \"Guatemala\", \"Honduras\", \"La Amistad International Park\", \"Panama\"]</tool_response>\n<think>Now I know about Belize, Condominios Panorama Life Torre I, Costa Rica, El Salvador, Gran Colombia, Guatemala, Honduras, La Amistad International Park, Panama. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(Central America, location.location.containedby)</search>\n<tool_response>[\"Americas\"]</tool_response>\n<think>Based on my knowledge graph exploration, I found that the answer is Guatemala.</think>\n<answer>Guatemala</answer>",
+        "tool_responses_excerpts": [
+          "[\"Belize\", \"Condominios Panorama Life Torre I\", \"Costa Rica\", \"El Salvador\", \"Gran Colombia\", \"Guatemala\", \"Honduras\", \"La Amistad International Park\", \"Panama\"]",
+          "[\"Belize\", \"Condominios Panorama Life Torre I\", \"Costa Rica\", \"El Salvador\", \"Gran Colombia\", \"Guatemala\", \"Honduras\", \"La Amistad International Park\", \"Panama\"]",
+          "[\"Americas\"]"
+        ]
+      },
+      {
+        "sample_id": "WebQTest-100_bf66fd89b6e9fc5fcb96c8b3f7a0e616",
+        "question": "The people from the country that contains Nord-Ouest Department speak what languages today?",
+        "gold_answer": "Haitian Creole",
+        "predicted": "Haitian Creole",
+        "em": 1.0,
+        "f1": 1.0,
+        "num_tool_calls": 3,
+        "hops": 2,
+        "n_tool_response_blocks_containing_predicted": 1,
+        "n_tool_response_blocks": 3,
+        "full_response_excerpt": "<think>I need to find information about Nord-Ouest Department. Let me start by checking its relations in the knowledge graph.</think>\n<search>get_tail_entities(Nord-Ouest Department, location.location.containedby)</search>\n<tool_response>[\"Haiti\"]</tool_response>\n<think>I can see the relation 'location.location.containedby'. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(Haiti, location.location.containedby)</search>\n<tool_response>[\"Americas\", \"Greater Antilles\", \"Latin America\", \"North America\"]</tool_response>\n<think>Now I know about Americas. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(Haiti, location.country.languages_spoken)</search>\n<tool_response>[\"French\", \"Haitian Creole\"]</tool_response>\n<think>Based on my knowledge graph exploration, I found that the answer is Haitian Creole.</think>\n<answer>Haitian Creole</answer>",
+        "tool_responses_excerpts": [
+          "[\"Haiti\"]",
+          "[\"Americas\", \"Greater Antilles\", \"Latin America\", \"North America\"]",
+          "[\"French\", \"Haitian Creole\"]"
+        ]
+      },
+      {
+        "sample_id": "WebQTest-1251_cbf2f20f6caf754bc49d672ca7b150b7",
+        "question": "What country speaks Germanic languages and uses the East German mark as currency?",
+        "gold_answer": "East Germany",
+        "predicted": "East Germany",
+        "em": 1.0,
+        "f1": 1.0,
+        "num_tool_calls": 3,
+        "hops": 1,
+        "n_tool_response_blocks_containing_predicted": 3,
+        "n_tool_response_blocks": 3,
+        "full_response_excerpt": "<think>I need to find information about Germanic languages. Let me start by checking its relations in the knowledge graph.</think>\n<search>get_tail_entities(German Language, language.human_language.countries_spoken_in)</search>\n<tool_response>[\"Austria\", \"Belgium\", \"Canada\", \"Cyprus\", \"Czech Republic\", \"Denmark\", \"East Germany\", \"Germany\", \"Liechtenstein\", \"Luxembourg\"]</tool_response>\n<think>I can see the relation 'language.human_language.countries_spoken_in'. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(German Language, language.human_language.countries_spoken_in)</search>\n<tool_response>[\"Austria\", \"Belgium\", \"Canada\", \"Cyprus\", \"Czech Republic\", \"Denmark\", \"East Germany\", \"Germany\", \"Liechtenstein\", \"Luxembourg\"]</tool_response>\n<think>Now I know about Austria, Belgium, Canada, Cyprus, Czech Republic, Denmark, East Germany, Germany, Liechtenstein, Luxembourg. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(German Language, language.human_language.countries_spoken_in)</search>\n<tool_response>[\"Austria\", \"Belgium\", \"Canada\", \"Cyprus\", \"Czech Republic\", \"Denmark\", \"East Germany\", \"Germany\", \"Liechtenstein\", \"Luxembourg\"]</tool_response>\n<think>Based on my knowledge graph exploration, I found that the answer is East Germany.</think>\n<answer>East Germany</answer>",
+        "tool_responses_excerpts": [
+          "[\"Austria\", \"Belgium\", \"Canada\", \"Cyprus\", \"Czech Republic\", \"Denmark\", \"East Germany\", \"Germany\", \"Liechtenstein\", \"Luxembourg\"]",
+          "[\"Austria\", \"Belgium\", \"Canada\", \"Cyprus\", \"Czech Republic\", \"Denmark\", \"East Germany\", \"Germany\", \"Liechtenstein\", \"Luxembourg\"]",
+          "[\"Austria\", \"Belgium\", \"Canada\", \"Cyprus\", \"Czech Republic\", \"Denmark\", \"East Germany\", \"Germany\", \"Liechtenstein\", \"Luxembourg\"]"
+        ]
+      },
+      {
+        "sample_id": "WebQTest-576_906ad6be7bec9d208f4dde4f7721c261",
+        "question": "Which of the seven Central American countries had co2 emissions per capita once of 2009 metric ton?",
+        "gold_answer": "Belize",
+        "predicted": "Belize",
+        "em": 1.0,
+        "f1": 1.0,
+        "num_tool_calls": 3,
+        "hops": 1,
+        "n_tool_response_blocks_containing_predicted": 1,
+        "n_tool_response_blocks": 3,
+        "full_response_excerpt": "<think>I need to find information about Central America. Let me start by checking its relations in the knowledge graph.</think>\n<search>get_tail_entities(Central America, location.location.containedby)</search>\n<tool_response>[\"Americas\"]</tool_response>\n<think>I can see the relation 'location.location.containedby'. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(Costa Rica, location.location.containedby)</search>\n<tool_response>[\"Americas\", \"Central America\", \"Latin America\", \"North America\"]</tool_response>\n<think>Now I know about Americas. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(Central America, location.location.contains)</search>\n<tool_response>[\"Belize\", \"Condominios Panorama Life Torre I\", \"Costa Rica\", \"El Salvador\", \"Gran Colombia\", \"Guatemala\", \"Honduras\", \"La Amistad International Park\", \"Panama\"]</tool_response>\n<think>Based on my knowledge graph exploration, I found that the answer is Belize.</think>\n<answer>Belize</answer>",
+        "tool_responses_excerpts": [
+          "[\"Americas\"]",
+          "[\"Americas\", \"Central America\", \"Latin America\", \"North America\"]",
+          "[\"Belize\", \"Condominios Panorama Life Torre I\", \"Costa Rica\", \"El Salvador\", \"Gran Colombia\", \"Guatemala\", \"Honduras\", \"La Amistad International Park\", \"Panama\"]"
+        ]
+      },
+      {
+        "sample_id": "WebQTest-576_8dfecb6548586cf236340abadabeb86c",
+        "question": "Which of the seven Central American countries uses the United States Dollar currency?",
+        "gold_answer": "El Salvador",
+        "predicted": "Panama",
+        "em": 1.0,
+        "f1": 0.0,
+        "num_tool_calls": 3,
+        "hops": 1,
+        "n_tool_response_blocks_containing_predicted": 2,
+        "n_tool_response_blocks": 3,
+        "full_response_excerpt": "<think>I need to find information about Central America. Let me start by checking its relations in the knowledge graph.</think>\n<search>get_tail_entities(Central America, location.location.contains)</search>\n<tool_response>[\"Belize\", \"Condominios Panorama Life Torre I\", \"Costa Rica\", \"El Salvador\", \"Gran Colombia\", \"Guatemala\", \"Honduras\", \"La Amistad International Park\", \"Panama\"]</tool_response>\n<think>I can see the relation 'location.location.contains'. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(Central America, location.location.contains)</search>\n<tool_response>[\"Belize\", \"Condominios Panorama Life Torre I\", \"Costa Rica\", \"El Salvador\", \"Gran Colombia\", \"Guatemala\", \"Honduras\", \"La Amistad International Park\", \"Panama\"]</tool_response>\n<think>Now I know about Belize, Condominios Panorama Life Torre I, Costa Rica, El Salvador, Gran Colombia, Guatemala, Honduras, La Amistad International Park, Panama. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(Costa Rica, location.location.containedby)</search>\n<tool_response>[\"Americas\", \"Central America\", \"Latin America\", \"North America\"]</tool_response>\n<think>Based on my knowledge graph exploration, I found that the answer is Panama.</think>\n<answer>Panama</answer>",
+        "tool_responses_excerpts": [
+          "[\"Belize\", \"Condominios Panorama Life Torre I\", \"Costa Rica\", \"El Salvador\", \"Gran Colombia\", \"Guatemala\", \"Honduras\", \"La Amistad International Park\", \"Panama\"]",
+          "[\"Belize\", \"Condominios Panorama Life Torre I\", \"Costa Rica\", \"El Salvador\", \"Gran Colombia\", \"Guatemala\", \"Honduras\", \"La Amistad International Park\", \"Panama\"]",
+          "[\"Americas\", \"Central America\", \"Latin America\", \"North America\"]"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-436_7d08be23b280e90db45a5fd05de6de8c",
+        "question": "What topic of the image hpatss poster PNG actor played dumbledore?",
+        "gold_answer": "Richard Harris",
+        "predicted": "Wizard",
+        "em": 0.0,
+        "f1": 0.0,
+        "num_tool_calls": 1,
+        "hops": 2,
+        "n_tool_response_blocks_containing_predicted": 0,
+        "n_tool_response_blocks": 1,
+        "full_response_excerpt": "<think>I need to find information about HPATSS poster PNG. Let me start by checking its relations in the knowledge graph.</think>\n<search>get_tail_entities(Harry Potter and the Sorcerer's Stone, Film, film.film.starring)</search>\n<tool_response>[]</tool_response>\n<think>I can see that the answer is Wizard.</think>\n<answer>Wizard</answer>",
+        "tool_responses_excerpts": [
+          "[]"
+        ]
+      },
+      {
+        "sample_id": "WebQTest-832_c334509bb5e02cacae1ba2e80c176499",
+        "question": "Lou Seal is the mascot for the team that last won the World Series when?",
+        "gold_answer": "2014 World Series",
+        "predicted": "2010 World Series",
+        "em": 0.0,
+        "f1": 0.6666666666666666,
+        "num_tool_calls": 3,
+        "hops": 2,
+        "n_tool_response_blocks_containing_predicted": 0,
+        "n_tool_response_blocks": 3,
+        "full_response_excerpt": "<think>I need to find information about Lou Seal. Let me start by checking its relations in the knowledge graph.</think>\n<search>get_tail_entities(Lou Seal, sports.mascot.team)</search>\n<tool_response>[\"San Francisco Giants\"]</tool_response>\n<think>I can see the relation 'sports.mascot.team'. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(San Francisco Giants, sports.sports_team.championships)</search>\n<tool_response>[\"2010 World Series\", \"2012 World Series\", \"2014 World Series\"]</tool_response>\n<think>Now I know about 2010 World Series. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(2010 World Series, sports.sports_championship_event.champion)</search>\n<tool_response>[\"San Francisco Giants\"]</tool_response>\n<think>Based on my knowledge graph exploration, I found that the answer is 2010 World Series.</think>\n<answer>2010 World Series</answer>",
+        "tool_responses_excerpts": [
+          "[\"San Francisco Giants\"]",
+          "[\"2010 World Series\", \"2012 World Series\", \"2014 World Series\"]",
+          "[\"San Francisco Giants\"]"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-1259_1997cb4922db71983be26e6a509950f4",
+        "question": "Where did the \"Country Nation World Tour\" concert artist go to college?",
+        "gold_answer": "Belmont University",
+        "predicted": "University of Tennessee",
+        "em": 0.0,
+        "f1": 0.4,
+        "num_tool_calls": 3,
+        "hops": 0,
+        "n_tool_response_blocks_containing_predicted": 0,
+        "n_tool_response_blocks": 3,
+        "full_response_excerpt": "<think>I need to find information about Country Nation World Tour. Let me start by checking its relations in the knowledge graph.</think>\n<search>get_tail_entities(Country Nation World Tour, music.concert_tour.artist)</search>\n<tool_response>[\"Brad Paisley\"]</tool_response>\n<think>I can see the relation 'music.concert_tour.artist'. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(Brad Paisley, music.artist.concert_tours)</search>\n<tool_response>[\"Beat This Summer Tour\", \"Brad Paisley 2009 Concert Tour\", \"Country Nation World Tour\"]</tool_response>\n<think>Now I know about Beat This Summer Tour, Brad Paisley 2009 Concert Tour, Country Nation World Tour. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(Brad Paisley, music.artist.concert_tours)</search>\n<tool_response>[\"Beat This Summer Tour\", \"Brad Paisley 2009 Concert Tour\", \"Country Nation World Tour\"]</tool_response>\n<think>Based on my knowledge graph exploration, I found that the answer is University of Tennessee.</think>\n<answer>University of Tennessee</answer>",
+        "tool_responses_excerpts": [
+          "[\"Brad Paisley\"]",
+          "[\"Beat This Summer Tour\", \"Brad Paisley 2009 Concert Tour\", \"Country Nation World Tour\"]",
+          "[\"Beat This Summer Tour\", \"Brad Paisley 2009 Concert Tour\", \"Country Nation World Tour\"]"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-241_dfb6c97ac9bf2f0ac07f27dd80f9edc2",
+        "question": "What country bordering France contains an airport that serves Nijmegen?",
+        "gold_answer": "Germany",
+        "predicted": "Netherlands",
+        "em": 0.0,
+        "f1": 0.0,
+        "num_tool_calls": 3,
+        "hops": 1,
+        "n_tool_response_blocks_containing_predicted": 0,
+        "n_tool_response_blocks": 3,
+        "full_response_excerpt": "<think>I need to find information about France. Let me start by checking its relations in the knowledge graph.</think>\n<search>get_tail_entities(France, Location.administrative_divisions)</search>\n<tool_response>[]</tool_response>\n<think>I can see the relation 'Location.administrative_divisions'. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(France, Location.administrative_divisions)</search>\n<tool_response>[]</tool_response>\n<think>Now I know about France. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(France, Location.partially_contains)</search>\n<tool_response>[]</tool_response>\n<think>Based on my knowledge graph exploration, I found that the answer is Netherlands.</think>\n<answer>Netherlands</answer>",
+        "tool_responses_excerpts": [
+          "[]",
+          "[]",
+          "[]"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-1077_f4a9e5f1e0dcfb82cbadf4771eda7bb5",
+        "question": "The national anthem Afghan National Anthem is from the country which practices what religions?",
+        "gold_answer": "Shia Islam",
+        "predicted": "Islam",
+        "em": 0.0,
+        "f1": 0.6666666666666666,
+        "num_tool_calls": 3,
+        "hops": 0,
+        "n_tool_response_blocks_containing_predicted": 0,
+        "n_tool_response_blocks": 3,
+        "full_response_excerpt": "<think>I need to find information about Afghan National Anthem. Let me start by checking its relations in the knowledge graph.</think>\n<search>get_tail_entities(Afghan National Anthem, music_composer)</search>\n<tool_response>[]</tool_response>\n<think>I can see the relation 'music_composer.compositions'. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(Imam Ali, music_composer.compositions)</search>\n<tool_response>[]</tool_response>\n<think>Now I know about []. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(Afghanistan, religion)</search>\n<tool_response>[]</tool_response>\n<think>Based on my knowledge graph exploration, I found that the answer is Islam.</think>\n<answer>Islam</answer>",
+        "tool_responses_excerpts": [
+          "[]",
+          "[]",
+          "[]"
+        ]
+      }
+    ],
+    "_source": "/lus/lfs1aip2/scratch/u6gg/ts1201.u6gg/Project/KG_GRPO/results/trajectories/phase7/39i_self_step200_full/step_0/trajectories.json"
+  },
+  "step_250": {
+    "n_total": 3531,
+    "n_correct": 1395,
+    "verbatim_single": 0.0974910394265233,
+    "verbatim_any": 0.23727598566308244,
+    "mean_tool_calls": 2.9974511469838574,
+    "pct_one_tool": 0.001416029453412631,
+    "examples": [
+      {
+        "sample_id": "WebQTest-576_01e2da60a2779c4ae4b5d1547499a4f8",
+        "question": "Which nation has the Alta Verapaz Department and is in Central America?",
+        "gold_answer": "Guatemala",
+        "predicted": "Guatemala",
+        "em": 1.0,
+        "f1": 1.0,
+        "num_tool_calls": 3,
+        "hops": 1,
+        "n_tool_response_blocks_containing_predicted": 2,
+        "n_tool_response_blocks": 3,
+        "full_response_excerpt": "<think>I need to find information about Central America. Let me start by checking its relations in the knowledge graph.</think>\n<search>get_tail_entities(Central America, location.location.contains)</search>\n<tool_response>[\"Belize\", \"Condominios Panorama Life Torre I\", \"Costa Rica\", \"El Salvador\", \"Gran Colombia\", \"Guatemala\", \"Honduras\", \"La Amistad International Park\", \"Panama\"]</tool_response>\n<think>I can see the relation 'location.location.contains'. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(Central America, location.location.contains)</search>\n<tool_response>[\"Belize\", \"Condominios Panorama Life Torre I\", \"Costa Rica\", \"El Salvador\", \"Gran Colombia\", \"Guatemala\", \"Honduras\", \"La Amistad International Park\", \"Panama\"]</tool_response>\n<think>Now I know about Belize, Condominios Panorama Life Torre I, Costa Rica, El Salvador, Gran Colombia, Guatemala, Honduras, La Amistad International Park, Panama. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(Central America, location.location.containedby)</search>\n<tool_response>[\"Americas\"]</tool_response>\n<think>Based on my knowledge graph exploration, I found that the answer is Guatemala.</think>\n<answer>Guatemala</answer>",
+        "tool_responses_excerpts": [
+          "[\"Belize\", \"Condominios Panorama Life Torre I\", \"Costa Rica\", \"El Salvador\", \"Gran Colombia\", \"Guatemala\", \"Honduras\", \"La Amistad International Park\", \"Panama\"]",
+          "[\"Belize\", \"Condominios Panorama Life Torre I\", \"Costa Rica\", \"El Salvador\", \"Gran Colombia\", \"Guatemala\", \"Honduras\", \"La Amistad International Park\", \"Panama\"]",
+          "[\"Americas\"]"
+        ]
+      },
+      {
+        "sample_id": "WebQTest-100_bf66fd89b6e9fc5fcb96c8b3f7a0e616",
+        "question": "The people from the country that contains Nord-Ouest Department speak what languages today?",
+        "gold_answer": "Haitian Creole",
+        "predicted": "Haitian Creole",
+        "em": 1.0,
+        "f1": 1.0,
+        "num_tool_calls": 3,
+        "hops": 2,
+        "n_tool_response_blocks_containing_predicted": 1,
+        "n_tool_response_blocks": 3,
+        "full_response_excerpt": "<think>I need to find information about Nord-Ouest Department. Let me start by checking its relations in the knowledge graph.</think>\n<search>get_tail_entities(Nord-Ouest Department, location.location.containedby)</search>\n<tool_response>[\"Haiti\"]</tool_response>\n<think>I can see the relation 'location.location.containedby'. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(Haiti, location.location.containedby)</search>\n<tool_response>[\"Americas\", \"Greater Antilles\", \"Latin America\", \"North America\"]</tool_response>\n<think>Now I know about Americas. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(Haiti, location.country.languages_spoken)</search>\n<tool_response>[\"French\", \"Haitian Creole\"]</tool_response>\n<think>Based on my knowledge graph exploration, I found that the answer is Haitian Creole.</think>\n<answer>Haitian Creole</answer>",
+        "tool_responses_excerpts": [
+          "[\"Haiti\"]",
+          "[\"Americas\", \"Greater Antilles\", \"Latin America\", \"North America\"]",
+          "[\"French\", \"Haitian Creole\"]"
+        ]
+      },
+      {
+        "sample_id": "WebQTest-1251_cbf2f20f6caf754bc49d672ca7b150b7",
+        "question": "What country speaks Germanic languages and uses the East German mark as currency?",
+        "gold_answer": "East Germany",
+        "predicted": "East Germany",
+        "em": 1.0,
+        "f1": 1.0,
+        "num_tool_calls": 3,
+        "hops": 1,
+        "n_tool_response_blocks_containing_predicted": 3,
+        "n_tool_response_blocks": 3,
+        "full_response_excerpt": "<think>I need to find information about Germanic languages. Let me start by checking its relations in the knowledge graph.</think>\n<search>get_tail_entities(German Language, language.human_language.countries_spoken_in)</search>\n<tool_response>[\"Austria\", \"Belgium\", \"Canada\", \"Cyprus\", \"Czech Republic\", \"Denmark\", \"East Germany\", \"Germany\", \"Liechtenstein\", \"Luxembourg\"]</tool_response>\n<think>I can see the relation 'language.human_language.countries_spoken_in'. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(German Language, language.human_language.countries_spoken_in)</search>\n<tool_response>[\"Austria\", \"Belgium\", \"Canada\", \"Cyprus\", \"Czech Republic\", \"Denmark\", \"East Germany\", \"Germany\", \"Liechtenstein\", \"Luxembourg\"]</tool_response>\n<think>Now I know about Austria, Belgium, Canada, Cyprus, Czech Republic, Denmark, East Germany, Germany, Liechtenstein, Luxembourg. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(German Language, language.human_language.countries_spoken_in)</search>\n<tool_response>[\"Austria\", \"Belgium\", \"Canada\", \"Cyprus\", \"Czech Republic\", \"Denmark\", \"East Germany\", \"Germany\", \"Liechtenstein\", \"Luxembourg\"]</tool_response>\n<think>Based on my knowledge graph exploration, I found that the answer is East Germany.</think>\n<answer>East Germany</answer>",
+        "tool_responses_excerpts": [
+          "[\"Austria\", \"Belgium\", \"Canada\", \"Cyprus\", \"Czech Republic\", \"Denmark\", \"East Germany\", \"Germany\", \"Liechtenstein\", \"Luxembourg\"]",
+          "[\"Austria\", \"Belgium\", \"Canada\", \"Cyprus\", \"Czech Republic\", \"Denmark\", \"East Germany\", \"Germany\", \"Liechtenstein\", \"Luxembourg\"]",
+          "[\"Austria\", \"Belgium\", \"Canada\", \"Cyprus\", \"Czech Republic\", \"Denmark\", \"East Germany\", \"Germany\", \"Liechtenstein\", \"Luxembourg\"]"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-849_1eb0f1ddd5074471fbe3a7f6b575f202",
+        "question": "Copenhagen is the capital of which German neighboring country?",
+        "gold_answer": "Denmark",
+        "predicted": "Denmark",
+        "em": 1.0,
+        "f1": 1.0,
+        "num_tool_calls": 3,
+        "hops": 1,
+        "n_tool_response_blocks_containing_predicted": 3,
+        "n_tool_response_blocks": 3,
+        "full_response_excerpt": "<think>I need to find information about Copenhagen. Let me start by checking its relations in the knowledge graph.</think>\n<search>get_tail_entities(Copenhagen, location.location.containedby)</search>\n<tool_response>[\"Capital Region of Denmark\", \"Denmark\"]</tool_response>\n<think>I can see the relation 'location.location.containedby'. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(Copenhagen, location.location.containedby)</search>\n<tool_response>[\"Capital Region of Denmark\", \"Denmark\"]</tool_response>\n<think>Now I know about Capital Region of Denmark. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(Copenhagen, travel.travel_destination.tourist_attractions)</search>\n<tool_response>[\"Aarhus Botanical Gardens\", \"Bakkehuset\", \"Copenhagen Zoo\", \"Danish Museum of Art & Design\", \"Dyrehavsbakken\", \"Frederik's Church\", \"Museum of Copenhagen\", \"National Museum of Denmark\", \"Ny Carlsberg Glyptotek\", \"Rosenborg Castle\"]</tool_response>\n<think>Based on my knowledge graph exploration, I found that the answer is Denmark.</think>\n<answer>Denmark</answer>",
+        "tool_responses_excerpts": [
+          "[\"Capital Region of Denmark\", \"Denmark\"]",
+          "[\"Capital Region of Denmark\", \"Denmark\"]",
+          "[\"Aarhus Botanical Gardens\", \"Bakkehuset\", \"Copenhagen Zoo\", \"Danish Museum of Art & Design\", \"Dyrehavsbakken\", \"Frederik's Church\", \"Museum of Copenhagen\", \"National Museum of Denmark\", \"Ny Carlsberg Glyptotek\", \"Rosenborg Castle\"]"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-2152_92fba37c9723caee68665ad9a5e4a468",
+        "question": "Which of team owners Tom Hicks sports team are in the American League West?",
+        "gold_answer": "Texas Rangers",
+        "predicted": "Texas Rangers",
+        "em": 1.0,
+        "f1": 1.0,
+        "num_tool_calls": 3,
+        "hops": 1,
+        "n_tool_response_blocks_containing_predicted": 1,
+        "n_tool_response_blocks": 3,
+        "full_response_excerpt": "<think>I need to find information about American League West. Let me start by checking its relations in the knowledge graph.</think>\n<search>get_tail_entities(Tom Hicks, organization.leadership)</search>\n<tool_response>[]</tool_response>\n<think>I can see the relation 'organization.leadership'. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(Tom Hicks, organization.leadership)</search>\n<tool_response>[]</tool_response>\n<think>Now I know about Tom Hicks. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(Tom Hicks, sports.sports_team_owner.teams_owned)</search>\n<tool_response>[\"Dallas Stars\", \"Texas Rangers\"]</tool_response>\n<think>Based on my knowledge graph exploration, I found that the answer is Texas Rangers.</think>\n<answer>Texas Rangers</answer>",
+        "tool_responses_excerpts": [
+          "[]",
+          "[]",
+          "[\"Dallas Stars\", \"Texas Rangers\"]"
+        ]
+      },
+      {
+        "sample_id": "WebQTest-918_a6b0e48e01f77546d20952acdc67b396",
+        "question": "Who is the reigning King in the country when Cabodian French is the primary language?",
+        "gold_answer": "Norodom Sihamoni",
+        "predicted": "<search>get_tail_entities(King, common.topic.notable_types)</search>\n<tool_response>[\"City/Town/Village\", \"Film\", \"Film character\", \"Musical Album\", \"Neighborhood\", \"Noble rank\"]</tool_response>\n<think>I can see the relation 'common.topic.notable_types'. Let me follow this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它",
+        "em": 0.0,
+        "f1": 0.0,
+        "num_tool_calls": 1,
+        "hops": 2,
+        "n_tool_response_blocks_containing_predicted": 0,
+        "n_tool_response_blocks": 1,
+        "full_response_excerpt": "<think>I need to find information about King. Let me start by checking its relations in the knowledge graph.</think>\n<search>get_tail_entities(King, common.topic.notable_types)</search>\n<tool_response>[\"City/Town/Village\", \"Film\", \"Film character\", \"Musical Album\", \"Neighborhood\", \"Noble rank\"]</tool_response>\n<think>I can see the relation 'common.topic.notable_types'. Let me follow this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this tool to follow它this information to follow this t",
+        "tool_responses_excerpts": [
+          "[\"City/Town/Village\", \"Film\", \"Film character\", \"Musical Album\", \"Neighborhood\", \"Noble rank\"]"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-124_ce0a7122fa98a81be5f3a00fc8a5a902",
+        "question": "What movie, featuring Francine Maisler, was directed by Angelina Jolie?",
+        "gold_answer": "Unbroken",
+        "predicted": "<search>get_tail_entities(Angelina Jolie, film.performance.actor)</search>\n<tool_response>[]</tool_response>\n<think>I can see the relation 'film.performance.actor'. Let me follow this information to follow它to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information",
+        "em": 0.0,
+        "f1": 0.0,
+        "num_tool_calls": 1,
+        "hops": 1,
+        "n_tool_response_blocks_containing_predicted": 0,
+        "n_tool_response_blocks": 1,
+        "full_response_excerpt": "<think>I need to find information about Francine Maisler. Let me start by checking its relations in the knowledge graph.</think>\n<search>get_tail_entities(Angelina Jolie, film.performance.actor)</search>\n<tool_response>[]</tool_response>\n<think>I can see the relation 'film.performance.actor'. Let me follow this information to follow它to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to f",
+        "tool_responses_excerpts": [
+          "[]"
+        ]
+      },
+      {
+        "sample_id": "WebQTest-537_de17dd1afec3743e98d327e6b1912e99",
+        "question": "Which movie that Charlie Hunnam was in was Carlo Poggioli the costume designer on?",
+        "gold_answer": "Cold Mountain",
+        "predicted": "<search>get_tail_entities(Charlie Hunnam, film)</search>\n<tool_response>[]</tool_response>\n<think>I can see the relation 'film.film.costume_design_by'. Let me follow this information to follow它to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information",
+        "em": 0.0,
+        "f1": 0.0,
+        "num_tool_calls": 1,
+        "hops": 1,
+        "n_tool_response_blocks_containing_predicted": 0,
+        "n_tool_response_blocks": 1,
+        "full_response_excerpt": "<think>I need to find information about Carlo Poggioli. Let me start by checking its relations in the knowledge graph.</think>\n<search>get_tail_entities(Charlie Hunnam, film)</search>\n<tool_response>[]</tool_response>\n<think>I can see the relation 'film.film.costume_design_by'. Let me follow this information to follow它to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this info",
+        "tool_responses_excerpts": [
+          "[]"
+        ]
+      },
+      {
+        "sample_id": "WebQTest-837_5dd0eeca79ae03b7711252c032849eb2",
+        "question": "Which year did the team whose mascots's name is Rise win the Superbowl?",
+        "gold_answer": "Super Bowl XLVII",
+        "predicted": "<search>get_tail_entities(Super Bowl, sports.sports_championship_event.champion)</search>\n<tool_response>[]</tool_response>\n<think>I can see the relation 'sports.sports_championship_event.champion'. Let me follow this information to follow它to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this",
+        "em": 0.0,
+        "f1": 0.007782101167315175,
+        "num_tool_calls": 1,
+        "hops": 1,
+        "n_tool_response_blocks_containing_predicted": 0,
+        "n_tool_response_blocks": 1,
+        "full_response_excerpt": "<think>I need to find information about Rise. Let me start by checking its relations in the knowledge graph.</think>\n<search>get_tail_entities(Super Bowl, sports.sports_championship_event.champion)</search>\n<tool_response>[]</tool_response>\n<think>I can see the relation 'sports.sports_championship_event.champion'. Let me follow this information to follow它to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow this information to follow",
+        "tool_responses_excerpts": [
+          "[]"
+        ]
+      },
+      {
+        "sample_id": "WebQTrn-464_cab1228be4e8c16ee35a67b7ac63b264",
+        "question": "What time zone do parts of Texas and Strathmore (D. J. Murray) Airport share?",
+        "gold_answer": "Mountain Time Zone",
+        "predicted": "<search>get_tail_entities(Strathmore (D. J. Murray) Airport, location.location.time_zones)</search>",
+        "em": 0.0,
+        "f1": 0.0,
+        "num_tool_calls": 1,
+        "hops": 1,
+        "n_tool_response_blocks_containing_predicted": 0,
+        "n_tool_response_blocks": 1,
+        "full_response_excerpt": "<think>I need to find information about Texas. Let me start by checking its relations in the knowledge graph.</think>\n<search>get_tail_entities(Texas, location.location.time_zones)</search>\n<tool_response>[\"Central Time Zone\", \"Mountain Time Zone\"]</tool_response>\n<think>I can see the relation 'location.location.time_zones'. Let me follow this information to continue reasoning.</think>\n<search>get_tail_entities(Strathmore (D. J. Murray) Airport, location.location.time_zones)</search>",
+        "tool_responses_excerpts": [
+          "[\"Central Time Zone\", \"Mountain Time Zone\"]"
+        ]
+      }
+    ],
+    "_source": "/lus/lfs1aip2/scratch/u6gg/ts1201.u6gg/Project/KG_GRPO/results/trajectories/phase7/39i_self_step250_full/step_0/trajectories.json"
+  },
+  "step_300": {
+    "n_total": 1400,
+    "n_correct": 0,
+    "verbatim_single": null,
+    "verbatim_any": null,
+    "mean_tool_calls": 1.0,
+    "pct_one_tool": 0.9985714285714286,
+    "examples": [
+      {
+        "sample_id": "WebQTest-576_01e2da60a2779c4ae4b5d1547499a4f8",
+        "em": 0.0,
+        "contains_em": 1.0,
+        "f1": 0.003577817531305903,
+        "num_tool_calls": 1,
+        "hops": 1,
+        "note": "per_sample summary only — full_response unavailable"
+      },
+      {
+        "sample_id": "WebQTest-1251_cbf2f20f6caf754bc49d672ca7b150b7",
+        "em": 0.0,
+        "contains_em": 1.0,
+        "f1": 0.0076045627376425855,
+        "num_tool_calls": 1,
+        "hops": 1,
+        "note": "per_sample summary only — full_response unavailable"
+      },
+      {
+        "sample_id": "WebQTrn-849_1eb0f1ddd5074471fbe3a7f6b575f202",
+        "em": 0.0,
+        "contains_em": 1.0,
+        "f1": 0.0038387715930902114,
+        "num_tool_calls": 1,
+        "hops": 1,
+        "note": "per_sample summary only — full_response unavailable"
+      },
+      {
+        "sample_id": "WebQTrn-3376_0619d288bbed0ca782e60c6f841a6051",
+        "em": 0.0,
+        "contains_em": 1.0,
+        "f1": 0.0,
+        "num_tool_calls": 1,
+        "hops": 1,
+        "note": "per_sample summary only — full_response unavailable"
+      },
+      {
+        "sample_id": "WebQTest-626_8c6b952c6bd963f0ece4e401c9eb731a",
+        "em": 0.0,
+        "contains_em": 1.0,
+        "f1": 0.0,
+        "num_tool_calls": 1,
+        "hops": 1,
+        "note": "per_sample summary only — full_response unavailable"
+      },
+      {
+        "sample_id": "WebQTest-832_c334509bb5e02cacae1ba2e80c176499",
+        "em": 0.0,
+        "contains_em": 0.0,
+        "f1": 0.0,
+        "num_tool_calls": 1,
+        "hops": 2,
+        "note": "per_sample summary only — full_response unavailable"
+      },
+      {
+        "sample_id": "WebQTrn-1259_1997cb4922db71983be26e6a509950f4",
+        "em": 0.0,
+        "contains_em": 0.0,
+        "f1": 0.0,
+        "num_tool_calls": 1,
+        "hops": 0,
+        "note": "per_sample summary only — full_response unavailable"
+      },
+      {
+        "sample_id": "WebQTest-1384_744a496b907e407b16bc5d7c197dc3f0",
+        "em": 0.0,
+        "contains_em": 0.0,
+        "f1": 0.0,
+        "num_tool_calls": 1,
+        "hops": 1,
+        "note": "per_sample summary only — full_response unavailable"
+      },
+      {
+        "sample_id": "WebQTrn-241_dfb6c97ac9bf2f0ac07f27dd80f9edc2",
+        "em": 0.0,
+        "contains_em": 0.0,
+        "f1": 0.0,
+        "num_tool_calls": 1,
+        "hops": 1,
+        "note": "per_sample summary only — full_response unavailable"
+      },
+      {
+        "sample_id": "WebQTrn-1077_f4a9e5f1e0dcfb82cbadf4771eda7bb5",
+        "em": 0.0,
+        "contains_em": 0.0,
+        "f1": 0.0,
+        "num_tool_calls": 1,
+        "hops": 0,
+        "note": "per_sample summary only — full_response unavailable"
+      }
+    ],
+    "_source": "/lus/lfs1aip2/scratch/u6gg/ts1201.u6gg/Project/KG_GRPO/results/phase7/39i_self_step300_full_per_sample/step_0_per_sample.json"
+  },
+  "step_400": {
+    "n_total": 2000,
+    "n_correct": 0,
+    "verbatim_single": null,
+    "verbatim_any": null,
+    "mean_tool_calls": 0.9985,
+    "pct_one_tool": 0.9835,
+    "examples": [
+      {
+        "sample_id": "WebQTest-1251_cbf2f20f6caf754bc49d672ca7b150b7",
+        "em": 0.0,
+        "contains_em": 1.0,
+        "f1": 0.09756097560975609,
+        "num_tool_calls": 1,
+        "hops": 1,
+        "note": "per_sample summary only — full_response unavailable"
+      },
+      {
+        "sample_id": "WebQTrn-3376_0619d288bbed0ca782e60c6f841a6051",
+        "em": 0.0,
+        "contains_em": 1.0,
+        "f1": 0.11764705882352941,
+        "num_tool_calls": 1,
+        "hops": 1,
+        "note": "per_sample summary only — full_response unavailable"
+      },
+      {
+        "sample_id": "WebQTest-626_8c6b952c6bd963f0ece4e401c9eb731a",
+        "em": 0.0,
+        "contains_em": 1.0,
+        "f1": 0.0,
+        "num_tool_calls": 1,
+        "hops": 1,
+        "note": "per_sample summary only — full_response unavailable"
+      },
+      {
+        "sample_id": "WebQTrn-810_c334509bb5e02cacae1ba2e80c176499",
+        "em": 0.0,
+        "contains_em": 1.0,
+        "f1": 0.19354838709677416,
+        "num_tool_calls": 1,
+        "hops": 2,
+        "note": "per_sample summary only — full_response unavailable"
+      },
+      {
+        "sample_id": "WebQTrn-2189_f4440609f5cecb091bf8e86adb47be25",
+        "em": 0.0,
+        "contains_em": 1.0,
+        "f1": 0.375,
+        "num_tool_calls": 1,
+        "hops": 0,
+        "note": "per_sample summary only — full_response unavailable"
+      },
+      {
+        "sample_id": "WebQTest-832_c334509bb5e02cacae1ba2e80c176499",
+        "em": 0.0,
+        "contains_em": 0.0,
+        "f1": 0.0,
+        "num_tool_calls": 1,
+        "hops": 2,
+        "note": "per_sample summary only — full_response unavailable"
+      },
+      {
+        "sample_id": "WebQTrn-1259_1997cb4922db71983be26e6a509950f4",
+        "em": 0.0,
+        "contains_em": 0.0,
+        "f1": 0.0,
+        "num_tool_calls": 1,
+        "hops": 0,
+        "note": "per_sample summary only — full_response unavailable"
+      },
+      {
+        "sample_id": "WebQTest-1384_744a496b907e407b16bc5d7c197dc3f0",
+        "em": 0.0,
+        "contains_em": 0.0,
+        "f1": 0.0,
+        "num_tool_calls": 1,
+        "hops": 1,
+        "note": "per_sample summary only — full_response unavailable"
+      },
+      {
+        "sample_id": "WebQTrn-241_dfb6c97ac9bf2f0ac07f27dd80f9edc2",
+        "em": 0.0,
+        "contains_em": 0.0,
+        "f1": 0.0,
+        "num_tool_calls": 1,
+        "hops": 1,
+        "note": "per_sample summary only — full_response unavailable"
+      },
+      {
+        "sample_id": "WebQTrn-1077_f4a9e5f1e0dcfb82cbadf4771eda7bb5",
+        "em": 0.0,
+        "contains_em": 0.0,
+        "f1": 0.0,
+        "num_tool_calls": 1,
+        "hops": 0,
+        "note": "per_sample summary only — full_response unavailable"
+      }
+    ],
+    "_source": "/lus/lfs1aip2/scratch/u6gg/ts1201.u6gg/Project/KG_GRPO/results/phase7/39i_self_step400_full_per_sample/step_0_per_sample.json"
+  }
+}

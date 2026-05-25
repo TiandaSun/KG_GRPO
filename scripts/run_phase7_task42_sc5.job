@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_task42_sc5
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=24:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Phase 7 Task 42 (v11 trimmed): self-consistency@5 full-3531 test eval.
+#
+# Runs one checkpoint (via env vars) with k=5 samples at temperature=0.7,
+# majority-voted answer compared to greedy EM.
+#
+# Usage:
+#   sbatch --export=ALL,\
+#     CHECKPOINT_DIR=/projects/.../grpo-cwq-7b-39b-kl-20260413,\
+#     STEP=400,\
+#     MODEL_TAG=39b_step400 \
+#     scripts/run_phase7_task42_sc5.job
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+: "${CHECKPOINT_DIR:?CHECKPOINT_DIR env var required}"
+: "${STEP:?STEP env var required}"
+: "${MODEL_TAG:?MODEL_TAG env var required}"
+
+K="${K:-5}"
+KG_PORT=$((18000 + SLURM_JOB_ID % 1000))
+OUT_JSON="results/phase7/sc${K}_${MODEL_TAG}_full.json"
+
+mkdir -p results/phase7
+
+echo "=== Phase 7 Task 42: SC@${K} full-3531 ${MODEL_TAG} ==="
+echo "Date: $(date)  KG port: $KG_PORT"
+
+# Start KG server
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port $KG_PORT --log-level warning &
+KG_PID=$!
+trap 'kill $KG_PID 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready"
+
+python scripts/phase7_task42_self_consistency.py \
+    --checkpoint_dir "$CHECKPOINT_DIR" \
+    --step "$STEP" \
+    --base_model outputs/verl-sft-cwq-7b-merged \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --kg_server_url http://localhost:$KG_PORT \
+    --output "$OUT_JSON" \
+    --k "$K" \
+    --temperature 0.7 \
+    --max_turns 5 \
+    --max_new_tokens 512 \
+    --max_samples 0 \
+    --save_every 100
+
+kill $KG_PID 2>/dev/null
+echo "=== Done: $(date) ==="

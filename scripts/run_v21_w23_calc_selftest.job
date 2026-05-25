@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=v21_calc_test
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --cpus-per-task=4
+#SBATCH --time=00:10:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+set -eo pipefail
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+python -m src_verl.tool_server.calc_server --selftest

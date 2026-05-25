@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=v17_diag_chat_tmpl
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --cpus-per-task=8
+#SBATCH --time=00:15:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# v17 W17.1 ABORT diagnosis: render an SFT trajectory through Llama-3.1-8B-Instruct's
+# chat template and check whether `tool`-role messages are preserved (vs Qwen2.5).
+#
+# Tiny job: 1 GPU only because we need transformers in the kg_verl env (which runs
+# from CUDA setup); pure CPU work, no GPU compute.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export HF_TOKEN=$(cat "$HOME/.cache/huggingface/token" 2>/dev/null)
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+python scripts/v17_diagnose_chat_template.py

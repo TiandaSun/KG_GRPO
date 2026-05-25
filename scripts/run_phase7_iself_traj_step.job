@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_iself_traj
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --cpus-per-task=72
+#SBATCH --time=16:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Re-run I-Self full-test eval with --save_trajectories at a given step.
+# The original eval at steps 300/400 saved per_sample but not trajectories,
+# so we cannot directly observe verbatim-copy behavior at the collapse points.
+# This re-eval fills that gap (S0.3 follow-up).
+#
+# Usage:
+#   sbatch --export=ALL,STEP=300 scripts/run_phase7_iself_traj_step.job
+#   sbatch --export=ALL,STEP=400 scripts/run_phase7_iself_traj_step.job
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+: "${STEP:?STEP env var required (300 or 400)}"
+
+DST="outputs/verl-sft-cwq-39i_self_step${STEP}-merged"
+OUT_JSON="results/phase7/39i_self_step${STEP}_full_test_retraj.json"
+TRAJ_DIR="results/trajectories/phase7/39i_self_step${STEP}_full"
+KG_PORT=$((19000 + SLURM_JOB_ID % 1000))
+
+[ -d "$DST" ] || { echo "ERROR: merged ckpt missing at $DST"; exit 1; }
+mkdir -p "$TRAJ_DIR" results/phase7
+
+echo "=== I-Self step ${STEP} trajectory re-eval ==="
+echo "Date: $(date)"
+echo "Model: $DST"
+
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port $KG_PORT --log-level warning &
+KG_PID=$!
+trap 'kill $KG_PID 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready on port $KG_PORT"
+
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$DST" \
+    --steps 0 \
+    --base_model "$DST" \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --output "$OUT_JSON" \
+    --kg_server_url http://localhost:$KG_PORT \
+    --max_samples 0 \
+    --max_turns 5 \
+    --max_new_tokens 512 \
+    --save_trajectories "$TRAJ_DIR" \
+    --max_trajectory_samples 3531
+
+kill $KG_PID 2>/dev/null
+echo "=== Done: $(date) ==="

@@ -1,0 +1,49 @@
+{
+  "qwen3_model": "Qwen/Qwen3-4B-Instruct-2507",
+  "qwen25_model": "Qwen/Qwen2.5-7B-Instruct",
+  "num_samples": 10,
+  "has_think_tags": false,
+  "qwen25_token_counts": [
+    652,
+    694,
+    642,
+    620,
+    671,
+    615,
+    671,
+    611,
+    668,
+    616
+  ],
+  "qwen3_token_counts": [
+    602,
+    644,
+    592,
+    570,
+    621,
+    565,
+    621,
+    561,
+    618,
+    566
+  ],
+  "length_delta_pct": 7.754443080094248,
+  "chat_template_samples": [
+    "<|im_start|>system\nYou are a knowledge graph reasoning agent. You can query a knowledge graph to answer questions.\n\nAvailable tools:\n- get_tail_relations(entity): Get all relation types going out from an entity\n- get_head_relations(entity): Get all relation types coming into an entity\n- get_tail_entities(entity, relation): Get entities reachable from entity via relation\n- get_head_entities(entity, relation): Get entities that connect to entity via relation\n\nTo use a tool, write: <search>tool_nam",
+    "<|im_start|>system\nYou are a knowledge graph reasoning agent. You can query a knowledge graph to answer questions.\n\nAvailable tools:\n- get_tail_relations(entity): Get all relation types going out from an entity\n- get_head_relations(entity): Get all relation types coming into an entity\n- get_tail_entities(entity, relation): Get entities reachable from entity via relation\n- get_head_entities(entity, relation): Get entities that connect to entity via relation\n\nTo use a tool, write: <search>tool_nam",
+    "<|im_start|>system\nYou are a knowledge graph reasoning agent. You can query a knowledge graph to answer questions.\n\nAvailable tools:\n- get_tail_relations(entity): Get all relation types going out from an entity\n- get_head_relations(entity): Get all relation types coming into an entity\n- get_tail_entities(entity, relation): Get entities reachable from entity via relation\n- get_head_entities(entity, relation): Get entities that connect to entity via relation\n\nTo use a tool, write: <search>tool_nam"
+  ],
+  "generation_samples_qwen3": [
+    "The capital of France is Paris.<|im_end|>",
+    "'Pride and Prejudice' was written by Jane Austen.<|im_end|>",
+    "The sky appears blue because molecules in the Earth's atmosphere scatter blue light more than other colors due to its shorter wavelength. This scattered blue light reaches our eyes from all directions, making the sky appear blue during the day.<|im_end|>",
+    "The three primary colors are red, blue, and yellow.<|im_end|>",
+    "To compute $ 17 \\times 23 $, we can use the distributive property:\n\n$$\n17 \\times 23 = 17 \\times (20 + 3) = (17 \\times 20) + (17 \\times 3)\n$$\n\nNow compute each part:\n\n- $ 17 \\times 20 = 340 $\n- $ 17 \\times 3 = 51 $\n\nAdd them together:\n\n$$\n340 + 51 = 391\n$$\n\n### Final Answer:\n$$\n\\boxed",
+    "The largest planet in the solar system is **Jupiter**.<|im_end|>",
+    "Buenos días<|im_end|>",
+    "Marie Curie was a pioneering Polish-French physicist and chemist who won Nobel Prizes in both Physics (1903) and Chemistry (1911) for her groundbreaking research on radioactivity and the discovery of the elements radium and polonium.<|im_end|>",
+    "Photosynthesis is a biological process used by green plants, algae, and some bacteria to convert light energy—usually from the sun—into chemical energy stored in glucose (a type of sugar). This process takes place primarily in the chloroplasts of plant cells, where the green pigment chlorophyll captures light energy.\n\nThe overall chemical equation for photosynthesis is:\n\n**6CO₂ + 6H₂O + light energy → C₆H₁₂O₆ + 6O₂**\n\nThis means that carbon dioxide (CO₂) from the air and water (H₂O) from the soil are combined using light energy",
+    "Romeo and Juliet are young lovers from feuding families in Verona, the Montagues and the Capulets, who fall deeply in love despite the hatred between their families. Their secret marriage and tragic deaths ultimately bring an end to the long-standing feud.<|im_end|>"
+  ],
+  "generation_ran": true
+}

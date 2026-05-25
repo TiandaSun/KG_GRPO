@@ -1,0 +1,100 @@
+{
+  "trajectory_file": "/lus/lfs1aip2/scratch/u6gg/ts1201.u6gg/Project/KG_GRPO/results/trajectories/phase7/39g2_step500_full/step_0/trajectories.json",
+  "n_total": 3531,
+  "n_total_em_correct": 1412,
+  "canonical_counts": {
+    "correct-via-memory": 1203,
+    "correct-via-tool": 205,
+    "kg-incomplete": 818,
+    "tool-misuse": 165,
+    "wrong-answer": 1140
+  },
+  "canonical_cvt": 205,
+  "canonical_cvt_rate": 0.05805720758991787,
+  "n_originally_CvM": 1203,
+  "n_now_CvT_under_fuzzy": 0,
+  "pct_flip": 0.0,
+  "fuzzy_cvt_total": 205,
+  "fuzzy_cvt_rate": 0.05805720758991787,
+  "by_hops": {
+    "1": {
+      "orig_cvm": 751,
+      "now_cvt_under_fuzzy": 0,
+      "pct_flip": 0.0
+    },
+    "2": {
+      "orig_cvm": 452,
+      "now_cvt_under_fuzzy": 0,
+      "pct_flip": 0.0
+    }
+  },
+  "examples_flipped": [],
+  "examples_still_CvM": [
+    {
+      "sample_id": "WebQTest-1000_058203c22235854bf96557ab2b7c383e",
+      "question": "What countries in the Chamorro Time Zone are in Oceania?",
+      "predicted": "Guam",
+      "gold_answer": "Guam",
+      "all_answers": [
+        "Guam",
+        "Northern Mariana Islands"
+      ],
+      "hops": 1,
+      "fuzzy_matched_candidate": null,
+      "fuzzy_matched_string": null,
+      "match_reason": ""
+    },
+    {
+      "sample_id": "WebQTest-1000_10aa3b0c992e4e6f4cf624c6c38c727f",
+      "question": "What country with the capital of HagÃ¥tÃ±a is in Oceania?",
+      "predicted": "Guam",
+      "gold_answer": "Guam",
+      "all_answers": [
+        "Guam"
+      ],
+      "hops": 1,
+      "fuzzy_matched_candidate": null,
+      "fuzzy_matched_string": null,
+      "match_reason": ""
+    },
+    {
+      "sample_id": "WebQTest-1000_27638ce6ed6f359e62d04c2c4e322eee",
+      "question": "What nation in the geographic region of Oceania is the birthplace of the fictional character Jemaine Clement?",
+      "predicted": "New Zealand",
+      "gold_answer": "New Zealand",
+      "all_answers": [
+        "New Zealand"
+      ],
+      "hops": 1,
+      "fuzzy_matched_candidate": null,
+      "fuzzy_matched_string": null,
+      "match_reason": ""
+    },
+    {
+      "sample_id": "WebQTest-1000_3f03848605c6758ff2230a955cd92d65",
+      "question": "Which Oceanic country's GDP has a change rate of -0.61?",
+      "predicted": "Kiribati",
+      "gold_answer": "Kiribati",
+      "all_answers": [
+        "Kiribati"
+      ],
+      "hops": 1,
+      "fuzzy_matched_candidate": null,
+      "fuzzy_matched_string": null,
+      "match_reason": ""
+    },
+    {
+      "sample_id": "WebQTest-1000_44a6b5c516e23d6ac2381e488680b8ec",
+      "question": "What country in Oceania that produces the beer Monteith's Lager?",
+      "predicted": "New Zealand",
+      "gold_answer": "New Zealand",
+      "all_answers": [
+        "New Zealand"
+      ],
+      "hops": 1,
+      "fuzzy_matched_candidate": null,
+      "fuzzy_matched_string": null,
+      "match_reason": ""
+    }
+  ]
+}

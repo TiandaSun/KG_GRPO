@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v14e1_sft_full
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --time=24:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# V14-E1 Qwen2.5-32B SFT FULL — mirrors V14-D1 14B recipe scaled for 32B.
+# LR halved further (5e-6 vs 14B's 1e-5) per scaling rule of thumb.
+# LoRA r=64 DoRA + rsLoRA keeps optimizer-state cost manageable on 4 GPUs.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+MODEL="Qwen/Qwen2.5-32B-Instruct"
+TRAIN_FILE="data/freebase/sft_trajectories.jsonl"
+OUTPUT_DIR="outputs/verl-sft-cwq-32b-from-base"
+MERGED_DIR="outputs/verl-sft-cwq-32b-from-base-merged"
+
+mkdir -p logs outputs
+
+echo "=== V14-E1 Qwen2.5-32B SFT FULL ==="
+echo "Date: $(date)"
+echo "Model: $MODEL"
+echo "Train: $TRAIN_FILE"
+
+[ -f "$TRAIN_FILE" ] || { echo "ERROR: SFT corpus missing"; exit 1; }
+
+TMP_CONFIG="${TMPDIR:-/tmp}/sft_cwq_32b_${SLURM_JOB_ID}.yaml"
+cat > "$TMP_CONFIG" <<'YAML'
+model:
+  model_name: "Qwen/Qwen2.5-32B-Instruct"
+  torch_dtype: "bfloat16"
+  attn_implementation: "eager"
+
+lora:
+  lora_r: 64
+  lora_alpha: 128
+  lora_target_modules: "all-linear"
+  lora_dropout: 0.05
+  use_dora: false
+  use_rslora: true
+
+training:
+  num_train_epochs: 1
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 16
+  learning_rate: 5.0e-6
+  gradient_checkpointing: true
+  max_seq_length: 2048
+  logging_steps: 10
+  save_strategy: "epoch"
+  warmup_ratio: 0.05
+  optim: "adamw_torch"
+  fsdp: "full_shard auto_wrap"
+  fsdp_transformer_layer_cls_to_wrap: "Qwen2DecoderLayer"
+  fsdp_use_orig_params: true
+  fsdp_activation_checkpointing: false
+  fsdp_state_dict_type: "FULL_STATE_DICT"
+
+data:
+  train_file: "data/freebase/sft_trajectories.jsonl"
+  output_dir: "outputs/verl-sft-cwq-32b-from-base"
+
+wandb:
+  wandb_project: "kg-align-verl"
+  wandb_run_name: "sft-cwq-32b-from-base"
+YAML
+
+cat "$TMP_CONFIG"
+echo ""
+
+NPROC=${SLURM_GPUS:-4}
+echo "Launching torchrun with --nproc_per_node=$NPROC"
+
+torchrun --standalone --nproc_per_node=$NPROC \
+    src_verl/training/sft_multiturn.py \
+    --config "$TMP_CONFIG" \
+    --model_path "$MODEL" \
+    --output_dir "$OUTPUT_DIR" \
+    --num_train_epochs 1 \
+    --train_file "$TRAIN_FILE"
+
+echo ""
+echo "=== Merge LoRA → full HF model ==="
+python scripts/merge_sft_adapter.py \
+    --base_model "$MODEL" \
+    --adapter_path "$OUTPUT_DIR" \
+    --output_path "$MERGED_DIR"
+cp -n "$OUTPUT_DIR"/tokenizer* "$MERGED_DIR/" 2>/dev/null || true
+cp -n "$OUTPUT_DIR"/chat_template.jinja "$MERGED_DIR/" 2>/dev/null || true
+
+echo "=== Done: $(date) ==="
+echo "Merged: $MERGED_DIR"

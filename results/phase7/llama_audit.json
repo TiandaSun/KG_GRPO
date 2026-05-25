@@ -1,0 +1,34 @@
+{
+  "models": [
+    {
+      "tag": "llama_sft",
+      "n": 100,
+      "orig_em": 0.0,
+      "any_answer_tags_frac": 0.0,
+      "degenerate_loop_frac": 0.16,
+      "gold_anywhere_frac": 0.04,
+      "repair_em_any_tool_resp": 0.01,
+      "trajectory_file": "results/trajectories/task14/llama_sft/step_0/trajectories.json"
+    },
+    {
+      "tag": "llama_e3_1293",
+      "n": 100,
+      "orig_em": 0.0,
+      "any_answer_tags_frac": 0.01,
+      "degenerate_loop_frac": 1.0,
+      "gold_anywhere_frac": 0.42,
+      "repair_em_any_tool_resp": 0.03,
+      "trajectory_file": "results/trajectories/task14/llama_e3_1293/step_1293/trajectories.json"
+    },
+    {
+      "tag": "llama_e5b_1293",
+      "n": 100,
+      "orig_em": 0.0,
+      "any_answer_tags_frac": 0.0,
+      "degenerate_loop_frac": 0.0,
+      "gold_anywhere_frac": 0.26,
+      "repair_em_any_tool_resp": 0.0,
+      "trajectory_file": "results/trajectories/task14/llama_e5b_1293/step_1293/trajectories.json"
+    }
+  ]
+}

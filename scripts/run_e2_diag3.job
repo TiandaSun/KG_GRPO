@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=e2_diag3
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --time=02:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# DIAGNOSTIC 3: Isolate save vs validation
+# save_freq=50 (save at step 50) but test_freq=200 (NO validation at step 50)
+# If this passes step 50: validation is the trigger
+# If this hangs at step 50: checkpoint save is the trigger
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+module load brics/nccl 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export VLLM_USE_V1=1
+export RAY_DEDUP_LOGS=1
+export RAY_TMPDIR="/tmp/ray-${SLURM_JOB_ID}"
+mkdir -p "$RAY_TMPDIR"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+export REWARD_TYPE=heuristic
+EXPERIMENT_NAME="grpo-cwq-7b-heuristic-diag3-saveonly"
+
+echo "=== E2 DIAG 3: save_freq=50, test_freq=200 ==="
+echo "Date: $(date)"
+echo "Node: $(hostname)"
+echo "Purpose: Isolate save (yes) vs validation (no) at step 50"
+echo ""
+
+python -m src_verl.kg_server.server \
+    --kg freebase --freebase_dir data/freebase/kg --port 18901 --log-level warning > /dev/null 2>&1 &
+KG_PID=$!
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:18901/health 2>/dev/null | grep -q "200" && echo "KG healthy" && break
+    sleep 10
+done
+
+ray stop 2>/dev/null || true
+
+echo "=== Launching GRPO ==="
+set +e
+python -m verl.trainer.main_ppo \
+    --config-path="$PWD/configs_verl" \
+    --config-name=grpo_cwq_7b \
+    trainer.experiment_name="$EXPERIMENT_NAME" \
+    trainer.save_freq=50 \
+    trainer.test_freq=200 \
+    trainer.val_before_train=false \
+    +actor_rollout_ref.rollout.enable_sleep_mode=true \
+    actor_rollout_ref.rollout.agent.default_agent_loop=tool_agent \
+    data.dataloader_num_workers=0
+set -e
+
+STEPS=$(grep -c "Training Progress" logs/e2_diag3-${SLURM_JOB_ID}.err 2>/dev/null || echo "?")
+echo "Steps completed: $STEPS"
+if [ "$STEPS" -gt 55 ]; then
+    echo ">>> PASSED step 50 WITH save but WITHOUT validation — validation was the trigger!"
+else
+    echo ">>> Hung at step 50 WITH save — checkpoint save is the trigger"
+fi
+
+kill $KG_PID 2>/dev/null
+echo "=== Done ==="

@@ -1,0 +1,209 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v14a1_searchr1_train
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --time=24:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# V14-A1 Search-R1 baseline training on CWQ with Freebase adapter.
+#
+# Task spec: hpc_tasks.md v14.1 Task V14-A1
+#   Train Qwen2.5-7B-Instruct with Search-R1's exact recipe
+#   (GRPO + outcome-only EM reward) on CWQ train, save checkpoints every 100
+#   steps. Eval done separately by run_phase7_v14_a1_searchr1_eval.job.
+#
+# Prereqs (checked at startup):
+#   - external/Search-R1/ cloned (from LOGIN node; git clone is cheap)
+#   - data/freebase/searchr1_cwq/{train,test}.parquet produced by
+#     scripts/prepare_cwq_for_searchr1.py
+#
+# Note the Isambard ARM quirks:
+#   - vLLM must run with enforce_eager=true (Triton graph compile broken on ARM)
+#   - flash-attn unavailable; use sdpa
+#   - VLLM_ATTENTION_BACKEND=XFORMERS (from Search-R1's own train_grpo.sh)
+#   - KG server + adapter run on the compute node (NEVER login)
+
+set -eo pipefail  # NOT set -u (breaks conda activate)
+
+# --- Environment ------------------------------------------------------------
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+module load brics/nccl 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TMPDIR=/tmp
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export VLLM_ATTENTION_BACKEND=XFORMERS  # Search-R1 default for Qwen2-7B
+export RAY_DEDUP_LOGS=1
+export RAY_TMPDIR="/tmp/ray-${SLURM_JOB_ID}"
+mkdir -p "$RAY_TMPDIR"
+
+cd "$SLURM_SUBMIT_DIR"
+
+# Search-R1 ships its own forked verl in external/Search-R1/verl. Put that
+# FIRST on PYTHONPATH so `python -m verl.trainer.main_ppo` picks it up instead
+# of our conda-installed verl (which has diverged APIs).
+export SEARCHR1_DIR="$PWD/external/Search-R1"
+export PYTHONPATH="$SEARCHR1_DIR:$PWD:${PYTHONPATH:-}"
+
+# --- Prerequisite checks ----------------------------------------------------
+if [ ! -d "$SEARCHR1_DIR" ]; then
+    echo "ERROR: Search-R1 not cloned to $SEARCHR1_DIR" >&2
+    echo "  Run: mkdir -p external && cd external && git clone https://github.com/PeterGriffinJin/Search-R1.git" >&2
+    exit 1
+fi
+if [ ! -f "data/freebase/searchr1_cwq/train.parquet" ]; then
+    echo "ERROR: Search-R1-formatted training data missing" >&2
+    echo "  Run: python scripts/prepare_cwq_for_searchr1.py" >&2
+    exit 1
+fi
+
+FREEBASE_PORT=18901
+ADAPTER_PORT=19001
+EXPERIMENT_NAME="searchr1-cwq-7b-20260420"
+CKPT_DIR="/projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/$EXPERIMENT_NAME"
+mkdir -p "$CKPT_DIR"
+
+echo "=== V14-A1 Search-R1 training (4x GH200, 24h walltime) ==="
+echo "Date: $(date)"
+echo "Node: $(hostname)"
+echo "Experiment: $EXPERIMENT_NAME"
+echo "Checkpoint dir: $CKPT_DIR"
+echo "GPUs: $(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | wc -l)"
+echo
+
+# --- Start KG server --------------------------------------------------------
+python -m src_verl.kg_server.server \
+    --kg freebase --freebase_dir data/freebase/kg --port $FREEBASE_PORT --log-level warning \
+    > "logs/${SLURM_JOB_NAME}-${SLURM_JOB_ID}.kg.log" 2>&1 &
+KG_PID=$!
+
+trap 'kill $ADAPTER_PID $KG_PID 2>/dev/null; ray stop 2>/dev/null; echo "=== End: $(date) ==="' EXIT
+
+echo "Waiting for KG server (up to ~2 min)..."
+for i in $(seq 1 24); do
+    if curl -s -o /dev/null -w "%{http_code}" http://localhost:$FREEBASE_PORT/health 2>/dev/null | grep -q "200"; then
+        echo "KG server healthy after ~$((i*5))s"
+        break
+    fi
+    sleep 5
+done
+
+# --- Start Search-R1 adapter ------------------------------------------------
+python scripts/phase7_ii2_searchr1_adapter.py \
+    --freebase_port $FREEBASE_PORT --port $ADAPTER_PORT \
+    > "logs/${SLURM_JOB_NAME}-${SLURM_JOB_ID}.adapter.log" 2>&1 &
+ADAPTER_PID=$!
+
+echo "Waiting for adapter..."
+for i in $(seq 1 12); do
+    if curl -s -o /dev/null -w "%{http_code}" http://localhost:$ADAPTER_PORT/health 2>/dev/null | grep -q "200"; then
+        echo "Adapter healthy after ~$((i*5))s"
+        break
+    fi
+    sleep 5
+done
+
+# Smoke-test the adapter with one query
+echo "Adapter smoke test:"
+curl -s -X POST http://localhost:$ADAPTER_PORT/retrieve \
+    -H 'Content-Type: application/json' \
+    -d '{"queries": ["What state is home to the university of George Washington Colonials men basketball"], "topk": 3, "return_scores": true}' \
+    | head -c 500
+echo
+echo
+
+ray stop 2>/dev/null || true
+
+# --- Launch Search-R1 training ----------------------------------------------
+# We reuse Search-R1's forked verl trainer. Overrides follow their train_grpo.sh
+# pattern with adjustments for:
+#   - Qwen2.5-7B-Instruct (instruct, not base)
+#   - CWQ data at data/freebase/searchr1_cwq
+#   - Our adapter at localhost:19001
+#   - 4 GPUs per node (not 8)
+#   - ARM compatibility (enforce_eager)
+#   - 500 total training steps to fit 24h walltime (see setup notes)
+
+BASE_MODEL="Qwen/Qwen2.5-7B-Instruct"
+WANDB_PROJECT="kg-align-verl"
+
+echo "=== Launching Search-R1 GRPO ==="
+echo "Model: $BASE_MODEL"
+echo "Start: $(date)"
+START_TIME=$(date +%s)
+
+set +e
+PYTHONUNBUFFERED=1 python3 -m verl.trainer.main_ppo \
+    data.train_files=data/freebase/searchr1_cwq/train.parquet \
+    data.val_files=data/freebase/searchr1_cwq/test.parquet \
+    data.train_data_num=null \
+    data.val_data_num=null \
+    data.train_batch_size=256 \
+    data.val_batch_size=256 \
+    data.max_prompt_length=4096 \
+    data.max_response_length=500 \
+    data.max_start_length=2048 \
+    data.max_obs_length=500 \
+    data.shuffle_train_dataloader=True \
+    algorithm.adv_estimator=grpo \
+    actor_rollout_ref.model.path="$BASE_MODEL" \
+    actor_rollout_ref.model.enable_gradient_checkpointing=true \
+    actor_rollout_ref.model.use_remove_padding=True \
+    actor_rollout_ref.actor.optim.lr=1e-6 \
+    actor_rollout_ref.actor.optim.lr_warmup_steps_ratio=0.285 \
+    actor_rollout_ref.actor.use_kl_loss=true \
+    actor_rollout_ref.actor.ppo_mini_batch_size=128 \
+    actor_rollout_ref.actor.ppo_micro_batch_size=32 \
+    actor_rollout_ref.actor.fsdp_config.param_offload=true \
+    actor_rollout_ref.actor.fsdp_config.grad_offload=true \
+    actor_rollout_ref.actor.fsdp_config.optimizer_offload=true \
+    actor_rollout_ref.rollout.log_prob_micro_batch_size=64 \
+    actor_rollout_ref.rollout.tensor_model_parallel_size=2 \
+    actor_rollout_ref.rollout.name=vllm \
+    actor_rollout_ref.rollout.gpu_memory_utilization=0.55 \
+    actor_rollout_ref.rollout.enforce_eager=true \
+    actor_rollout_ref.ref.log_prob_micro_batch_size=64 \
+    actor_rollout_ref.ref.fsdp_config.param_offload=True \
+    actor_rollout_ref.actor.kl_loss_coef=0.001 \
+    actor_rollout_ref.actor.kl_loss_type=low_var_kl \
+    algorithm.no_think_rl=false \
+    actor_rollout_ref.rollout.n_agent=5 \
+    actor_rollout_ref.rollout.temperature=1 \
+    actor_rollout_ref.actor.state_masking=true \
+    trainer.logger=['wandb','console'] \
+    +trainer.val_only=false \
+    +trainer.val_before_train=false \
+    trainer.default_hdfs_dir=null \
+    trainer.n_gpus_per_node=4 \
+    trainer.nnodes=1 \
+    trainer.save_freq=100 \
+    trainer.test_freq=100 \
+    trainer.project_name="$WANDB_PROJECT" \
+    trainer.experiment_name="$EXPERIMENT_NAME" \
+    trainer.total_epochs=15 \
+    trainer.total_training_steps=500 \
+    trainer.default_local_dir="$CKPT_DIR" \
+    max_turns=4 \
+    retriever.url="http://localhost:${ADAPTER_PORT}/retrieve" \
+    retriever.topk=3 \
+    2>&1
+TRAIN_EXIT=$?
+set -e
+
+END_TIME=$(date +%s)
+ELAPSED=$((END_TIME - START_TIME))
+
+echo
+echo "=== Training finished ==="
+echo "Exit code: $TRAIN_EXIT"
+echo "Elapsed: ${ELAPSED}s ($((ELAPSED / 60))m)"
+echo "Checkpoints saved:"
+ls "$CKPT_DIR" 2>/dev/null | grep global_step | sort -t_ -k3 -n || echo "  (none)"

@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v14c1_sft
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --time=24:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# V14-C1 Part A — SFT Qwen2.5-7B-Instruct on fs1-2708 with fs1 hyperparams.
+# Our LoRA stack + their data + their config.  Merges to a verl-compatible
+# checkpoint at outputs/verl-sft-cwq-7b-fs1-adapt-merged.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+echo "=== V14-C1 fs1-SFT ==="
+echo "Date: $(date)"
+echo "Base:   Qwen/Qwen2.5-7B-Instruct"
+echo "Data:   data/freebase/fs1_2708_sft.jsonl (5974 CWQ-val traces, all valid=1)"
+echo "Hyper:  LR=1e-5, epochs=5, warmup=0.05, max_seq=8192, LoRA r=64 DoRA"
+
+python src_verl/training/sft_fs1_adapt.py \
+    --train_file data/freebase/fs1_2708_sft.jsonl \
+    --model_name Qwen/Qwen2.5-7B-Instruct \
+    --output_dir outputs/verl-sft-cwq-7b-fs1-adapt \
+    --num_train_epochs 5 \
+    --learning_rate 1e-5 \
+    --warmup_ratio 0.05 \
+    --weight_decay 0.0001 \
+    --max_seq_length 8192 \
+    --per_device_train_batch_size 1 \
+    --gradient_accumulation_steps 8 \
+    --lora_r 64 \
+    --lora_alpha 128
+
+echo "=== Done: $(date) ==="
+ls -la outputs/verl-sft-cwq-7b-fs1-adapt-merged/ 2>/dev/null | head -5

@@ -1,0 +1,162 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v14e1_grpo4n
+#SBATCH --nodes=4
+#SBATCH --gpus-per-node=4
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=72
+#SBATCH --time=24:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# V14-E1 Qwen2.5-32B E5b GRPO on 4 nodes × 4 GH200 = 16 GPUs.
+# 2-node attempt OOMed at vLLM wake_up; 32B requires 4 nodes for FSDP-shard
+# of optimizer state across 16 ranks (Adam 32B = 256 GB total → 16 GB/GPU at 16-way).
+# Topology: TP=4 within each node (4 vLLM replicas, NVLink-local), FSDP across all 16 GPUs.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+module load brics/nccl 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export VLLM_USE_V1=1
+export RAY_DEDUP_LOGS=1
+export RAY_TMPDIR="/tmp/ray-${SLURM_JOB_ID}"
+export TMPDIR="/tmp"
+mkdir -p "$RAY_TMPDIR"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+export REWARD_TYPE=tool_type_bonus
+
+INIT_BASE="outputs/verl-sft-cwq-32b-from-base-merged"
+EXPERIMENT_NAME="grpo-cwq-32b-e5b-4node-20260425"
+
+echo "=== V14-E1 Qwen2.5-32B 4-node GRPO (E5b-stabilized) ==="
+echo "Date: $(date)"
+echo "Nodes: $SLURM_JOB_NODELIST"
+echo "Init: $INIT_BASE"
+
+[ -d "$INIT_BASE" ] || { echo "ERROR: merged 32B SFT not found at $INIT_BASE"; exit 1; }
+
+# --- Ray cluster: head on node 0, workers on nodes 1-3 ---
+nodes=($(scontrol show hostnames "$SLURM_JOB_NODELIST"))
+HEAD_NODE=${nodes[0]}
+HEAD_IP=$(srun --nodes=1 --ntasks=1 -w "$HEAD_NODE" bash -c \
+    "ip -4 -o addr show hsn0 2>/dev/null | awk '{print \$4}' | cut -d/ -f1")
+RAY_PORT=6379
+
+echo "Head: $HEAD_NODE (hsn0=$HEAD_IP)"
+
+srun --nodes=1 --ntasks=1 -w "$HEAD_NODE" --export=ALL \
+    ray start --head \
+        --node-ip-address="$HEAD_IP" \
+        --port=$RAY_PORT \
+        --num-cpus=72 \
+        --num-gpus=4 \
+        --block &
+RAY_HEAD_PID=$!
+sleep 45
+
+# Spawn workers on nodes 1, 2, 3
+declare -a RAY_WORKER_PIDS=()
+for i in 1 2 3; do
+    WN=${nodes[$i]}
+    echo "Starting Ray worker on $WN"
+    srun --nodes=1 --ntasks=1 -w "$WN" --export=ALL \
+        ray start \
+            --address="${HEAD_IP}:${RAY_PORT}" \
+            --num-cpus=72 \
+            --num-gpus=4 \
+            --block &
+    RAY_WORKER_PIDS+=($!)
+done
+sleep 45
+
+export RAY_ADDRESS="${HEAD_IP}:${RAY_PORT}"
+ray status --address="$RAY_ADDRESS" 2>&1 | head -25 || true
+
+# --- Per-node KG servers (one per node, all bound to localhost) ---
+KG_PORT=$((18000 + SLURM_JOB_ID % 1000))
+declare -a KG_PIDS=()
+for i in 0 1 2 3; do
+    N=${nodes[$i]}
+    srun --overlap --nodes=1 --ntasks=1 --cpus-per-task=4 -w "$N" --export=ALL \
+        python -m src_verl.kg_server.server \
+            --kg freebase --freebase_dir data/freebase/kg \
+            --port $KG_PORT --host 127.0.0.1 --log-level warning &
+    KG_PIDS+=($!)
+done
+
+cleanup() {
+    for pid in "${KG_PIDS[@]}"; do kill $pid 2>/dev/null || true; done
+    kill $RAY_HEAD_PID 2>/dev/null || true
+    for pid in "${RAY_WORKER_PIDS[@]}"; do kill $pid 2>/dev/null || true; done
+    rm -f "$TOOL_CFG" 2>/dev/null || true
+}
+trap cleanup EXIT
+
+sleep 60  # 32B-sized KG cache + larger model load
+ALL_OK=1
+for i in 0 1 2 3; do
+    N=${nodes[$i]}
+    OK=0
+    for j in $(seq 1 12); do
+        code=$(srun --overlap --nodes=1 --ntasks=1 --cpus-per-task=1 -w "$N" --export=ALL \
+            curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:${KG_PORT}/health" 2>/dev/null || echo FAIL)
+        if [ "$code" = "200" ]; then OK=1; break; fi
+        sleep 10
+    done
+    if [ "$OK" = "1" ]; then
+        echo "$N KG ready"
+    else
+        echo "ERROR: KG server not healthy on $N"
+        ALL_OK=0
+    fi
+done
+[ "$ALL_OK" = "1" ] || exit 1
+
+# --- Per-job tool config (localhost rewrite) ---
+TOOL_CFG="configs_verl/kg_tool_config_freebase_${SLURM_JOB_ID}.yaml"
+sed "s|http://localhost:18901|http://127.0.0.1:${KG_PORT}|" \
+    configs_verl/kg_tool_config_freebase.yaml > "$TOOL_CFG"
+echo "Tool config: $TOOL_CFG"
+grep kg_server_url "$TOOL_CFG"
+
+# --- Training: 500 steps, save every 50, more conservative vLLM memory ---
+# vs 14B 2-node: gpu_mem_util 0.45→0.30, max_num_seqs 64→16, max_num_batched_tokens 4096→2048.
+# 32B vLLM TP=4 = 16 GB weights/GPU, leaves more room for activations and KV.
+python -m verl.trainer.main_ppo \
+    --config-path="$PWD/configs_verl" \
+    --config-name=grpo_cwq_7b \
+    ~ray_kwargs.ray_init.num_cpus \
+    trainer.experiment_name="$EXPERIMENT_NAME" \
+    trainer.total_training_steps=500 \
+    trainer.nnodes=4 \
+    trainer.n_gpus_per_node=4 \
+    actor_rollout_ref.model.path="$INIT_BASE" \
+    actor_rollout_ref.actor.use_kl_loss=true \
+    actor_rollout_ref.actor.kl_loss_coef=0.05 \
+    actor_rollout_ref.actor.kl_loss_type=low_var_kl \
+    actor_rollout_ref.actor.ppo_micro_batch_size_per_gpu=1 \
+    actor_rollout_ref.ref.log_prob_micro_batch_size_per_gpu=1 \
+    actor_rollout_ref.rollout.tensor_model_parallel_size=4 \
+    actor_rollout_ref.rollout.log_prob_micro_batch_size_per_gpu=1 \
+    actor_rollout_ref.rollout.gpu_memory_utilization=0.30 \
+    actor_rollout_ref.rollout.max_num_seqs=16 \
+    actor_rollout_ref.rollout.max_num_batched_tokens=2048 \
+    +actor_rollout_ref.rollout.enable_sleep_mode=true \
+    actor_rollout_ref.rollout.agent.default_agent_loop=tool_agent \
+    actor_rollout_ref.rollout.multi_turn.tool_config_path="$TOOL_CFG" \
+    data.dataloader_num_workers=0
+
+echo "=== Done: $(date) ==="

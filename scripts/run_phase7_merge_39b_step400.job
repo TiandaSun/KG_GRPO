@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_merge_39b
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=1:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Phase 7: Merge 39B @ global_step_400 FSDP checkpoint into a HF directory
+# suitable as an init_base for Variants I-Oracle / I-Self / G.
+#
+# Output: outputs/verl-sft-cwq-39b-step400
+# Uses verl's built-in FSDP → HF merger (same pattern as 39c1/c2 jobs).
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+SRC="/projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/grpo-cwq-7b-39b-kl-20260413/global_step_400/actor"
+DST="outputs/verl-sft-cwq-39b-step400"
+BASE_MODEL="outputs/verl-sft-cwq-7b-merged"
+
+mkdir -p "$DST"
+
+echo "=== Merging 39B @ step 400 FSDP → HF ==="
+echo "Source: $SRC"
+echo "Target: $DST"
+echo "Date: $(date)"
+
+if [ ! -d "$SRC" ]; then
+    echo "ERROR: source checkpoint not found at $SRC"
+    exit 1
+fi
+
+python -m verl.model_merger merge \
+    --backend fsdp \
+    --local_dir "$SRC" \
+    --target_dir "$DST"
+
+# Tokenizer + chat template fall-through (same pattern as 39c1 cycle orchestrator)
+if [ ! -f "$DST/tokenizer.json" ]; then
+    echo "Copying tokenizer from base model..."
+    cp -n "$BASE_MODEL"/tokenizer* "$DST/" 2>/dev/null || true
+    cp -n "$BASE_MODEL"/chat_template.jinja "$DST/" 2>/dev/null || true
+fi
+
+echo ""
+echo "Merged checkpoint contents:"
+ls -la "$DST" | head -15
+echo ""
+echo "=== Done: $(date) ==="

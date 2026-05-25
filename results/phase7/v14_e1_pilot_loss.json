@@ -1,0 +1,22 @@
+{
+  "trainer_state": "outputs/verl-sft-cwq-32b-pilot/checkpoint-16/trainer_state.json",
+  "num_log_points": 3,
+  "losses": [
+    [
+      5,
+      1.4179
+    ],
+    [
+      10,
+      0.8639
+    ],
+    [
+      15,
+      0.6805
+    ]
+  ],
+  "first_loss": 1.4179,
+  "last_loss": 0.6805,
+  "relative_drop_pct": 52.0064884688624,
+  "verdict": "WARN: loss drop >50% \u2014 reduce epochs in full run"
+}

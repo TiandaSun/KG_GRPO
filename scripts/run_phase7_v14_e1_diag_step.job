@@ -1,0 +1,144 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v14e1_diag
+#SBATCH --nodes=1
+#SBATCH --gpus=2
+#SBATCH --cpus-per-task=144
+#SBATCH --time=02:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# V14-E1 32B DIAGNOSTIC — bisect format collapse across GRPO steps.
+#
+# Step 200 standalone eval shows EM=0 with no <answer> tags emitted; in-training
+# val showed 41.5% EM (different extractor). This script runs the same 50-sample
+# smoke with full trajectory dump at any earlier checkpoint to find the pivot
+# where <answer> emission was lost.
+#
+# Usage:
+#   sbatch --export=ALL,STEP=0   scripts/run_phase7_v14_e1_diag_step.job  # SFT base
+#   sbatch --export=ALL,STEP=50  scripts/run_phase7_v14_e1_diag_step.job
+#   sbatch --export=ALL,STEP=100 scripts/run_phase7_v14_e1_diag_step.job
+#   sbatch --export=ALL,STEP=150 scripts/run_phase7_v14_e1_diag_step.job
+#
+# 2 GPUs needed for FSDP merge CPU RAM (~230 GB). For STEP=0 only 1 GPU is
+# strictly needed (no merge), but we use 2 uniformly for queue simplicity.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+: "${STEP:?STEP env var required (0 for SFT base, or 50/100/150 for GRPO checkpoints)}"
+
+EXPERIMENT="grpo-cwq-32b-e5b-4node-20260425"
+BASE_MODEL="outputs/verl-sft-cwq-32b-from-base-merged"
+
+if [ "$STEP" = "0" ]; then
+    MODEL_TAG="v14_e1_qwen32b_sft_base"
+    DST="$BASE_MODEL"
+    SRC=""
+else
+    MODEL_TAG="v14_e1_qwen32b_e5b_step${STEP}"
+    SRC="/projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/${EXPERIMENT}/global_step_${STEP}/actor"
+    DST="outputs/verl-sft-cwq-32b-${MODEL_TAG}-merged"
+fi
+
+OUT_JSON="results/phase7/${MODEL_TAG}_diag50.json"
+TRAJ_DIR="results/trajectories/phase7/${MODEL_TAG}_diag50"
+KG_PORT=$((18000 + SLURM_JOB_ID % 1000))
+
+mkdir -p results/phase7 "$TRAJ_DIR" logs
+
+echo "=== V14-E1 32B DIAG @ step ${STEP} ==="
+echo "Date: $(date)"
+echo "Model: $DST"
+[ -n "$SRC" ] && echo "Source FSDP: $SRC"
+
+# --- (1) Merge if needed ---
+if [ -n "$SRC" ]; then
+    [ -d "$SRC" ] || { echo "ERROR: FSDP checkpoint not found at $SRC"; exit 1; }
+    if [ ! -f "$DST/config.json" ]; then
+        echo "=== Merging FSDP -> HF ==="
+        mkdir -p "$DST"
+        python -m verl.model_merger merge \
+            --backend fsdp \
+            --local_dir "$SRC" \
+            --target_dir "$DST"
+        if [ ! -f "$DST/tokenizer.json" ]; then
+            cp -n "$BASE_MODEL"/tokenizer* "$DST/" 2>/dev/null || true
+            cp -n "$BASE_MODEL"/chat_template.jinja "$DST/" 2>/dev/null || true
+        fi
+        echo "Merge complete."
+    else
+        echo "[skip] merged checkpoint already exists at $DST"
+    fi
+fi
+
+[ -d "$DST" ] || { echo "ERROR: merged checkpoint not at $DST"; exit 1; }
+
+# --- (2) KG server ---
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port $KG_PORT --log-level warning &
+KG_PID=$!
+trap 'kill $KG_PID 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready on port $KG_PORT"
+
+# --- (3) Eval: 50 samples with full trajectories ---
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$DST" \
+    --steps 0 \
+    --base_model "$DST" \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --output "$OUT_JSON" \
+    --kg_server_url http://localhost:$KG_PORT \
+    --max_samples 50 \
+    --max_turns 5 \
+    --max_new_tokens 512 \
+    --save_trajectories "$TRAJ_DIR" \
+    --max_trajectory_samples 50
+
+kill $KG_PID 2>/dev/null
+
+# --- (4) Inspect tag stats ---
+echo ""
+echo "=== Step ${STEP} tag stats ==="
+python3 << PYEOF
+import json, glob
+files = glob.glob("results/trajectories/phase7/${MODEL_TAG}_diag50/step_0/trajectories.json")
+if not files:
+    print("ERROR: no trajectory file")
+else:
+    with open(files[0]) as f:
+        traj = json.load(f)
+    n = len(traj)
+    n_open = sum(1 for t in traj if "<answer>" in t.get("full_response", ""))
+    n_pair = sum(1 for t in traj if "<answer>" in t.get("full_response", "") and "</answer>" in t.get("full_response", ""))
+    n_pred = sum(1 for t in traj if t.get("predicted"))
+    n_em1 = sum(1 for t in traj if t.get("em", 0) >= 0.5)
+    n_cem1 = sum(1 for t in traj if t.get("contains_em") if isinstance(t.get("contains_em"), (int, float)) and t.get("contains_em", 0) >= 0.5)
+    print(f"Step ${STEP}: trajectories={n}")
+    print(f"  with <answer> open tag:  {n_open}/{n} ({100*n_open/n:.1f}%)")
+    print(f"  with <answer>+</answer>: {n_pair}/{n} ({100*n_pair/n:.1f}%)")
+    print(f"  predicted non-empty:     {n_pred}/{n} ({100*n_pred/n:.1f}%)")
+    print(f"  EM=1:                    {n_em1}/{n} ({100*n_em1/n:.1f}%)")
+    print(f"  ContainsEM=1:            {n_cem1}/{n} ({100*n_cem1/n:.1f}%)")
+PYEOF
+
+echo "=== Done: \$(date) ==="

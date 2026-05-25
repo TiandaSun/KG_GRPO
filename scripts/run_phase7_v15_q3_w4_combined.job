@@ -1,0 +1,252 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v15_q3w4
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --cpus-per-task=72
+#SBATCH --time=12:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# V15 combined Lane 6 (Q3 entropy) + Lane 7 (W4 GPT-4o n=500-Q).
+# Lane 6 runs in the foreground on GPU; Lane 7 runs in the background as a
+# CPU+network process on the SAME node. They share a single KG server and the
+# same 500-ID subset (200 from results/task37_sample_ids.json + 300 new
+# seed=42 IDs from the remaining test.parquet rows).
+#
+# Submit (after `source ~/.bashrc` so OPENAI_API_KEY is in env):
+#   sbatch --export=ALL scripts/run_phase7_v15_q3_w4_combined.job
+
+set -eo pipefail
+
+# ---------------------------------------------------------------------------
+# Conda + ARM workarounds (Isambard GH200)
+# ---------------------------------------------------------------------------
+source ~/.bashrc
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+module load brics/nccl 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+if [ -z "${OPENAI_API_KEY:-}" ]; then
+    echo "ERROR: OPENAI_API_KEY not set. Source ~/.bashrc before sbatch (with --export=ALL)."
+    exit 1
+fi
+
+# ---------------------------------------------------------------------------
+# Paths
+# ---------------------------------------------------------------------------
+SUBSET_DIR=kg_grpo_emnlp2026_v2/_handoff/data
+SUBSET_FILE=$SUBSET_DIR/v15_subset_500ids.json
+EXISTING_IDS=results/task37_sample_ids.json
+TEST_PARQUET=data/freebase/verl_cwq/test.parquet
+
+Q3_OUT_ROOT=results/phase7/v15_q3_entropy
+W4_OUT=$SUBSET_DIR/v15_w4_gpt4o_500q.json
+
+mkdir -p "$SUBSET_DIR" "$Q3_OUT_ROOT" logs
+
+KG_PORT=$((19800 + SLURM_JOB_ID % 100))
+
+echo "=== V15 combined Q3 + W4 ==="
+echo "Date: $(date)"
+echo "Job:  $SLURM_JOB_ID  Node: $(hostname)"
+echo "KG port: $KG_PORT"
+echo "Subset file: $SUBSET_FILE"
+echo "Q3 out: $Q3_OUT_ROOT"
+echo "W4 out: $W4_OUT"
+
+# ---------------------------------------------------------------------------
+# Build SHARED 500-ID subset ONCE (idempotent — skip if file exists)
+# ---------------------------------------------------------------------------
+if [ -f "$SUBSET_FILE" ]; then
+    echo "Subset already exists at $SUBSET_FILE; reusing."
+else
+    echo "Building 500-ID subset (200 existing + 300 seed=42 new) ..."
+    python - <<'PY'
+import json, random
+import pyarrow.parquet as pq
+
+EXISTING = "results/task37_sample_ids.json"
+PARQUET = "data/freebase/verl_cwq/test.parquet"
+OUT = "kg_grpo_emnlp2026_v2/_handoff/data/v15_subset_500ids.json"
+SEED = 42
+TARGET_TOTAL = 500
+
+with open(EXISTING) as f:
+    d = json.load(f)
+existing = list(map(str, d.get("filter_ids", d.get("category_b_ids", []))))
+existing = list(dict.fromkeys(existing))  # dedup, preserve order
+print(f"existing IDs: {len(existing)}")
+
+table = pq.read_table(PARQUET)
+all_ids = []
+for row in table.to_pylist():
+    sid = row.get("extra_info", {}).get("sample_id")
+    if sid is None:
+        continue
+    all_ids.append(str(sid))
+print(f"test.parquet rows: {len(all_ids)}")
+
+existing_set = set(existing)
+remaining = [s for s in all_ids if s not in existing_set]
+print(f"remaining pool: {len(remaining)}")
+
+n_new = TARGET_TOTAL - len(existing)
+assert n_new > 0, "existing already >= target"
+assert len(remaining) >= n_new, "not enough remaining"
+
+rng = random.Random(SEED)
+new_ids = rng.sample(remaining, n_new)
+combined = existing + new_ids
+assert len(set(combined)) == len(combined), "overlap detected"
+assert len(combined) == TARGET_TOTAL
+
+payload = {
+    "subset_ids": combined,
+    "n_existing": len(existing),
+    "n_new": len(new_ids),
+    "seed": SEED,
+    "source_existing": EXISTING,
+    "source_parquet": PARQUET,
+}
+import os
+os.makedirs(os.path.dirname(OUT), exist_ok=True)
+with open(OUT, "w") as f:
+    json.dump(payload, f, indent=2)
+print(f"wrote {OUT}: total={len(combined)} existing={len(existing)} new={len(new_ids)}")
+PY
+fi
+
+# Sanity-check
+python -c "
+import json
+d = json.load(open('$SUBSET_FILE'))
+ids = d.get('subset_ids', [])
+print(f'subset OK: total={len(ids)} unique={len(set(ids))}')
+assert len(ids) == 500 and len(set(ids)) == 500
+"
+
+# ---------------------------------------------------------------------------
+# Start KG server
+# ---------------------------------------------------------------------------
+echo "Starting KG server on port $KG_PORT ..."
+python -m src_verl.kg_server.server \
+    --kg freebase \
+    --freebase_dir data/freebase/kg \
+    --port "$KG_PORT" \
+    --log-level warning &
+KG_PID=$!
+
+cleanup() {
+    echo "Cleanup: killing KG server (PID $KG_PID) and lanes if alive ..."
+    kill "$KG_PID" 2>/dev/null || true
+    [ -n "${Q3_PID:-}" ] && kill "$Q3_PID" 2>/dev/null || true
+    [ -n "${W4_PID:-}" ] && kill "$W4_PID" 2>/dev/null || true
+}
+trap cleanup EXIT
+
+# Wait for KG server health
+echo "Waiting for KG server health ..."
+for i in $(seq 1 30); do
+    code=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:$KG_PORT/health" 2>/dev/null || echo 000)
+    if [ "$code" = "200" ]; then
+        echo "KG server healthy (after $((i*5))s)"
+        break
+    fi
+    sleep 5
+done
+if ! curl -s -o /dev/null -w "%{http_code}" "http://localhost:$KG_PORT/health" | grep -q 200; then
+    echo "ERROR: KG server failed to come up"
+    exit 1
+fi
+
+# ---------------------------------------------------------------------------
+# Lane 6 (foreground GPU): V15-Q3 entropy time-series
+# Lane 7 (background CPU+network): V15-W4 GPT-4o n=500
+# ---------------------------------------------------------------------------
+echo "Launching Lane 6 (Q3 entropy, GPU) ..."
+python scripts/task_v15_q3_entropy.py \
+    --subset_ids "$SUBSET_FILE" \
+    --kg_server_url "http://localhost:$KG_PORT" \
+    --checkpoints_root outputs \
+    --steps "200,250,300,400" \
+    --eval_data "$TEST_PARQUET" \
+    --out_root "$Q3_OUT_ROOT" \
+    --max_turns 5 \
+    --max_new_tokens 512 \
+    > logs/v15_q3_entropy-${SLURM_JOB_ID}.log 2>&1 &
+Q3_PID=$!
+echo "  Q3 PID: $Q3_PID"
+
+echo "Launching Lane 7 (W4 GPT-4o, CPU+network) ..."
+python scripts/task_v15_w4_gpt4o.py \
+    --subset_ids "$SUBSET_FILE" \
+    --kg_server_url "http://localhost:$KG_PORT" \
+    --model gpt-4o \
+    --max_turns 5 \
+    --out "$W4_OUT" \
+    > logs/v15_w4_gpt4o-${SLURM_JOB_ID}.log 2>&1 &
+W4_PID=$!
+echo "  W4 PID: $W4_PID"
+
+echo "Waiting for both lanes to finish ..."
+Q3_RC=0
+W4_RC=0
+wait "$Q3_PID" || Q3_RC=$?
+echo "Lane 6 (Q3) exited: rc=$Q3_RC"
+wait "$W4_PID" || W4_RC=$?
+echo "Lane 7 (W4) exited: rc=$W4_RC"
+
+# ---------------------------------------------------------------------------
+# Final summary
+# ---------------------------------------------------------------------------
+echo
+echo "================ FINAL SUMMARY ================"
+echo "Lane 6 (V15-Q3 entropy): rc=$Q3_RC"
+if [ -f "$Q3_OUT_ROOT/summary.json" ]; then
+    python -c "
+import json
+d = json.load(open('$Q3_OUT_ROOT/summary.json'))
+print('  unit:', d.get('unit'))
+for r in d.get('records', []):
+    print(f\"  step={r['step']}  mean_inside={r['mean_inside']:.4f}  mean_outside={r['mean_outside']:.4f}  n_in={r['n_inside']}  n_out={r['n_outside']}\")
+"
+else
+    echo "  (no summary.json yet)"
+fi
+
+echo
+echo "Lane 7 (V15-W4 GPT-4o): rc=$W4_RC"
+if [ -f "$W4_OUT" ]; then
+    python -c "
+import json
+d = json.load(open('$W4_OUT'))
+s = d.get('summary', {})
+print(f\"  model={s.get('model')}  n={s.get('n')}\")
+print(f\"  EM={100*s.get('em_mean', 0):.2f}%  ContEM={100*s.get('contains_em_mean', 0):.2f}%  F1={100*s.get('f1_mean', 0):.2f}%\")
+print(f\"  tools/Q={s.get('avg_tool_calls', 0):.2f}  turns/Q={s.get('avg_turns', 0):.2f}\")
+print(f\"  cost_total=\\\${s.get('total_cost_usd', 0):.2f}  elapsed_s={int(s.get('elapsed_s', 0))}\")
+"
+else
+    echo "  (no W4 output JSON)"
+fi
+
+echo "================================================"
+echo "Done: $(date)"
+
+# Bubble up worst exit code so SLURM marks the job correctly
+if [ "$Q3_RC" -ne 0 ]; then exit "$Q3_RC"; fi
+if [ "$W4_RC" -ne 0 ]; then exit "$W4_RC"; fi
+exit 0

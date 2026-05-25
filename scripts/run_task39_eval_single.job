@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=t39_eval
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=02:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Task 39: Single-checkpoint evaluation (200 test questions, same as Task 37)
+#
+# Usage:
+#   sbatch --export=ALL,\
+#     CHECKPOINT_DIR=/projects/.../grpo-cwq-7b-39a-format-20260413,\
+#     STEP=50,\
+#     MODEL_TAG=39a_format_step050 \
+#     scripts/run_task39_eval_single.job
+#
+# Evaluates one (variant, step) on 200 random test questions using the same
+# sample IDs as Task 37 (results/task37_sample_ids.json). Results land in
+# results/task39_eval/{MODEL_TAG}/ with per-sample + trajectories for later
+# classification.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+: "${CHECKPOINT_DIR:?CHECKPOINT_DIR env var required}"
+: "${STEP:?STEP env var required}"
+: "${MODEL_TAG:?MODEL_TAG env var required}"
+
+BASE_MODEL="${BASE_MODEL:-outputs/verl-sft-cwq-7b-merged}"
+FILTER_IDS="results/task37_sample_ids.json"
+KG_PORT=$((18000 + SLURM_JOB_ID % 1000))
+
+OUT_JSON="results/task39_eval/${MODEL_TAG}.json"
+TRAJ_DIR="results/trajectories/task39/${MODEL_TAG}"
+PS_DIR="results/task39_eval/${MODEL_TAG}_per_sample"
+
+mkdir -p results/task39_eval "$TRAJ_DIR" "$PS_DIR"
+
+echo "=== Task 39: Eval ${MODEL_TAG} ==="
+echo "Date: $(date)"
+echo "Checkpoint: $CHECKPOINT_DIR"
+echo "Step: $STEP"
+echo "Output: $OUT_JSON"
+echo "KG port: $KG_PORT"
+echo ""
+
+# Start KG server
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port $KG_PORT --log-level warning &
+KG_PID=$!
+trap 'kill $KG_PID 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready"
+
+# Run eval (200 questions, max_turns=5, max_new_tokens=512 — same config as Task 37)
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$CHECKPOINT_DIR" \
+    --steps "$STEP" \
+    --base_model "$BASE_MODEL" \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --output "$OUT_JSON" \
+    --kg_server_url http://localhost:$KG_PORT \
+    --max_samples 0 \
+    --max_turns 5 \
+    --max_new_tokens 512 \
+    --filter_ids "$FILTER_IDS" \
+    --save_per_sample "$PS_DIR" \
+    --save_every 50 \
+    --resume \
+    --save_trajectories "$TRAJ_DIR" \
+    --max_trajectory_samples 200
+
+kill $KG_PID 2>/dev/null
+echo ""
+echo "=== Done: $(date) ==="

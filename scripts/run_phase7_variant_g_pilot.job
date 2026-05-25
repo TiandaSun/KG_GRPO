@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_g_pilot
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=3:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Variant G Step 1a: yield pilot on 2,000 random train questions.
+# Runs 39B@400 greedy+tools and reports strict yield fraction.
+# Decision determines whether to launch full 27K sweep, widen the filter,
+# or fall back to EEF salvage.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+KG_PORT=$((18000 + SLURM_JOB_ID % 1000))
+
+echo "=== Variant G Step 1a: yield pilot ==="
+echo "Date: $(date)  KG port: $KG_PORT"
+
+# Start KG server
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port $KG_PORT --log-level warning &
+KG_PID=$!
+trap 'kill $KG_PID 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready"
+
+python scripts/phase7_variant_g_pilot.py \
+    --checkpoint_dir /projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/grpo-cwq-7b-39b-kl-20260413 \
+    --step 400 \
+    --base_model outputs/verl-sft-cwq-7b-merged \
+    --train_parquet data/freebase/verl_cwq/train.parquet \
+    --kg_server_url http://localhost:$KG_PORT \
+    --n_pilot 2000 \
+    --seed 42 \
+    --output data/freebase/verl_cwq/39b_pilot_yield.json
+
+echo ""
+echo "=== Filter pilot with strict rule ==="
+python scripts/phase7_variant_g_filter.py \
+    --input data/freebase/verl_cwq/39b_pilot_yield.json \
+    --output data/freebase/verl_cwq/39b_self_distill_pilot.jsonl \
+    --filter strict
+
+kill $KG_PID 2>/dev/null
+echo "=== Done: $(date) ==="

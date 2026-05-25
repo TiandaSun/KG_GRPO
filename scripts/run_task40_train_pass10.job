@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=t40_pass10
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=08:00:00
+#SBATCH --output=logs/%x-%A_%a.log
+#SBATCH --error=logs/%x-%A_%a.err
+#SBATCH --partition=workq
+#SBATCH --array=0-3
+
+# Task 40 Step 1: Pass@10 Category B filter on CWQ TRAIN split.
+# Identifies questions raw Qwen2.5-7B-Instruct cannot answer from parametric
+# memory (pass@10 == 0). Train split has 27,639 rows; we shard into 4 chunks
+# of ~6,910 rows each.
+#
+# Submit: sbatch scripts/run_task40_train_pass10.job
+# Merge afterwards via: sbatch --dependency=afterok:<JOBID> scripts/run_task40_merge_cat_b.job
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+mkdir -p results logs
+
+CHUNK=${SLURM_ARRAY_TASK_ID}
+N_CHUNKS=4
+N_TRAIN=27639
+
+# Compute [start, end) for this chunk
+CHUNK_SIZE=$(( (N_TRAIN + N_CHUNKS - 1) / N_CHUNKS ))
+START=$(( CHUNK * CHUNK_SIZE ))
+END=$(( START + CHUNK_SIZE ))
+if [ $END -gt $N_TRAIN ]; then
+    END=$N_TRAIN
+fi
+
+OUTPUT="results/task40_train_cat_b_chunk${CHUNK}.json"
+
+echo "=== Task 40 Step 1: Train Pass@10 chunk ${CHUNK}/${N_CHUNKS} ==="
+echo "Date: $(date)  Node: $(hostname)"
+echo "Range: [${START}, ${END})  Output: ${OUTPUT}"
+nvidia-smi --query-gpu=name,memory.total --format=csv,noheader 2>/dev/null || true
+echo ""
+
+python scripts/task26_pass10_category_b.py \
+    --model Qwen/Qwen2.5-7B-Instruct \
+    --eval_data data/freebase/verl_cwq/train.parquet \
+    --k_samples 10 \
+    --temperature 0.7 \
+    --start_idx "$START" \
+    --end_idx "$END" \
+    --output "$OUTPUT"
+
+echo ""
+echo "=== Chunk ${CHUNK} done: $(date) ==="

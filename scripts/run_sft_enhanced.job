@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=sft_cwq_7b_enh
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --time=06:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Task 40 Step 4: Enhanced SFT = original 5K CWQ trajectories
+#   + Task 40 Step 3 gold KG trajectories (500-1000 verified).
+# Produces a LoRA adapter and a merged model at
+# outputs/verl-sft-cwq-7b-enhanced-merged.
+#
+# Depends on Step 3 (gold_kg_trajectories.jsonl).
+# Submit after Step 3 finishes:
+#   sbatch --dependency=afterok:<ORACLE_JOBID> scripts/run_sft_enhanced.job
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+module load brics/nccl 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+echo "=== Task 40 Step 4: Enhanced CWQ SFT (4x GH200) ==="
+echo "Date: $(date)  Node: $(hostname)"
+nvidia-smi --query-gpu=name,memory.total --format=csv,noheader 2>/dev/null || true
+echo ""
+
+# --- Concatenate original + gold trajectories ---
+ORIG="data/freebase/sft_trajectories.jsonl"
+GOLD="data/freebase/verl_cwq/gold_kg_trajectories.jsonl"
+COMBINED="data/freebase/sft_trajectories_enhanced.jsonl"
+
+if [ ! -f "$ORIG" ]; then
+    echo "ERROR: missing original SFT file $ORIG"
+    exit 1
+fi
+if [ ! -f "$GOLD" ]; then
+    echo "ERROR: missing gold trajectories $GOLD"
+    exit 1
+fi
+
+cat "$ORIG" "$GOLD" > "$COMBINED"
+echo "Combined: $(wc -l < "$COMBINED") trajectories ($(wc -l < "$ORIG") orig + $(wc -l < "$GOLD") gold)"
+
+# --- SFT training ---
+SFT_OUTPUT="outputs/verl-sft-cwq-7b-enhanced"
+SFT_MERGED="outputs/verl-sft-cwq-7b-enhanced-merged"
+
+if [ -d "$SFT_MERGED" ] && [ -f "$SFT_MERGED/config.json" ]; then
+    echo "Merged enhanced SFT already exists at $SFT_MERGED, skipping training."
+else
+    python src_verl/training/sft_multiturn.py \
+        --config configs_verl/sft_cwq_enhanced.yaml
+
+    echo ""
+    echo "--- Merging LoRA adapter ---"
+    python scripts/merge_sft_adapter.py \
+        --base_model Qwen/Qwen2.5-7B-Instruct \
+        --adapter_path "$SFT_OUTPUT" \
+        --output_path "$SFT_MERGED"
+fi
+
+echo ""
+echo "=== Results ==="
+ls -lh "$SFT_MERGED"/*.safetensors 2>/dev/null | head -5 || true
+echo ""
+echo "=== Task 40 Step 4 done: $(date) ==="

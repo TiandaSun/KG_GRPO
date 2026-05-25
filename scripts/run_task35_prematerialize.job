@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=t35_wikidata_cache
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=4
+#SBATCH --time=24:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Task 35 Step 2: Wikidata pre-materialization
+# Queries 1-hop neighborhoods for all ~9,570 QIDs in KGQAGen-10k dev+test
+# CPU only (no GPU). Estimated 13h with 1s sleep + Wikidata SPARQL ~5s/QID.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+echo "=== Task 35: Wikidata Pre-Materialization ==="
+echo "Date: $(date)"
+echo "Node: $(hostname)"
+echo ""
+
+mkdir -p data/wikidata_cache logs
+
+python scripts/task35_prematerialize_wikidata.py \
+    --output_dir data/wikidata_cache \
+    --max_qids 0 \
+    --sleep_s 1.0
+
+echo ""
+echo "=== Done: $(date) ==="

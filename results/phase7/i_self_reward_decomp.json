@@ -1,0 +1,63 @@
+{
+  "reward_type": "tool_type_bonus_retrieval_contrib",
+  "weights": {
+    "r_outcome": 0.25,
+    "r_tool_type": 0.5,
+    "r_retrieval_contrib": 0.25
+  },
+  "experiment": "39i_self",
+  "steps": {
+    "step_200": {
+      "n": 3531,
+      "r_outcome": 0.4050642744202593,
+      "r_tool_type": 0.4844944774851315,
+      "r_retrieval_contrib": 0.0882658359293874,
+      "r_total": 0.3655797663299776,
+      "em": 0.3899745114698386,
+      "f1": 0.4201540373706817,
+      "num_tool_calls": 3.0,
+      "source": "full_trajectories",
+      "input_path": "/lus/lfs1aip2/scratch/u6gg/ts1201.u6gg/Project/KG_GRPO/results/trajectories/phase7/39i_self_step200_full/step_0/trajectories.json"
+    },
+    "step_250": {
+      "n": 3531,
+      "r_outcome": 0.4098547770995409,
+      "r_tool_type": 0.4909138110072686,
+      "r_retrieval_contrib": 0.10403096384404782,
+      "r_total": 0.37392834073953185,
+      "em": 0.394505805720759,
+      "f1": 0.4252037484783241,
+      "num_tool_calls": 2.998300764655905,
+      "source": "full_trajectories",
+      "input_path": "/lus/lfs1aip2/scratch/u6gg/ts1201.u6gg/Project/KG_GRPO/results/trajectories/phase7/39i_self_step250_full/step_0/trajectories.json"
+    },
+    "step_300": {
+      "n": 1400,
+      "r_outcome": 0.0006011538198742474,
+      "r_tool_type": null,
+      "r_retrieval_contrib": null,
+      "r_total_lower_bound": 0.00015028845496856184,
+      "r_total": null,
+      "em": 0.0,
+      "f1": 0.0012023076397484947,
+      "num_tool_calls": 1.0,
+      "source": "per_sample_summary",
+      "input_path": "/lus/lfs1aip2/scratch/u6gg/ts1201.u6gg/Project/KG_GRPO/results/phase7/39i_self_step300_full_per_sample/step_0_per_sample.json",
+      "note": "full_response not on disk for this step; tool-side reward components cannot be recomputed offline."
+    },
+    "step_400": {
+      "n": 2000,
+      "r_outcome": 0.008211178076317615,
+      "r_tool_type": null,
+      "r_retrieval_contrib": null,
+      "r_total_lower_bound": 0.0020527945190794037,
+      "r_total": null,
+      "em": 0.0,
+      "f1": 0.01642235615263523,
+      "num_tool_calls": 0.9985,
+      "source": "per_sample_summary",
+      "input_path": "/lus/lfs1aip2/scratch/u6gg/ts1201.u6gg/Project/KG_GRPO/results/phase7/39i_self_step400_full_per_sample/step_0_per_sample.json",
+      "note": "full_response not on disk for this step; tool-side reward components cannot be recomputed offline."
+    }
+  }
+}

@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_s01_iself_eval
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --cpus-per-task=72
+#SBATCH --time=12:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# S0.1 multi-seed full-test eval at one (seed, step) point.
+# Merges FSDP -> HF if needed, then runs full 3531 eval with per-sample save.
+#
+# Usage:
+#   sbatch --export=ALL,SEED=1,STEP=200 scripts/run_phase7_s01_iself_eval_seed_step.job
+#
+# Output:
+#   results/phase7/39i_self_seed{SEED}_step{STEP}_full_test.json
+#   results/phase7/39i_self_seed{SEED}_step{STEP}_full_per_sample/step_0_per_sample.json
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+: "${SEED:?SEED env var required (1, 2, or 3)}"
+: "${STEP:?STEP env var required (50, 100, 150, 200, 250, 300, 350, or 400)}"
+
+EXPERIMENT="grpo-cwq-7b-39i-self-seed${SEED}-20260427"
+BASE_MODEL="outputs/verl-sft-cwq-39b-step400"  # the I-Self init base; tokenizer source
+SRC="/projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/${EXPERIMENT}/global_step_${STEP}/actor"
+DST="outputs/verl-sft-cwq-39i_self_seed${SEED}_step${STEP}-merged"
+OUT_JSON="results/phase7/39i_self_seed${SEED}_step${STEP}_full_test.json"
+PS_DIR="results/phase7/39i_self_seed${SEED}_step${STEP}_full_per_sample"
+KG_PORT=$((19000 + SLURM_JOB_ID % 1000))
+
+mkdir -p results/phase7 "$PS_DIR" logs
+
+echo "=== S0.1 eval seed=${SEED} step=${STEP} ==="
+echo "Date: $(date)"
+
+[ -d "$SRC" ] || { echo "ERROR: FSDP ckpt not found at $SRC"; exit 1; }
+
+# --- (1) Merge FSDP -> HF ---
+if [ ! -f "$DST/config.json" ]; then
+    echo "=== Merging FSDP -> HF (7B, 4 shards) ==="
+    mkdir -p "$DST"
+    python -m verl.model_merger merge --backend fsdp --local_dir "$SRC" --target_dir "$DST"
+    if [ ! -f "$DST/tokenizer.json" ]; then
+        cp -n "$BASE_MODEL"/tokenizer* "$DST/" 2>/dev/null || true
+        cp -n "$BASE_MODEL"/chat_template.jinja "$DST/" 2>/dev/null || true
+    fi
+    echo "Merge complete."
+else
+    echo "[skip] merged ckpt already exists at $DST"
+fi
+
+# --- (2) KG server ---
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port $KG_PORT --log-level warning &
+KG_PID=$!
+trap 'kill $KG_PID 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready on port $KG_PORT"
+
+# --- (3) Full 3531 eval with per-sample save (no trajectories — saves disk) ---
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$DST" \
+    --steps 0 \
+    --base_model "$DST" \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --output "$OUT_JSON" \
+    --kg_server_url http://localhost:$KG_PORT \
+    --max_samples 0 \
+    --max_turns 5 \
+    --max_new_tokens 512 \
+    --save_per_sample "$PS_DIR"
+
+kill $KG_PID 2>/dev/null
+echo "=== Done: $(date) ==="

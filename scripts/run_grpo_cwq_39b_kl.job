@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=grpo_39b_kl
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --time=24:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Task 39B: E5b-stabilized via Increased KL Penalty
+#
+# Baseline E5b (grpo-cwq-7b-tool-type-bonus-20260326) had:
+#   - actor.use_kl_loss=false  (NO KL loss)
+#   - algorithm.use_kl_in_reward=false  (NO KL in reward)
+#   → ZERO KL regularization. Collapsed at step 150.
+#
+# Variant B enables KL loss with kl_loss_coef=0.05 (50x verl default of 0.001,
+# aggressive enough to constrain drift per hpc_tasks.md spec).
+#
+# Reward: unchanged from E5b (REWARD_TYPE=tool_type_bonus)
+# Hypothesis: KL constraint prevents the format drift that caused E5b collapse.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+module load brics/nccl 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export VLLM_USE_V1=1
+export RAY_DEDUP_LOGS=1
+export RAY_TMPDIR="/tmp/ray-${SLURM_JOB_ID}"
+mkdir -p "$RAY_TMPDIR"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+export REWARD_TYPE=tool_type_bonus
+EXPERIMENT_NAME="grpo-cwq-7b-39b-kl-20260413"
+
+echo "=== Task 39B: E5b-stabilized via KL penalty (4x GH200) ==="
+echo "Date: $(date)"
+echo "Node: $(hostname)"
+echo "Reward type: $REWARD_TYPE"
+echo "Experiment: $EXPERIMENT_NAME"
+echo "KL loss: ENABLED, coef=0.05 (50x verl default)"
+echo "GPUs: $(nvidia-smi --query-gpu=name --format=csv,noheader | wc -l)x GH200"
+echo ""
+
+python -m src_verl.kg_server.server \
+    --kg freebase --freebase_dir data/freebase/kg --port 18901 --log-level warning > /dev/null 2>&1 &
+KG_PID=$!
+
+echo "Waiting for KG server..."
+sleep 30
+for i in $(seq 1 12); do
+    if curl -s -o /dev/null -w "%{http_code}" http://localhost:18901/health 2>/dev/null | grep -q "200"; then
+        echo "KG server healthy after ${i}0+30 seconds"
+        break
+    fi
+    sleep 10
+done
+echo ""
+
+ray stop 2>/dev/null || true
+
+echo "=== Launching GRPO (39B: KL penalty enabled) ==="
+echo "Start: $(date)"
+START_TIME=$(date +%s)
+
+set +e
+python -m verl.trainer.main_ppo \
+    --config-path="$PWD/configs_verl" \
+    --config-name=grpo_cwq_7b \
+    trainer.experiment_name="$EXPERIMENT_NAME" \
+    actor_rollout_ref.actor.use_kl_loss=true \
+    actor_rollout_ref.actor.kl_loss_coef=0.05 \
+    actor_rollout_ref.actor.kl_loss_type=low_var_kl \
+    +actor_rollout_ref.rollout.enable_sleep_mode=true \
+    actor_rollout_ref.rollout.agent.default_agent_loop=tool_agent \
+    data.dataloader_num_workers=0
+GRPO_EXIT=$?
+set -e
+
+END_TIME=$(date +%s)
+ELAPSED=$((END_TIME - START_TIME))
+
+echo ""
+echo "=== Results ==="
+echo "Reward type: $REWARD_TYPE (unchanged E5b)"
+echo "KL loss coef: 0.05"
+echo "Exit code: $GRPO_EXIT"
+echo "Total time: ${ELAPSED}s ($((ELAPSED / 60))m $((ELAPSED % 60))s)"
+echo "Checkpoints:"
+ls /projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/${EXPERIMENT_NAME}/ 2>/dev/null | grep global_step | sort -t_ -k3 -n
+echo ""
+
+kill $KG_PID 2>/dev/null
+echo "=== Done ==="
+echo "End: $(date)"

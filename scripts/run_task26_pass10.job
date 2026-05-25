@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=task26_pass10
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=18:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Task 26: Pass@10 Category B Identification
+# Generate 10 responses per question WITHOUT tools (pure parametric memory)
+# Category B = pass@10=0 (model genuinely can't answer from memory)
+# Full CWQ test set: 3,531 questions × 10 samples = 35,310 inference runs
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+echo "=== Task 26: Pass@10 Category B Identification ==="
+echo "Date: $(date)"
+echo "Node: $(hostname)"
+echo "GPU: $(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null || echo 'unknown')"
+echo ""
+
+mkdir -p results logs
+
+# Use base Qwen2.5-7B-Instruct (NOT SFT) with direct-answer prompt
+# SFT was trained for tool use, so without tools it emits <search> tags -> no answers
+python scripts/task26_pass10_category_b.py \
+    --model Qwen/Qwen2.5-7B-Instruct \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --k_samples 10 \
+    --temperature 0.7 \
+    --output results/task26_category_b.json
+
+echo ""
+echo "=== Done ==="
+echo "End: $(date)"

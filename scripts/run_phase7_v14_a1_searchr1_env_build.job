@@ -1,0 +1,292 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_sr1_env
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=4:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Search-R1 dedicated conda env probe/build job.
+#
+# Search-R1 pins: vllm<=0.6.3, transformers<4.48, tensordict<0.6, flash-attn.
+# Our `kg_verl` env has vllm 0.12, transformers 4.57, tensordict 0.10, no flash-attn.
+# ARM aarch64 wheels are limited, so this job:
+#   1. Tries to create env `searchr1` with pinned versions
+#   2. Attempts each dep install with fallbacks (skip-on-fail)
+#   3. Runs a smoke-import test
+#   4. Tries the exact Search-R1 training command with a 1-step sanity config
+#
+# All stdout/stderr is captured; no login-node side effects. The new env lives
+# under $CONDA_PREFIX_BASE/envs/searchr1 (same location as kg_verl).
+#
+# Output: results/phase7/v14_a1_env_build_report.md with what worked + failure
+# modes per package.
+
+# NOTE: `set -e` omitted on purpose; we want to collect failures per-package and
+# keep going. We do set `pipefail` for safer pipes.
+set -o pipefail
+
+# Capture per-package log even when install fails
+PKG_LOG="logs/${SLURM_JOB_NAME}-${SLURM_JOB_ID}.pkg.log"
+: > "$PKG_LOG"
+REPORT="results/phase7/v14_a1_env_build_report.md"
+mkdir -p results/phase7
+
+log_step() {
+    echo ""
+    echo "==================="
+    echo "STEP: $*"
+    echo "==================="
+    echo ""
+}
+
+try_install() {
+    local label="$1"; shift
+    echo ""
+    echo "---- install: $label ----"
+    echo "cmd: $*" | tee -a "$PKG_LOG"
+    if "$@" 2>&1 | tee -a "$PKG_LOG"; then
+        echo "[OK]   $label" | tee -a "$PKG_LOG"
+        echo "  - $label: OK" >> "$REPORT"
+        return 0
+    else
+        echo "[FAIL] $label" | tee -a "$PKG_LOG"
+        echo "  - $label: FAILED (see $PKG_LOG)" >> "$REPORT"
+        return 1
+    fi
+}
+
+try_import() {
+    local mod="$1"
+    python -c "
+import importlib, sys
+m = importlib.import_module('$mod')
+v = getattr(m, '__version__', 'unknown')
+print(f'[IMPORT-OK] $mod=={v}')
+" 2>&1 | tee -a "$PKG_LOG"
+    return $?
+}
+
+echo "=== Search-R1 env build probe: $(date) ==="
+echo "Node: $(hostname)"
+echo "CPU arch: $(uname -m)"
+echo "Python conda base: $HOME/miniforge3"
+
+source "$HOME/miniforge3/bin/activate"
+
+# Common Isambard ARM setup
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+module load brics/nccl 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TMPDIR="/tmp"
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export PIP_NO_CACHE_DIR=0
+export PIP_CACHE_DIR="/scratch/u6gg/ts1201.u6gg/pip_cache"
+mkdir -p "$PIP_CACHE_DIR"
+
+# Report preamble
+cat > "$REPORT" <<MD
+# V14-A1 Search-R1 env build probe ($(date))
+
+Platform: $(uname -m) ($(hostname))
+Goal: create a dedicated conda env \`searchr1\` compatible with Search-R1's pinned deps (vllm<=0.6.3, transformers<4.48, tensordict<0.6, flash-attn).
+
+## Install outcomes
+MD
+
+log_step "Remove any existing searchr1 env (idempotent)"
+conda env remove -n searchr1 -y 2>&1 | tee -a "$PKG_LOG" || true
+
+log_step "Create env searchr1 with Python 3.10"
+try_install "conda-create-python-3.10" \
+    conda create -n searchr1 python=3.10 -y -c conda-forge || {
+    echo "ERROR: could not create base env; aborting" | tee -a "$PKG_LOG"
+    cat >> "$REPORT" <<MD
+
+## VERDICT
+**ABORT** — conda env creation failed. See $PKG_LOG.
+MD
+    exit 1
+}
+
+# Activate the fresh env
+conda activate searchr1
+which python
+python --version
+echo "pip version: $(pip --version)"
+
+# ------------------------------------------------------------------
+# ARM-specific: PyTorch. We need a version compatible with vllm 0.6.3.
+# vllm 0.6.3 requires PyTorch 2.4.x.
+# On ARM, try conda-forge first (may have aarch64 wheels), else try pip index.
+# ------------------------------------------------------------------
+log_step "Install PyTorch 2.4 (ARM-friendly)"
+# Try PyTorch 2.4.1 with cu121 ARM wheel from pytorch.org
+try_install "torch-2.4.1-cu121-pip" \
+    pip install --index-url https://download.pytorch.org/whl/cu121 \
+        torch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 || {
+    # Fallback: conda-forge
+    try_install "torch-2.4-conda-forge" \
+        conda install -n searchr1 -c conda-forge pytorch=2.4 -y
+}
+try_import torch
+
+# ------------------------------------------------------------------
+# vllm 0.6.3 — the core pin. On ARM this often needs a source build.
+# Try the prebuilt wheel first; fall back to source build.
+# ------------------------------------------------------------------
+log_step "Install vllm 0.6.3"
+try_install "vllm-0.6.3-pip" \
+    pip install "vllm==0.6.3" || {
+    echo "vllm 0.6.3 wheel not available — attempting source build" | tee -a "$PKG_LOG"
+    try_install "vllm-0.6.3-from-source" \
+        pip install "vllm==0.6.3" --no-binary=vllm
+}
+try_import vllm
+
+# ------------------------------------------------------------------
+# transformers < 4.48
+# ------------------------------------------------------------------
+log_step "Install transformers<4.48"
+try_install "transformers-4.47" pip install "transformers==4.47.1"
+try_import transformers
+
+# ------------------------------------------------------------------
+# tensordict < 0.6
+# ------------------------------------------------------------------
+log_step "Install tensordict<0.6"
+try_install "tensordict-0.5" pip install "tensordict==0.5.0"
+try_import tensordict
+
+# ------------------------------------------------------------------
+# flash-attn — CLAUDE.md says NOT available on ARM. Try anyway; record.
+# ------------------------------------------------------------------
+log_step "Install flash-attn (may fail on ARM)"
+try_install "flash-attn-pip" pip install flash-attn --no-build-isolation || \
+    echo "flash-attn install failed as expected on ARM; Search-R1 must run without it." | tee -a "$PKG_LOG"
+python -c "import flash_attn; print('flash-attn version:', flash_attn.__version__)" 2>&1 | tee -a "$PKG_LOG" || \
+    echo "[IMPORT-FAIL] flash_attn (expected on ARM)" | tee -a "$PKG_LOG"
+
+# ------------------------------------------------------------------
+# Remaining Search-R1 deps (from their requirements.txt). Read the file if
+# exists, install in one shot, falling back to per-package failures.
+# ------------------------------------------------------------------
+SR1_REQS="external/Search-R1/requirements.txt"
+if [ -f "$SR1_REQS" ]; then
+    log_step "Install remaining Search-R1 requirements (except already-pinned)"
+    # Filter out torch/vllm/transformers/tensordict/flash-attn to avoid conflicts.
+    TMP_REQ="/tmp/searchr1_req_filtered.txt"
+    grep -vE "^(torch|torchvision|torchaudio|vllm|transformers|tensordict|flash[-_]attn)([=<>]|$|#)" "$SR1_REQS" | grep -v "^\s*$" | grep -v "^\s*#" > "$TMP_REQ"
+    echo "filtered requirements ($(wc -l < $TMP_REQ) lines):"
+    cat "$TMP_REQ" | tee -a "$PKG_LOG"
+    try_install "searchr1-reqs" pip install -r "$TMP_REQ" || true
+fi
+
+# Extra deps verl/Search-R1 often requires
+log_step "Install hydra-core, ray, datasets (common RL deps)"
+try_install "hydra-core" pip install "hydra-core>=1.3" || true
+try_install "ray[default]" pip install "ray[default]>=2.9" || true
+try_install "datasets" pip install "datasets>=2.14" || true
+try_install "pandas" pip install "pandas" || true
+try_install "pyarrow" pip install "pyarrow" || true
+try_install "wandb" pip install wandb || true
+
+# Key imports sanity check
+log_step "Key imports"
+cat >> "$REPORT" <<MD
+
+## Import smoke tests
+MD
+for mod in torch vllm transformers tensordict ray hydra datasets pyarrow; do
+    if try_import "$mod"; then
+        echo "  - $mod: OK" >> "$REPORT"
+    else
+        echo "  - $mod: FAILED" >> "$REPORT"
+    fi
+done
+
+# Critical vllm functionality test — can we load a tiny model?
+log_step "vllm sanity: load Qwen/Qwen2.5-0.5B-Instruct"
+python - <<'PY' 2>&1 | tee -a "$PKG_LOG"
+import sys
+try:
+    from vllm import LLM, SamplingParams
+    print("importing vllm OK; attempting model load (~1 min)...")
+    # Use a tiny model to validate end-to-end
+    llm = LLM(
+        model="Qwen/Qwen2.5-0.5B-Instruct",
+        enforce_eager=True,
+        gpu_memory_utilization=0.3,
+        max_model_len=512,
+        dtype="bfloat16",
+    )
+    params = SamplingParams(max_tokens=16, temperature=0.0)
+    out = llm.generate(["Hello, I am"], params)
+    print(f"[SMOKE-OK] vllm generated: {out[0].outputs[0].text!r}")
+except Exception as e:
+    print(f"[SMOKE-FAIL] vllm: {type(e).__name__}: {e}")
+    sys.exit(1)
+PY
+VLLM_SMOKE=$?
+
+# Search-R1 third_party vllm version check
+log_step "Check Search-R1 third_party vllm version accept"
+python - <<'PY' 2>&1 | tee -a "$PKG_LOG"
+import importlib.util, sys
+spec = importlib.util.find_spec("vllm")
+if not spec:
+    print("[CHECK-FAIL] vllm not importable")
+    sys.exit(1)
+import vllm
+print(f"vllm.__version__ = {vllm.__version__}")
+
+# Search-R1 accepts: 0.3.1, 0.4.2, 0.5.4, 0.6.3
+accepted = {"0.3.1", "0.4.2", "0.5.4", "0.6.3"}
+if vllm.__version__ in accepted:
+    print(f"[CHECK-OK] Search-R1 will accept vllm=={vllm.__version__}")
+else:
+    print(f"[CHECK-FAIL] Search-R1 does NOT accept vllm=={vllm.__version__}")
+    sys.exit(2)
+PY
+SR1_CHECK=$?
+
+# Verdict
+cat >> "$REPORT" <<MD
+
+## Smoke test results
+
+- vllm end-to-end generate: $([ $VLLM_SMOKE -eq 0 ] && echo "PASS" || echo "FAIL")
+- Search-R1 vllm version accept: $([ $SR1_CHECK -eq 0 ] && echo "PASS" || echo "FAIL")
+
+## Verdict
+
+MD
+
+if [ $VLLM_SMOKE -eq 0 ] && [ $SR1_CHECK -eq 0 ]; then
+    cat >> "$REPORT" <<MD
+**OPTION 1 SUCCESS** — dedicated \`searchr1\` conda env is fully functional.
+
+Next step: resubmit Search-R1 training with this env.
+Activation: \`conda activate searchr1\` (path: \$HOME/miniforge3/envs/searchr1)
+MD
+    echo "=== OPTION 1 SUCCESS ==="
+else
+    cat >> "$REPORT" <<MD
+**OPTION 1 FAILED or PARTIAL** — see logs for details.
+
+Recommended next steps (user decision):
+- Try Option 2: patch Search-R1's version check to accept vllm 0.12 (~30 min, risk of silent API breaks)
+- Or go Option 3: reframe paper using our existing E1 (outcome-only) as the Search-R1-equivalent baseline (zero new compute)
+MD
+    echo "=== OPTION 1 FAILED/PARTIAL ==="
+fi
+
+echo ""
+echo "=== Env build probe done: $(date) ==="
+echo "Per-package log: $PKG_LOG"
+echo "Report: $REPORT"

@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v14d1_topup
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=06:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# V14-D1 top-up: resume the timed-out 3531-sample eval to complete remaining ~531.
+# The prior run (job 4155074) saved 3000 samples to per_sample JSON before timeout
+# at 3100/3531. --resume reads per_sample, skips those IDs, fills the gap.
+# Produces the clean full-3531 summary EM number for the headline table.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+MODEL_TAG="v14_d1_qwen14b_e5b_step400"
+MERGED="outputs/verl-sft-cwq-14b-${MODEL_TAG}-merged"
+OUT_JSON="results/phase7/v14_d1_qwen14b_e5b_step400_full_test.json"
+PS_DIR="results/phase7/v14_d1_qwen14b_e5b_step400_full_per_sample"
+KG_PORT=$((18000 + SLURM_JOB_ID % 1000))
+
+echo "=== V14-D1 top-up (resume full-3531) ==="
+echo "Date: $(date)"
+echo "Merged: $MERGED"
+echo "Per-sample (resume from): $PS_DIR/step_0_per_sample.json"
+
+[ -d "$MERGED" ] || { echo "ERROR: merged 14B not found"; exit 1; }
+[ -f "$PS_DIR/step_0_per_sample.json" ] || { echo "ERROR: prior per_sample not found"; exit 1; }
+
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port $KG_PORT --log-level warning &
+KG_PID=$!
+trap 'kill $KG_PID 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready"
+
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$MERGED" \
+    --steps 0 \
+    --base_model "$MERGED" \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --output "$OUT_JSON" \
+    --kg_server_url http://localhost:$KG_PORT \
+    --max_samples 0 \
+    --max_turns 5 \
+    --max_new_tokens 512 \
+    --save_per_sample "$PS_DIR" \
+    --save_every 50 \
+    --resume
+
+kill $KG_PID 2>/dev/null
+echo "=== Done: $(date) ==="

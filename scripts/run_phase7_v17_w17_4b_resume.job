@@ -1,0 +1,225 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v17_w17_4b_resume
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --cpus-per-task=72
+#SBATCH --time=04:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# v17 W17.4 — Per-checkpoint full 3531-Q CWQ test eval on the W17.3 GRPO ckpts.
+# W17.3 caps at ~step 112 within walltime (12.7 min/step × 24h = ~113 steps),
+# so we evaluate checkpoints at steps 50 and 100 (save_freq=50). Each checkpoint:
+#   Phase A: merge FSDP -> HF (single rank, ~10 min)
+#   Phase B: chunked-4 eval on 3531 Q with 4 independent KG servers (~2.5h)
+# Two checkpoints sequential; total ~6h plus headroom.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export HF_TOKEN=$(cat "$HOME/.cache/huggingface/token" 2>/dev/null)
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+EXPERIMENT="grpo-cwq-llama8b-v17-base-20260511"
+CKPT_ROOT="/projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/${EXPERIMENT}"
+SFT_INIT="outputs/v17_llama_w17_1f_base_gate_sft-merged"  # tokenizer source
+EVAL_DATA="data/freebase/verl_cwq/test.parquet"
+OUT_DIR="_handoff/data/v17_llama"
+KG_PORT_BASE=$((19700 + SLURM_JOB_ID % 80))
+
+mkdir -p "$OUT_DIR" logs
+
+echo "=== v17 W17.4 per-checkpoint full-test eval ==="
+echo "Date: $(date)"
+echo "Experiment: $EXPERIMENT"
+echo "Checkpoints root: $CKPT_ROOT"
+
+# --- Determine which checkpoints exist ---
+SAVED_STEPS=$(ls "$CKPT_ROOT" 2>/dev/null | grep '^global_step_' | sed 's/global_step_//' | sort -n | tr '\n' ' ')
+echo "Available saved steps: $SAVED_STEPS"
+if [ -z "$SAVED_STEPS" ]; then
+    echo "ERROR: no checkpoints found in $CKPT_ROOT"
+    exit 1
+fi
+
+# --- Spawn 4 KG servers (one per chunk; reused across all checkpoint evals) ---
+KG_PIDS=()
+for k in 0 1 2 3; do
+    port=$((KG_PORT_BASE + k))
+    python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg \
+        --port $port --log-level warning &
+    KG_PIDS+=($!)
+done
+trap 'for pid in "${KG_PIDS[@]}"; do kill $pid 2>/dev/null; done; wait 2>/dev/null' EXIT
+echo "Started 4 KG servers at ports $KG_PORT_BASE-$((KG_PORT_BASE+3))"
+sleep 60
+for k in 0 1 2 3; do
+    port=$((KG_PORT_BASE + k))
+    for i in $(seq 1 12); do
+        curl -s -o /dev/null -w "%{http_code}" http://localhost:$port/health 2>/dev/null | grep -q "200" && break
+        sleep 10
+    done
+    echo "KG server $k ready at port $port"
+done
+
+run_eval_chunk() {
+    local idx="$1"
+    local start="$2"
+    local n="$3"
+    local step="$4"
+    local merged="$5"
+    local kg_port=$((KG_PORT_BASE + idx))
+    local out_json="${OUT_DIR}/w17_4_step${step}_chunk${idx}.json"
+    local ps_dir="${OUT_DIR}/w17_4_step${step}_chunk${idx}_per_sample"
+    local traj_dir="${OUT_DIR}/w17_4_step${step}_chunk${idx}_trajectories"
+    local logfile="logs/p7_v17_w17_4_curve-${SLURM_JOB_ID}-step${step}-gpu${idx}.log"
+
+    mkdir -p "$ps_dir" "$traj_dir"
+    {
+        echo "=== step=$step GPU=$idx KG-port=$kg_port start=$start n=$n  $(date) ==="
+        CUDA_VISIBLE_DEVICES=$idx python scripts/eval_with_tools.py \
+            --checkpoint_dir "$merged" \
+            --steps 0 \
+            --base_model "$merged" \
+            --eval_data "$EVAL_DATA" \
+            --output "$out_json" \
+            --kg_server_url "http://localhost:$kg_port" \
+            --start_idx $start \
+            --max_samples $n \
+            --max_turns 5 \
+            --max_new_tokens 512 \
+            --save_every 100 \
+            --save_per_sample "$ps_dir" \
+            --save_trajectories "$traj_dir" \
+            --max_trajectory_samples $n \
+            --resume
+        echo "=== step=$step GPU=$idx done $(date) ==="
+    } > "$logfile" 2>&1
+}
+
+aggregate_step() {
+    local step="$1"
+    python3 << PYEOF
+import json
+from pathlib import Path
+
+OUT_DIR = Path("$OUT_DIR")
+STEP = $step
+file_pattern = {
+    0: "step_0_per_sample.json",
+    1: "step_0_chunk_882_3531.json",
+    2: "step_0_chunk_1764_3531.json",
+    3: "step_0_chunk_2646_3531.json",
+}
+merged_per_sample = []
+merged_traj = []
+em=cm=f1=tools=0.0
+n=0
+for idx in range(4):
+    pf = OUT_DIR / f"w17_4_step{STEP}_chunk{idx}_per_sample" / file_pattern[idx]
+    if not pf.exists():
+        print(f"!! step={STEP} chunk={idx} MISSING {pf.name}")
+        continue
+    with open(pf) as f:
+        data = json.load(f)
+    merged_per_sample.extend(data)
+    for r in data:
+        em += r.get("em",0); cm += r.get("contains_em",0)
+        f1 += r.get("f1",0); tools += r.get("num_tool_calls",0); n += 1
+    tf = OUT_DIR / f"w17_4_step{STEP}_chunk{idx}_trajectories/step_0/trajectories.json"
+    if tf.exists():
+        with open(tf) as f:
+            merged_traj.extend(json.load(f))
+if n == 0:
+    print(f"ERROR step={STEP}: no data merged"); exit(1)
+result = {"0": {"em": em/n, "contains_em": cm/n, "f1": f1/n,
+                "avg_tool_calls": tools/n, "n_samples": n}}
+with open(OUT_DIR / f"w17_4_step{STEP}_full_test.json", "w") as f:
+    json.dump(result, f, indent=2)
+print(f"step={STEP}: EM={em/n:.4f} ContEM={cm/n:.4f} F1={f1/n:.4f} Tools={tools/n:.2f} (n={n})")
+
+ps = OUT_DIR / f"w17_4_step{STEP}_full_per_sample"; ps.mkdir(parents=True, exist_ok=True)
+with open(ps / "step_0_per_sample.json", "w") as f:
+    json.dump(merged_per_sample, f, indent=2)
+if merged_traj:
+    td = OUT_DIR / f"w17_4_step{STEP}_full_trajectories/step_0"; td.mkdir(parents=True, exist_ok=True)
+    with open(td / "trajectories.json", "w") as f:
+        json.dump(merged_traj, f, indent=2, ensure_ascii=False)
+PYEOF
+}
+
+# --- Iterate over saved checkpoints ---
+for STEP in $SAVED_STEPS; do
+    echo ""
+    echo "=== Processing step $STEP at $(date) ==="
+
+    SRC="${CKPT_ROOT}/global_step_${STEP}/actor"
+    DST="outputs/v17_llama_grpo_step${STEP}-merged"
+
+    [ -d "$SRC" ] || { echo "WARN: FSDP ckpt not at $SRC, skipping"; continue; }
+
+    # Phase A: merge FSDP -> HF
+    if [ ! -f "$DST/config.json" ]; then
+        echo "--- Merging step $STEP FSDP -> HF ---"
+        mkdir -p "$DST"
+        python -m verl.model_merger merge --backend fsdp --local_dir "$SRC" --target_dir "$DST"
+        # Copy tokenizer + chat template from SFT init (carries Instruct's chat template)
+        if [ ! -f "$DST/tokenizer.json" ] && [ -d "$SFT_INIT" ]; then
+            cp -n "$SFT_INIT"/tokenizer* "$DST/" 2>/dev/null || true
+            cp -n "$SFT_INIT"/chat_template.jinja "$DST/" 2>/dev/null || true
+            cp -n "$SFT_INIT"/special_tokens_map.json "$DST/" 2>/dev/null || true
+        fi
+    fi
+    [ -f "$DST/tokenizer.json" ] || { echo "ERROR: tokenizer missing in $DST"; continue; }
+    [ -f "$DST/config.json" ]    || { echo "ERROR: config missing in $DST"; continue; }
+
+    # Phase B: chunked-4 eval
+    echo "--- Eval step $STEP chunked-4 ---"
+    run_eval_chunk 0 0    882 "$STEP" "$DST" &
+    PID0=$!
+    run_eval_chunk 1 882  882 "$STEP" "$DST" &
+    PID1=$!
+    run_eval_chunk 2 1764 882 "$STEP" "$DST" &
+    PID2=$!
+    run_eval_chunk 3 2646 885 "$STEP" "$DST" &
+    PID3=$!
+
+    fail=0
+    wait $PID0 || fail=1
+    wait $PID1 || fail=1
+    wait $PID2 || fail=1
+    wait $PID3 || fail=1
+
+    echo "--- Aggregating step $STEP ---"
+    aggregate_step $STEP
+
+    if [ $fail -ne 0 ]; then
+        echo "WARN: step $STEP had chunk failures; aggregation may be partial"
+    fi
+done
+
+# Summary
+echo ""
+echo "=== W17.4 SUMMARY ==="
+for STEP in $SAVED_STEPS; do
+    f="${OUT_DIR}/w17_4_step${STEP}_full_test.json"
+    if [ -f "$f" ]; then
+        python3 -c "import json; d=json.load(open('$f'))['0']; print(f\"step=${STEP} EM={d['em']:.4f} ContEM={d['contains_em']:.4f} F1={d['f1']:.4f} Tools={d['avg_tool_calls']:.2f}\")"
+    fi
+done
+
+for pid in "${KG_PIDS[@]}"; do kill $pid 2>/dev/null; done
+echo "=== Done $(date) ==="

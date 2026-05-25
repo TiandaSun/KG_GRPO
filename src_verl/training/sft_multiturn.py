@@ -29,6 +29,8 @@ from datasets import Dataset
 from peft import LoraConfig, get_peft_model
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from trl import SFTConfig, SFTTrainer
+import torch.nn as nn
+import torch.nn.functional as F
 
 logger = logging.getLogger(__name__)
 
@@ -70,6 +72,14 @@ class SFTMultiturnConfig:
     wandb_project: str = "kg-align-verl"
     wandb_run_name: str = "sft-multiturn"
 
+    # FSDP (multi-GPU sharding for models >14B). Default disabled for backward compat.
+    # When enabled, the script must be launched via torchrun --nproc_per_node=N (not plain python).
+    fsdp: str = ""  # e.g. "full_shard auto_wrap" enables FSDP; "" disables.
+    fsdp_transformer_layer_cls_to_wrap: str = ""  # e.g. "Qwen2DecoderLayer"
+    fsdp_use_orig_params: bool = True  # required for PEFT/LoRA + FSDP
+    fsdp_activation_checkpointing: bool = False
+    fsdp_state_dict_type: str = "FULL_STATE_DICT"
+
     @classmethod
     def from_yaml(cls, path: Path) -> SFTMultiturnConfig:
         with open(path, "r") as f:
@@ -82,6 +92,73 @@ class SFTMultiturnConfig:
                     if hasattr(config, key):
                         setattr(config, key, value)
         return config
+
+
+class WeightedDataCollator:
+    """Pads input_ids/attention_mask/labels/loss_weights to the longest sequence
+    in the batch. Used when --answer_token_weight > 1.0 so that per-token weights
+    flow through to the Trainer's compute_loss override."""
+
+    def __init__(self, tokenizer: Any, label_pad_token_id: int = -100):
+        self.tokenizer = tokenizer
+        self.label_pad_token_id = label_pad_token_id
+
+    def __call__(self, features: list[dict[str, Any]]) -> dict[str, torch.Tensor]:
+        max_len = max(len(f["input_ids"]) for f in features)
+        pad_id = self.tokenizer.pad_token_id
+        if pad_id is None:
+            pad_id = self.tokenizer.eos_token_id
+
+        out: dict[str, list[list[Any]]] = {
+            "input_ids": [], "attention_mask": [], "labels": [], "loss_weights": [],
+        }
+        for f in features:
+            n_pad = max_len - len(f["input_ids"])
+            out["input_ids"].append(list(f["input_ids"]) + [pad_id] * n_pad)
+            out["attention_mask"].append(list(f["attention_mask"]) + [0] * n_pad)
+            out["labels"].append(list(f["labels"]) + [self.label_pad_token_id] * n_pad)
+            out["loss_weights"].append(list(f["loss_weights"]) + [1.0] * n_pad)
+
+        return {
+            "input_ids": torch.tensor(out["input_ids"], dtype=torch.long),
+            "attention_mask": torch.tensor(out["attention_mask"], dtype=torch.long),
+            "labels": torch.tensor(out["labels"], dtype=torch.long),
+            "loss_weights": torch.tensor(out["loss_weights"], dtype=torch.float32),
+        }
+
+
+class WeightedSFTTrainer(SFTTrainer):
+    """SFTTrainer that consumes a `loss_weights` tensor and applies it per-token.
+
+    Standard CE with ignore_index=-100 is computed, then multiplied by the
+    aligned weights before being averaged over the SUM of weights on valid
+    (non-ignored) positions. Tokens inside <answer>...</answer> receive a
+    user-specified boost via --answer_token_weight.
+    """
+
+    def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
+        labels = inputs.pop("labels")
+        loss_weights = inputs.pop("loss_weights")
+        outputs = model(**inputs)
+        logits = outputs.logits
+
+        # Shift for causal LM
+        shift_logits = logits[..., :-1, :].contiguous()
+        shift_labels = labels[..., 1:].contiguous()
+        shift_weights = loss_weights[..., 1:].contiguous().to(shift_logits.dtype)
+
+        flat_logits = shift_logits.view(-1, shift_logits.size(-1))
+        flat_labels = shift_labels.view(-1)
+        flat_weights = shift_weights.view(-1)
+
+        per_tok = F.cross_entropy(
+            flat_logits, flat_labels, ignore_index=-100, reduction="none"
+        )
+        valid_mask = (flat_labels != -100).to(flat_weights.dtype)
+        weight = flat_weights * valid_mask
+        loss = (per_tok * weight).sum() / weight.sum().clamp(min=1.0)
+
+        return (loss, outputs) if return_outputs else loss
 
 
 def load_trajectories(path: Path) -> list[dict[str, Any]]:
@@ -129,6 +206,161 @@ def trajectories_to_dataset(
     return dataset
 
 
+def _build_loss_weights(
+    full_ids: list[int],
+    labels: list[int],
+    tokenizer: Any,
+    eot_id: int | None,
+    answer_weight: float,
+) -> list[float]:
+    """Per-token loss weight: 1.0 default, `answer_weight` for tokens whose
+    decoded character range overlaps any `<answer>...</answer>` span (plus the
+    trailing <|eot_id|> when present).
+
+    Works at the character level (decode each token, compute offsets, string-
+    search the tags) because Llama-3.1 BPE merges `\\n<` into a different token
+    than `<` standalone — pure token-subsequence matching misses some spans.
+    """
+    weights: list[float] = [1.0] * len(full_ids)
+    if answer_weight <= 1.0 or not full_ids:
+        return weights
+
+    # Decode each token to its UTF-8 string. Token offsets in the rebuilt text.
+    pieces: list[str] = []
+    for tid in full_ids:
+        pieces.append(tokenizer.decode([tid], skip_special_tokens=False))
+    text = "".join(pieces)
+    # token_starts[i] = char offset where token i begins in `text`
+    token_starts: list[int] = []
+    off = 0
+    for p in pieces:
+        token_starts.append(off)
+        off += len(p)
+    n = len(full_ids)
+
+    def _tok_at(char_off: int, after: bool = False) -> int:
+        """First token index with start >= char_off (or > char_off if after=True)."""
+        for i, s in enumerate(token_starts):
+            if (s > char_off) if after else (s >= char_off):
+                return i
+        return n
+
+    cursor = 0
+    while True:
+        oc = text.find("<answer>", cursor)
+        if oc < 0:
+            break
+        cc = text.find("</answer>", oc + len("<answer>"))
+        if cc < 0:
+            break
+        close_end = cc + len("</answer>")
+        # First token whose start >= oc; last token (exclusive) whose start >= close_end
+        tok_start = 0
+        while tok_start < n and token_starts[tok_start] + len(pieces[tok_start]) <= oc:
+            tok_start += 1
+        tok_end = tok_start
+        while tok_end < n and token_starts[tok_end] < close_end:
+            tok_end += 1
+        # Include the chat-template EOS immediately following </answer>
+        if eot_id is not None and tok_end < n and full_ids[tok_end] == eot_id:
+            tok_end += 1
+        # Only boost trainable positions — skip system-prompt occurrences of
+        # "<answer>your answer</answer>" (the format-instruction template), whose
+        # labels are -100 and don't influence loss anyway.
+        for j in range(tok_start, tok_end):
+            if labels[j] != -100:
+                weights[j] = answer_weight
+        cursor = close_end
+    return weights
+
+
+def trajectories_to_dataset_assistant_only(
+    records: list[dict[str, Any]],
+    tokenizer: Any,
+    max_seq_length: int = 2048,
+    answer_token_weight: float = 1.0,
+) -> Dataset:
+    """Pre-tokenize trajectories with assistant-only loss masking.
+
+    Walks each trajectory message-by-message; tokens introduced by an assistant
+    turn are kept as labels, all other tokens (system, user, tool) are masked
+    with -100 so they don't contribute to the SFT loss.
+
+    Critical for Llama-3.1: without this, the model autoregressively learns the
+    chat-template flow including user/tool turns and emits "user\\n\\n<tool_response>"
+    inside its own assistant outputs (W17.1/1b/1c failure mode, May 10 2026).
+    """
+    all_input_ids: list[list[int]] = []
+    all_attention_mask: list[list[int]] = []
+    all_labels: list[list[int]] = []
+    all_loss_weights: list[list[float]] = []
+
+    eot_id = tokenizer.eos_token_id
+
+    n_truncated = 0
+    n_total_tokens = 0
+    n_trainable_tokens = 0
+    n_answer_tokens = 0
+
+    for record in records:
+        trajectory = record["trajectory"]
+        messages: list[dict[str, str]] = [
+            {"role": msg["role"], "content": msg["content"]}
+            for msg in trajectory
+        ]
+
+        full_ids: list[int] = []
+        labels: list[int] = []
+
+        for i in range(len(messages)):
+            cur_ids = list(
+                tokenizer.apply_chat_template(
+                    messages[: i + 1], tokenize=True, add_generation_prompt=False
+                )
+            )
+            new_ids = cur_ids[len(full_ids):]
+            if messages[i]["role"] == "assistant":
+                labels.extend(new_ids)
+                n_trainable_tokens += len(new_ids)
+            else:
+                labels.extend([-100] * len(new_ids))
+            full_ids = cur_ids
+
+        if len(full_ids) > max_seq_length:
+            full_ids = full_ids[:max_seq_length]
+            labels = labels[:max_seq_length]
+            n_truncated += 1
+
+        attention_mask = [1] * len(full_ids)
+        n_total_tokens += len(full_ids)
+
+        weights = _build_loss_weights(
+            full_ids, labels, tokenizer, eot_id, answer_token_weight
+        )
+        n_answer_tokens += sum(1 for w in weights if w > 1.0)
+
+        all_input_ids.append(full_ids)
+        all_attention_mask.append(attention_mask)
+        all_labels.append(labels)
+        all_loss_weights.append(weights)
+
+    dataset_dict: dict[str, Any] = {
+        "input_ids": all_input_ids,
+        "attention_mask": all_attention_mask,
+        "labels": all_labels,
+    }
+    if answer_token_weight > 1.0:
+        dataset_dict["loss_weights"] = all_loss_weights
+    dataset = Dataset.from_dict(dataset_dict)
+    pct = 100.0 * n_trainable_tokens / max(n_total_tokens, 1)
+    logger.info(
+        "Created assistant-only dataset: %d samples | trainable tokens %d/%d (%.1f%%) | truncated %d | answer-weighted tokens %d (boost %.1fx)",
+        len(dataset), n_trainable_tokens, n_total_tokens, pct, n_truncated,
+        n_answer_tokens, answer_token_weight,
+    )
+    return dataset
+
+
 def main() -> None:
     logging.basicConfig(
         level=logging.INFO,
@@ -142,6 +374,65 @@ def main() -> None:
         default=Path("configs_verl/sft_multiturn.yaml"),
         help="YAML config path.",
     )
+    parser.add_argument(
+        "--model_path",
+        type=str,
+        default=None,
+        help="Override model.model_name from config (used for SFT replay on intermediate GRPO checkpoints)",
+    )
+    parser.add_argument(
+        "--output_dir",
+        type=str,
+        default=None,
+        help="Override data.output_dir from config",
+    )
+    parser.add_argument(
+        "--num_train_epochs",
+        type=int,
+        default=None,
+        help="Override training.num_train_epochs from config",
+    )
+    parser.add_argument(
+        "--max_steps",
+        type=int,
+        default=None,
+        help="Hard cap on optimizer steps (TRL SFTConfig.max_steps). When set, overrides epochs — training stops after this many gradient-update steps. Used for W17.1 sanity gate.",
+    )
+    parser.add_argument(
+        "--assistant_only_loss",
+        action="store_true",
+        help="Pre-tokenize trajectories with -100 labels for non-assistant tokens. Required for Llama-3.1 (W17.1/1b/1c failed without this); benign for Qwen.",
+    )
+    parser.add_argument(
+        "--answer_token_weight",
+        type=float,
+        default=1.0,
+        help="Per-token loss multiplier for tokens inside <answer>...</answer> spans (and trailing EOS). Counters the rare-decision class imbalance (1 answer turn vs 6-7 search turns per trajectory) that blocks <answer> emission for Llama-3.1 even with assistant-only masking. 1.0 = disabled. Suggested 5-10.",
+    )
+    parser.add_argument(
+        "--tokenizer_path",
+        type=str,
+        default=None,
+        help="Optional separate tokenizer path. Used when training Llama-3.1-8B Base weights with Instruct's chat template (Base + Instruct share vocab; only weights differ).",
+    )
+    parser.add_argument(
+        "--train_file",
+        type=str,
+        default=None,
+        help="Override data.train_file from config",
+    )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=None,
+        help="Override training seed (default 42). Affects shuffling, init order, dropout, etc.",
+    )
+    parser.add_argument(
+        "--wandb_run_name",
+        type=str,
+        default=None,
+        help="Override wandb.wandb_run_name from config",
+    )
     args = parser.parse_args()
 
     # Load config
@@ -151,10 +442,34 @@ def main() -> None:
         logger.warning("Config not found at %s, using defaults", args.config)
         config = SFTMultiturnConfig()
 
+    # CLI overrides
+    if args.model_path:
+        config.model_name = args.model_path
+        logger.info("Override: model_name = %s", args.model_path)
+    if args.output_dir:
+        config.output_dir = args.output_dir
+        logger.info("Override: output_dir = %s", args.output_dir)
+    if args.num_train_epochs:
+        config.num_train_epochs = args.num_train_epochs
+        logger.info("Override: num_train_epochs = %d", args.num_train_epochs)
+    if args.train_file:
+        config.train_file = args.train_file
+        logger.info("Override: train_file = %s", args.train_file)
+    if args.wandb_run_name:
+        config.wandb_run_name = args.wandb_run_name
+        logger.info("Override: wandb_run_name = %s", args.wandb_run_name)
+
+    seed = args.seed if args.seed is not None else 42
+    logger.info("Training seed = %d", seed)
+
     logger.info("SFT Config: %s", config)
 
-    # Load tokenizer
-    tokenizer = AutoTokenizer.from_pretrained(config.model_name)
+    # Load tokenizer (optionally from a separate path; used for Base+Instruct-tokenizer combo)
+    tok_src = args.tokenizer_path if args.tokenizer_path else config.model_name
+    if args.tokenizer_path:
+        logger.info("Using SEPARATE tokenizer path: %s (model weights from %s)",
+                    args.tokenizer_path, config.model_name)
+    tokenizer = AutoTokenizer.from_pretrained(tok_src)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
     tokenizer.padding_side = "right"  # SFT uses right padding
@@ -164,6 +479,10 @@ def main() -> None:
     model_kwargs: dict[str, Any] = {
         "torch_dtype": dtype_map.get(config.torch_dtype, torch.bfloat16),
     }
+    # For FSDP multi-rank loading, conserve CPU RAM: only rank 0 loads full
+    # weights; others init empty and receive shards via sync_module_states.
+    if config.fsdp:
+        model_kwargs["low_cpu_mem_usage"] = True
 
     # Try flash attention, fall back to SDPA
     try:
@@ -193,10 +512,22 @@ def main() -> None:
         return
 
     records = load_trajectories(train_path)
-    train_dataset = trajectories_to_dataset(records, tokenizer)
+    if args.assistant_only_loss:
+        logger.info("Assistant-only loss masking ENABLED (Llama-3.1 fix)")
+        if args.answer_token_weight > 1.0:
+            logger.info(
+                "Answer-token reweighting ENABLED (boost=%.2fx on <answer>...</answer>)",
+                args.answer_token_weight,
+            )
+        train_dataset = trajectories_to_dataset_assistant_only(
+            records, tokenizer, max_seq_length=config.max_seq_length,
+            answer_token_weight=args.answer_token_weight,
+        )
+    else:
+        train_dataset = trajectories_to_dataset(records, tokenizer)
 
     # SFT training config
-    sft_config = SFTConfig(
+    sft_kwargs: dict[str, Any] = dict(
         output_dir=config.output_dir,
         num_train_epochs=config.num_train_epochs,
         per_device_train_batch_size=config.per_device_train_batch_size,
@@ -211,18 +542,71 @@ def main() -> None:
         bf16=True,
         report_to="wandb",
         run_name=config.wandb_run_name,
-        dataset_text_field="text",
-        seed=42,
+        seed=seed,
+        data_seed=seed,
     )
+    if not args.assistant_only_loss:
+        # Default path: SFTTrainer tokenises the "text" column itself.
+        sft_kwargs["dataset_text_field"] = "text"
+    # When assistant_only_loss is set, the dataset already has input_ids/
+    # attention_mask/labels — SFTTrainer auto-detects this and skips its own
+    # tokenisation. We also turn off packing/grouping below.
+    if args.assistant_only_loss and args.answer_token_weight > 1.0:
+        # The trainer must not drop our `loss_weights` column.
+        sft_kwargs["remove_unused_columns"] = False
+    if args.max_steps is not None:
+        sft_kwargs["max_steps"] = args.max_steps
+        logger.info("Override: max_steps = %d (hard cap on optimizer steps)", args.max_steps)
+    # FSDP (only when configured — empty string ⇒ standard single-/multi-GPU
+    # without FSDP sharding; 32B+ should set fsdp="full_shard auto_wrap").
+    if config.fsdp:
+        fsdp_config_dict: dict[str, Any] = {
+            "use_orig_params": config.fsdp_use_orig_params,  # required for PEFT/LoRA
+            "activation_checkpointing": config.fsdp_activation_checkpointing,
+            "state_dict_type": config.fsdp_state_dict_type,
+            "sync_module_states": True,  # rank 0 broadcasts weights to others
+            "limit_all_gathers": True,  # rate-limit all_gather to reduce peak CPU mem
+        }
+        if config.fsdp_transformer_layer_cls_to_wrap:
+            fsdp_config_dict["transformer_layer_cls_to_wrap"] = (
+                config.fsdp_transformer_layer_cls_to_wrap
+            )
+        sft_kwargs["fsdp"] = config.fsdp
+        sft_kwargs["fsdp_config"] = fsdp_config_dict
+        # Reentrant grad-checkpointing is incompatible with FSDP — force non-reentrant.
+        sft_kwargs["gradient_checkpointing_kwargs"] = {"use_reentrant": False}
+        logger.info("FSDP enabled: %s | config: %s", config.fsdp, fsdp_config_dict)
+    sft_config = SFTConfig(**sft_kwargs)
 
-    # Create trainer — SFTTrainer auto-creates DataCollatorForLanguageModeling
-    trainer = SFTTrainer(
+    # Create trainer — SFTTrainer auto-creates DataCollatorForLanguageModeling.
+    # When assistant_only_loss is on, we pass our own collator that PRESERVES
+    # the pre-computed labels (default LM collator overwrites them with input_ids).
+    trainer_kwargs: dict[str, Any] = dict(
         model=model,
         args=sft_config,
         train_dataset=train_dataset,
         tokenizer=tokenizer,
         peft_config=peft_config,
     )
+    use_weighted = args.assistant_only_loss and args.answer_token_weight > 1.0
+    if use_weighted:
+        trainer_kwargs["data_collator"] = WeightedDataCollator(
+            tokenizer=tokenizer, label_pad_token_id=-100
+        )
+        logger.info("Using WeightedDataCollator + WeightedSFTTrainer (answer-token boost)")
+        trainer = WeightedSFTTrainer(**trainer_kwargs)
+    elif args.assistant_only_loss:
+        from transformers import DataCollatorForSeq2Seq
+        trainer_kwargs["data_collator"] = DataCollatorForSeq2Seq(
+            tokenizer=tokenizer,
+            padding=True,
+            label_pad_token_id=-100,
+            return_tensors="pt",
+        )
+        logger.info("Using DataCollatorForSeq2Seq (preserves -100 label masks)")
+        trainer = SFTTrainer(**trainer_kwargs)
+    else:
+        trainer = SFTTrainer(**trainer_kwargs)
 
     # Train
     logger.info("Starting SFT training...")

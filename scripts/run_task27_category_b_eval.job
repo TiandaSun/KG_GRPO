@@ -1,0 +1,195 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=task27_catb
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=24:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Task 27: Category B Re-Evaluation of ALL Qwen Experiments
+# Evaluate best checkpoints on Category B questions only (pass@10=0)
+# Key question: does tool use help on questions model genuinely can't answer from memory?
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+CKPT_ROOT="/projects/u6gg/KG_GRPO/checkpoints/kg-align-verl"
+BASE_MODEL="outputs/verl-sft-cwq-7b-merged"
+FILTER="results/task26_category_b.json"
+TRAJ_DIR="results/trajectories/task27_category_b"
+
+echo "=== Task 27: Category B Re-Evaluation ==="
+echo "Date: $(date)"
+echo "Category B questions: $(python3 -c "import json; print(len(json.load(open('$FILTER'))['category_b_ids']))")"
+echo ""
+
+# Start KG server
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port 18901 --log-level warning &
+KG_PID=$!
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:18901/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready"
+
+mkdir -p results "$TRAJ_DIR"
+
+# === Evaluate each model on Category B (500 samples, test.parquet) ===
+
+# SFT base (step 0)
+echo ""
+echo "=== SFT Base (with tools, Category B) ==="
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$CKPT_ROOT/grpo-cwq-7b-verifiable-20260321" \
+    --steps 0 \
+    --base_model "$BASE_MODEL" \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --output results/task27_sft_catb.json \
+    --kg_server_url http://localhost:18901 \
+    --max_samples 500 \
+    --max_turns 5 \
+    --filter_ids "$FILTER" \
+    --save_trajectories "$TRAJ_DIR/sft" \
+    --max_trajectory_samples 100
+
+# E1: outcome @ 1250
+echo ""
+echo "=== E1 Outcome @ 1250 (Category B) ==="
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$CKPT_ROOT/grpo-cwq-7b-outcome-20260321" \
+    --steps 1250 \
+    --base_model "$BASE_MODEL" \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --output results/task27_e1_catb.json \
+    --kg_server_url http://localhost:18901 \
+    --max_samples 500 \
+    --max_turns 5 \
+    --filter_ids "$FILTER" \
+    --save_trajectories "$TRAJ_DIR/e1" \
+    --max_trajectory_samples 100
+
+# E2: heuristic @ 1200
+echo ""
+echo "=== E2 Heuristic @ 1200 (Category B) ==="
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$CKPT_ROOT/grpo-cwq-7b-heuristic-20260325" \
+    --steps 1200 \
+    --base_model "$BASE_MODEL" \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --output results/task27_e2_catb.json \
+    --kg_server_url http://localhost:18901 \
+    --max_samples 500 \
+    --max_turns 5 \
+    --filter_ids "$FILTER" \
+    --save_trajectories "$TRAJ_DIR/e2" \
+    --max_trajectory_samples 100
+
+# E3: verifiable @ 500
+echo ""
+echo "=== E3 Verifiable @ 500 (Category B) ==="
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$CKPT_ROOT/grpo-cwq-7b-verifiable-20260321" \
+    --steps 500 \
+    --base_model "$BASE_MODEL" \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --output results/task27_e3_catb.json \
+    --kg_server_url http://localhost:18901 \
+    --max_samples 500 \
+    --max_turns 5 \
+    --filter_ids "$FILTER" \
+    --save_trajectories "$TRAJ_DIR/e3" \
+    --max_trajectory_samples 100
+
+# E4: random @ 1250
+echo ""
+echo "=== E4 Random @ 1250 (Category B) ==="
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$CKPT_ROOT/grpo-cwq-7b-random-20260326" \
+    --steps 1250 \
+    --base_model "$BASE_MODEL" \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --output results/task27_e4_catb.json \
+    --kg_server_url http://localhost:18901 \
+    --max_samples 500 \
+    --max_turns 5 \
+    --filter_ids "$FILTER" \
+    --save_trajectories "$TRAJ_DIR/e4" \
+    --max_trajectory_samples 100
+
+# E5a: retrieval-grounded @ 1000
+echo ""
+echo "=== E5a Retrieval-Grounded @ 1000 (Category B) ==="
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$CKPT_ROOT/grpo-cwq-7b-retrieval-grounded-20260326" \
+    --steps 1000 \
+    --base_model "$BASE_MODEL" \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --output results/task27_e5a_catb.json \
+    --kg_server_url http://localhost:18901 \
+    --max_samples 500 \
+    --max_turns 5 \
+    --filter_ids "$FILTER" \
+    --save_trajectories "$TRAJ_DIR/e5a" \
+    --max_trajectory_samples 100
+
+# E5b: tool-type-bonus @ 100
+echo ""
+echo "=== E5b Tool-Type-Bonus @ 100 (Category B) ==="
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$CKPT_ROOT/grpo-cwq-7b-tool-type-bonus-20260326" \
+    --steps 100 \
+    --base_model "$BASE_MODEL" \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --output results/task27_e5b_catb.json \
+    --kg_server_url http://localhost:18901 \
+    --max_samples 500 \
+    --max_turns 5 \
+    --filter_ids "$FILTER" \
+    --save_trajectories "$TRAJ_DIR/e5b" \
+    --max_trajectory_samples 100
+
+kill $KG_PID 2>/dev/null
+
+# === Summary ===
+echo ""
+echo "=== Task 27 Summary ==="
+python3 << 'PYEOF'
+import json
+from pathlib import Path
+
+models = [
+    ("SFT base", "results/task27_sft_catb.json"),
+    ("E1 outcome@1250", "results/task27_e1_catb.json"),
+    ("E2 heuristic@1200", "results/task27_e2_catb.json"),
+    ("E3 verifiable@500", "results/task27_e3_catb.json"),
+    ("E4 random@1250", "results/task27_e4_catb.json"),
+    ("E5a retrieval@1000", "results/task27_e5a_catb.json"),
+    ("E5b tool-bonus@100", "results/task27_e5b_catb.json"),
+]
+
+print(f"{'Model':<25} {'EM':>8} {'ContEM':>8} {'F1':>8} {'Tools':>8}")
+print("-" * 60)
+for name, path in models:
+    if not Path(path).exists():
+        print(f"{name:<25} {'MISSING':>8}")
+        continue
+    d = json.load(open(path))
+    for step, v in d.items():
+        print(f"{name:<25} {v['em']:>8.4f} {v['contains_em']:>8.4f} {v['f1']:>8.4f} {v['avg_tool_calls']:>8.1f}")
+PYEOF
+
+echo ""
+echo "=== Done: $(date) ==="

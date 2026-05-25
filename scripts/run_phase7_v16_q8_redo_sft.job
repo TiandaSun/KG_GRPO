@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v16q8r_sft
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --time=12:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# V16-Q8-REDO Phase 2: SFT on the bug-fixed Q8 synthetic-schema corpus.
+#
+# Mirrors run_phase7_s11_g3_sft.job but with:
+#   - Train file: data/freebase/sft_trajectories_q8_redo.jsonl  (5000 trajectories,
+#     re-generated from URI-rewritten parquet; system prompt untouched)
+#   - Init = Qwen/Qwen2.5-7B-Instruct (raw HF base, like G3 — no pre-SFT)
+#   - Output: outputs/verl-sft-cwq-7b-q8-redo  +  -merged
+#   - Single seed=42
+#
+# Phase 1 sanity check passed all 4 green checks before we got here.
+#
+# Usage:
+#   sbatch scripts/run_phase7_v16_q8_redo_sft.job
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+SEED=42
+INIT_BASE="Qwen/Qwen2.5-7B-Instruct"
+TRAIN_FILE="data/freebase/sft_trajectories_q8_redo.jsonl"
+OUTPUT_DIR="outputs/verl-sft-cwq-7b-q8-redo"
+MERGED_DIR="outputs/verl-sft-cwq-7b-q8-redo-merged"
+WANDB_RUN="sft-cwq-7b-q8-redo-20260507"
+
+echo "=== V16-Q8-REDO SFT seed=${SEED} (4x GH200) ==="
+echo "Date: $(date)"
+echo "Init: $INIT_BASE  (raw HF base — no pre-SFT)"
+echo "Train: $TRAIN_FILE"
+echo "Output: $OUTPUT_DIR"
+echo "Merged: $MERGED_DIR"
+
+[ -f "$TRAIN_FILE" ] || { echo "ERROR: $TRAIN_FILE not found"; exit 1; }
+TRAIN_LINES=$(wc -l < "$TRAIN_FILE")
+echo "Trajectories in $TRAIN_FILE: $TRAIN_LINES (expected 5000)"
+
+python src_verl/training/sft_multiturn.py \
+    --config configs_verl/sft_cwq.yaml \
+    --model_path "$INIT_BASE" \
+    --output_dir "$OUTPUT_DIR" \
+    --num_train_epochs 1 \
+    --train_file "$TRAIN_FILE" \
+    --seed "$SEED" \
+    --wandb_run_name "$WANDB_RUN"
+
+echo ""
+echo "=== Merge LoRA adapter ==="
+python scripts/merge_sft_adapter.py \
+    --base_model "$INIT_BASE" \
+    --adapter_path "$OUTPUT_DIR" \
+    --output_path "$MERGED_DIR"
+
+# Defensive: ensure the merged dir has a tokenizer (the merger normally writes it).
+if [ ! -f "$MERGED_DIR/tokenizer.json" ]; then
+    echo "WARN: tokenizer.json missing in $MERGED_DIR; verify before GRPO."
+fi
+
+echo ""
+echo "=== Done: $(date) ==="
+echo "Merged checkpoint: $MERGED_DIR"

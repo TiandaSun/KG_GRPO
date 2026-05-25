@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v14c1_prep
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=8
+#SBATCH --time=02:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# V14-C1 Part 0: download fs1-2708 dataset, inspect format, convert to our
+# SFT jsonl format. Runs on compute node (NOT login) to avoid memory issues.
+# Adaptation approach: fs1 data + fs1 hyperparams + our SFT infrastructure.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export TMPDIR="/tmp"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+OUT_DATA="data/freebase/fs1_2708_sft.jsonl"
+OUT_INSPECT="results/phase7/v14_c1_fs1_data_inspection.md"
+
+echo "=== V14-C1 Prep ==="
+echo "Date: $(date)"
+echo "Target: $OUT_DATA"
+
+mkdir -p data/freebase results/phase7
+
+python - <<'PY'
+"""Download jjzha/fs1-2708, inspect, convert to SFT jsonl format.
+
+fs1 dataset uses 'text' field (standard SFT format).  Our sft_multiturn
+pipeline accepts either 'text' field or {'messages': [...]} OpenAI format.
+We write both a raw jsonl dump and an inspection report.
+"""
+from datasets import load_dataset
+import json
+from pathlib import Path
+import os
+
+print("Downloading jjzha/fs1-2708 ...")
+ds = load_dataset("jjzha/fs1-2708")
+print("Splits:", list(ds.keys()))
+for split, s in ds.items():
+    print(f"  {split}: {len(s)} rows, columns={s.column_names}")
+
+# Take the train split (or first split)
+split_name = "train" if "train" in ds else list(ds.keys())[0]
+train = ds[split_name]
+n = len(train)
+print(f"Using split: {split_name} (n={n})")
+
+# Inspect first row
+row0 = train[0]
+print("\nFirst row keys:", list(row0.keys()))
+for k, v in row0.items():
+    snippet = str(v)[:300]
+    print(f"  {k!r}: ({type(v).__name__}) {snippet}{'...' if len(str(v)) > 300 else ''}")
+
+# Dump jsonl (each row as-is)
+out_path = Path("data/freebase/fs1_2708_sft.jsonl")
+with open(out_path, "w") as f:
+    for row in train:
+        f.write(json.dumps(row, ensure_ascii=False) + "\n")
+print(f"\nWrote {n} rows to {out_path}")
+
+# Write inspection report
+from statistics import mean
+text_field = "text" if "text" in row0 else None
+if text_field:
+    lengths = [len(row[text_field]) for row in train]
+    print(f"\n'text' length stats: mean={mean(lengths):.0f}  min={min(lengths)}  max={max(lengths)}")
+
+report = Path("results/phase7/v14_c1_fs1_data_inspection.md")
+with open(report, "w") as rf:
+    rf.write("# V14-C1 fs1-2708 Data Inspection\n\n")
+    rf.write(f"- Dataset: `jjzha/fs1-2708`\n")
+    rf.write(f"- Split used: `{split_name}`\n")
+    rf.write(f"- Rows: {n}\n")
+    rf.write(f"- Columns: {train.column_names}\n\n")
+    rf.write("## First-row sample (truncated)\n\n")
+    for k, v in row0.items():
+        snippet = str(v)[:500].replace('\n', '\\n')
+        rf.write(f"- **{k}**: {snippet}{'...' if len(str(v)) > 500 else ''}\n")
+    if text_field:
+        rf.write(f"\n## 'text' length stats\n\n- mean: {mean(lengths):.0f} chars\n- min: {min(lengths)}\n- max: {max(lengths)}\n")
+print(f"Wrote inspection report to {report}")
+PY
+
+echo ""
+echo "=== Done: $(date) ==="
+ls -la "$OUT_DATA" "$OUT_INSPECT" 2>/dev/null

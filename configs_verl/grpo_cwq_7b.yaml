@@ -42,7 +42,7 @@ actor_rollout_ref:
     name: vllm
     mode: "async"  # CRITICAL: enables AgentLoopManager for multi-turn tool calls
     tensor_model_parallel_size: 1
-    gpu_memory_utilization: 0.4
+    gpu_memory_utilization: 0.6  # Benchmarked: 5.5% faster than 0.4 (job 3443387)
     enforce_eager: true
     checkpoint_engine:
       update_weights_bucket_megabytes: 4096

@@ -1,0 +1,178 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v17_w17_1c_xlam
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --cpus-per-task=72
+#SBATCH --time=12:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# v17 W17.1 — Llama-3.1-8B-Instruct format-emission sanity gate (CRITICAL).
+#
+# Phases (single allocation, 4x GH200):
+#   1. SFT 100 optimizer steps on the 5K rule-based corpus (LoRA r=64, DoRA + rslora,
+#      identical hyperparameters to G2's configs_verl/sft_cwq.yaml).
+#   2. Merge LoRA -> HF.
+#   3. Full-stack 100-question CWQ test eval (single GPU is fine — only 100 Q).
+#   4. Compute format-validity from saved trajectories.
+#
+# Gate decision (read by next stage from the markdown report):
+#   - format_valid >= 0.90 AND tools_per_q > 0.5  -> PASS  (proceed to W17.2)
+#   - else                                        -> ABORT (do not launch W17.2)
+#
+# Llama-3.1-8B-Instruct specifics (vs Qwen2.5-7B):
+#   - tokenizer / chat_template come from meta-llama/Llama-3.1-8B-Instruct
+#     (NOT Qwen2.5's). The merge step copies them from the adapter dir.
+#   - attn_implementation = "eager" (flash_attn unavailable on ARM GH200; vLLM
+#     uses its own FA, but raw HF eval needs eager).
+#   - Effective batch matched to G2: 4 GPUs * 2 per-device * 8 grad-accum = 64.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export HF_TOKEN=$(cat "$HOME/.cache/huggingface/token" 2>/dev/null)
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+INIT_BASE="meta-llama/Llama-3.1-8B-Instruct"
+TRAIN_FILE="data/freebase/sft_trajectories.jsonl"
+SFT_DIR="outputs/v17_llama_w17_1c_xlam_gate_sft"
+MERGED_DIR="${SFT_DIR}-merged"
+EVAL_DATA="data/freebase/verl_cwq/test.parquet"
+OUT_DIR="_handoff/data/v17_llama"
+EVAL_JSON="${OUT_DIR}/w17_1c_xlam_gate_eval.json"
+PS_DIR="${OUT_DIR}/w17_1c_xlam_gate_per_sample"
+TRAJ_DIR="${OUT_DIR}/w17_1c_xlam_gate_trajectories"
+GATE_REPORT="${OUT_DIR}/W17_1c_xlam_GATE_REPORT.md"
+KG_PORT=$((19900 + SLURM_JOB_ID % 100))
+
+mkdir -p "$OUT_DIR" "$PS_DIR" "$TRAJ_DIR" logs
+
+echo "=== v17 W17.1 sanity gate (4x GH200) ==="
+echo "Date: $(date)"
+echo "Init: $INIT_BASE"
+echo "Train: $TRAIN_FILE"
+echo "SFT out: $SFT_DIR"
+echo "Eval data: $EVAL_DATA (100-Q subset)"
+echo "Gate report: $GATE_REPORT"
+echo "KG port: $KG_PORT"
+
+[ -f "$TRAIN_FILE" ] || { echo "ERROR: $TRAIN_FILE not found"; exit 1; }
+[ -f "$EVAL_DATA" ]  || { echo "ERROR: $EVAL_DATA not found"; exit 1; }
+TRAIN_LINES=$(wc -l < "$TRAIN_FILE")
+echo "Trajectories in $TRAIN_FILE: $TRAIN_LINES (expected 5000)"
+
+LLAMA_CACHE="$HF_HOME/hub/models--meta-llama--Llama-3.1-8B-Instruct"
+if [ -d "$LLAMA_CACHE" ]; then
+    echo "[ok] Llama-3.1-8B-Instruct cached at $LLAMA_CACHE"
+else
+    echo "[warn] Llama cache not found — will download (~16GB) on first load"
+fi
+
+# --- Phase 1: 100-step SFT ---
+echo ""
+echo "=== Phase 1: SFT 3 epochs (xLAM recipe) ==="
+phase1_start=$(date +%s)
+
+python src_verl/training/sft_multiturn.py \
+    --config configs_verl/sft_cwq_llama_8b_xlam.yaml \
+    --model_path "$INIT_BASE" \
+    --output_dir "$SFT_DIR" \
+    --num_train_epochs 3 \
+    --train_file "$TRAIN_FILE" \
+    --seed 42 \
+    --wandb_run_name "v17-llama-w17_1c-xlam-20260509"
+
+phase1_end=$(date +%s)
+echo "Phase 1 done in $((phase1_end - phase1_start))s"
+
+# --- Phase 2: Merge LoRA -> HF ---
+echo ""
+echo "=== Phase 2: Merge LoRA adapter ==="
+phase2_start=$(date +%s)
+
+python scripts/merge_sft_adapter.py \
+    --base_model "$INIT_BASE" \
+    --adapter_path "$SFT_DIR" \
+    --output_path "$MERGED_DIR"
+
+# Sanity: tokenizer.json must be present in merged dir for raw HF eval.
+if [ ! -f "$MERGED_DIR/tokenizer.json" ]; then
+    echo "ERROR: tokenizer.json missing from $MERGED_DIR — eval will fail"
+    exit 1
+fi
+[ -f "$MERGED_DIR/config.json" ] || { echo "ERROR: config.json missing"; exit 1; }
+
+phase2_end=$(date +%s)
+echo "Phase 2 done in $((phase2_end - phase2_start))s"
+
+# --- Phase 3: KG server up + 100-Q CWQ eval (single GPU) ---
+echo ""
+echo "=== Phase 3: 100-Q sanity eval ==="
+phase3_start=$(date +%s)
+
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg \
+    --port $KG_PORT --log-level warning &
+KG_PID=$!
+trap 'kill $KG_PID 2>/dev/null; wait 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready on port $KG_PORT"
+
+# Use only GPU 0 for the eval — 100 questions don't need 4 GPUs.
+CUDA_VISIBLE_DEVICES=0 python scripts/eval_with_tools.py \
+    --checkpoint_dir "$MERGED_DIR" \
+    --steps 0 \
+    --base_model "$MERGED_DIR" \
+    --eval_data "$EVAL_DATA" \
+    --output "$EVAL_JSON" \
+    --kg_server_url "http://localhost:$KG_PORT" \
+    --max_samples 100 \
+    --max_turns 5 \
+    --max_new_tokens 512 \
+    --save_per_sample "$PS_DIR" \
+    --save_trajectories "$TRAJ_DIR" \
+    --max_trajectory_samples 100
+
+kill $KG_PID 2>/dev/null
+trap - EXIT
+phase3_end=$(date +%s)
+echo "Phase 3 done in $((phase3_end - phase3_start))s"
+
+# --- Phase 4: Format-validity analysis (CPU) ---
+echo ""
+echo "=== Phase 4: Format-validity analysis ==="
+
+TRAJ_FILE="${TRAJ_DIR}/step_0/trajectories.json"
+if [ ! -f "$TRAJ_FILE" ]; then
+    echo "ERROR: trajectories file missing at $TRAJ_FILE"
+    exit 1
+fi
+
+python scripts/v17_format_valid.py \
+    --trajectories "$TRAJ_FILE" \
+    --output "$GATE_REPORT" \
+    --gate_format_valid 0.90 \
+    --gate_tools_per_q 0.5
+
+echo ""
+echo "=== Gate report ==="
+cat "$GATE_REPORT"
+echo ""
+echo "=== Done: $(date) ==="
+echo "Read gate report at: $GATE_REPORT"

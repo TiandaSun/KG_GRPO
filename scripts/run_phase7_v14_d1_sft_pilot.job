@@ -1,0 +1,125 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v14d1_sft_pilot
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --time=04:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# V14-D1 Qwen2.5-14B E5b-stabilized — SFT PILOT (0.1-epoch sanity check)
+#
+# Per v13 SFT Warmup Strategy:
+#   - Train on 500 samples (10% of 5K primary corpus) with target hyperparams
+#   - Monitor loss: expect smooth log-decrease
+#   - If loss drop < 5%  → investigate chat template (STOP)
+#   - If loss drop > 50% → reduce epochs
+#   - If NaN/diverge    → reduce LR
+#
+# Hyperparams (documented rationale):
+#   - LR = 1.0e-5 (0.5× of 7B's 2e-5, per v13 "LR: 0.5-0.7× of 7B baseline")
+#   - per_device_train_batch_size = 1 (14B OOM at bs=2 on GH200 120GB)
+#   - gradient_accumulation_steps = 4 (effective batch 16 on 4 GPUs; more opt steps for pilot visibility)
+#   - num_train_epochs = 1 (single pass over 500 samples)
+#   - Other: LoRA r=64 alpha=128 dora=true rslora=true (inherits from configs_verl/sft_cwq.yaml)
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+MODEL="Qwen/Qwen2.5-14B-Instruct"
+TRAIN_FILE="data/freebase/sft_trajectories_pilot500.jsonl"
+OUTPUT_DIR="outputs/verl-sft-cwq-14b-pilot"
+LOSS_JSON="results/phase7/v14_d1_pilot_loss.json"
+
+mkdir -p results/phase7 logs "$OUTPUT_DIR"
+
+echo "=== V14-D1 Qwen2.5-14B SFT Pilot (0.1-epoch sanity) ==="
+echo "Date: $(date)"
+echo "Model: $MODEL"
+echo "Train: $TRAIN_FILE ($(wc -l < "$TRAIN_FILE") samples)"
+echo "Output: $OUTPUT_DIR"
+echo "Hyperparams: LR=1e-5  per_device_bs=1  grad_accum=4  epochs=1"
+
+if [ ! -f "$TRAIN_FILE" ]; then
+    echo "ERROR: pilot dataset not found at $TRAIN_FILE"
+    echo "Build with: head -500 data/freebase/sft_trajectories.jsonl > $TRAIN_FILE"
+    exit 1
+fi
+
+# Run SFT via the shared entry point.  Overrides via CLI; the YAML gives
+# LoRA r=64 alpha=128 dora=true rslora=true by default (from configs_verl/sft_cwq.yaml).
+python src_verl/training/sft_multiturn.py \
+    --config configs_verl/sft_cwq.yaml \
+    --model_path "$MODEL" \
+    --output_dir "$OUTPUT_DIR" \
+    --num_train_epochs 1 \
+    --train_file "$TRAIN_FILE"
+
+STATE_FILE="$OUTPUT_DIR/trainer_state.json"
+
+if [ ! -f "$STATE_FILE" ]; then
+    # Checkpoints may land under checkpoint-*/trainer_state.json on save_strategy=epoch.
+    LAST_CKPT=$(ls -d "$OUTPUT_DIR"/checkpoint-* 2>/dev/null | sort -V | tail -1 || true)
+    if [ -n "$LAST_CKPT" ] && [ -f "$LAST_CKPT/trainer_state.json" ]; then
+        STATE_FILE="$LAST_CKPT/trainer_state.json"
+        echo "Using trainer_state from $STATE_FILE"
+    fi
+fi
+
+echo ""
+echo "=== Loss curve summary ==="
+if [ -f "$STATE_FILE" ]; then
+    python3 - <<PYEOF
+import json, sys, os
+sf = "$STATE_FILE"
+out = "$LOSS_JSON"
+with open(sf) as f:
+    state = json.load(f)
+history = state.get("log_history", [])
+losses = [(h.get("step"), h.get("loss")) for h in history if h.get("loss") is not None]
+summary = {
+    "trainer_state": sf,
+    "num_log_points": len(losses),
+    "losses": losses,
+    "first_loss": losses[0][1] if losses else None,
+    "last_loss": losses[-1][1] if losses else None,
+}
+if summary["first_loss"] and summary["last_loss"]:
+    summary["relative_drop_pct"] = 100.0 * (summary["first_loss"] - summary["last_loss"]) / summary["first_loss"]
+    drop = summary["relative_drop_pct"]
+    if drop < 5:
+        summary["verdict"] = "FAIL: loss drop < 5% — investigate chat template"
+    elif drop > 50:
+        summary["verdict"] = "WARN: loss drop > 50% — reduce epochs in full run"
+    else:
+        summary["verdict"] = "PASS: loss curve shape is healthy"
+else:
+    summary["verdict"] = "UNKNOWN: no loss recorded"
+os.makedirs(os.path.dirname(out), exist_ok=True)
+with open(out, "w") as f:
+    json.dump(summary, f, indent=2)
+print(json.dumps(summary, indent=2))
+PYEOF
+else
+    echo "WARN: trainer_state.json not found — cannot summarise loss curve"
+    echo "Check $OUTPUT_DIR for checkpoints and logs."
+fi
+
+echo ""
+echo "=== Done: $(date) ==="
+echo "Pilot artefacts: $OUTPUT_DIR"
+echo "Loss summary:    $LOSS_JSON"

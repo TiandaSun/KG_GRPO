@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=t14_qwen
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=06:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Task 14: Full CWQ test set eval (3,531 samples) for one Qwen model
+# Usage:
+#   sbatch --export=ALL,MODEL_KEY=e3_500 scripts/run_task14_full_eval_qwen.job
+#   sbatch --export=ALL,MODEL_KEY=sft,CHUNK=0 scripts/run_task14_full_eval_qwen.job  # optional chunk
+#
+# Supported MODEL_KEY values: sft, e1_1250, e2_1200, e3_500, e3_750, e4_1250, e5a_1000, e5b_100
+# CHUNK (optional): 0=samples 0-2000, 1=samples 2000-3531. Omit to run full set.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+MODEL_KEY="${MODEL_KEY:?MODEL_KEY env var required}"
+CKPT_ROOT="/projects/u6gg/KG_GRPO/checkpoints/kg-align-verl"
+BASE_MODEL="outputs/verl-sft-cwq-7b-merged"
+
+# Map MODEL_KEY -> (CKPT_DIR, STEP)
+case "$MODEL_KEY" in
+    sft)       CKPT_DIR="$CKPT_ROOT/grpo-cwq-7b-verifiable-20260321"; STEP=0 ;;
+    e1_1250)   CKPT_DIR="$CKPT_ROOT/grpo-cwq-7b-outcome-20260321"; STEP=1250 ;;
+    e2_1200)   CKPT_DIR="$CKPT_ROOT/grpo-cwq-7b-heuristic-20260325"; STEP=1200 ;;
+    e3_500)    CKPT_DIR="$CKPT_ROOT/grpo-cwq-7b-verifiable-20260321"; STEP=500 ;;
+    e3_750)    CKPT_DIR="$CKPT_ROOT/grpo-cwq-7b-verifiable-20260321"; STEP=750 ;;
+    e4_1250)   CKPT_DIR="$CKPT_ROOT/grpo-cwq-7b-random-20260326"; STEP=1250 ;;
+    e5a_1000)  CKPT_DIR="$CKPT_ROOT/grpo-cwq-7b-retrieval-grounded-20260326"; STEP=1000 ;;
+    e5b_100)   CKPT_DIR="$CKPT_ROOT/grpo-cwq-7b-tool-type-bonus-20260326"; STEP=100 ;;
+    *)         echo "Unknown MODEL_KEY: $MODEL_KEY"; exit 1 ;;
+esac
+
+# Optional chunk support (for resubmitting timeouts)
+CHUNK_ARGS=""
+CHUNK_SUFFIX=""
+if [ -n "${CHUNK:-}" ]; then
+    case "$CHUNK" in
+        0) START_IDX=0;    END_IDX=2000 ;;
+        1) START_IDX=2000; END_IDX=3531 ;;
+        *) echo "CHUNK must be 0 or 1"; exit 1 ;;
+    esac
+    CHUNK_ARGS="--start_idx $START_IDX --end_idx $END_IDX"
+    CHUNK_SUFFIX="_chunk${CHUNK}"
+fi
+
+OUT_JSON="results/task14_full_${MODEL_KEY}${CHUNK_SUFFIX}.json"
+PER_SAMPLE_DIR="results/task14_per_sample/${MODEL_KEY}"
+TRAJ_DIR="results/trajectories/task14/${MODEL_KEY}"
+
+# Unique port per job to avoid collisions when multiple jobs share a node
+KG_PORT=$((18000 + SLURM_JOB_ID % 1000))
+
+echo "=== Task 14: Full CWQ Test Set Eval ==="
+echo "Model: $MODEL_KEY  Step: $STEP  Chunk: ${CHUNK:-full}"
+echo "Checkpoint: $CKPT_DIR"
+echo "KG port: $KG_PORT"
+echo "Date: $(date)"
+echo ""
+
+# Start KG server
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port $KG_PORT --log-level warning &
+KG_PID=$!
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready"
+
+mkdir -p results "$PER_SAMPLE_DIR" "$TRAJ_DIR"
+
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$CKPT_DIR" \
+    --steps "$STEP" \
+    --base_model "$BASE_MODEL" \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --output "$OUT_JSON" \
+    --kg_server_url http://localhost:$KG_PORT \
+    --max_samples 0 \
+    --max_turns 5 \
+    $CHUNK_ARGS \
+    --save_per_sample "$PER_SAMPLE_DIR" \
+    --save_every 200 \
+    --resume \
+    --save_trajectories "$TRAJ_DIR" \
+    --max_trajectory_samples 200
+
+kill $KG_PID 2>/dev/null
+echo "=== Done: $(date) ==="

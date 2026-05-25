@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=v21_g2_passk
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --cpus-per-task=18
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# v20 W21 Part B — self-distill (G2@500) pass@16, closes fig:passk gap.
+# Matches the EXISTING fig:passk protocol for comparability with the E3/E5b/39B
+# bars already in the figure: 200-Q seed-42 subset (results/task37_sample_ids.json),
+# n=16, temp=0.7. (Spec said 500-Q/temp1; the existing fig used 200-Q/temp0.7, so
+# we match the existing protocol to keep G2 on the same axes.)
+#
+# Loads the MERGED G2@500 checkpoint directly via the `sft` codepath (output key
+# "sft_base" actually = G2@500). Two modes (with-tools + without-tools) selected
+# by MODE env var so each is a separate, backfill-friendly job.
+#
+# Usage:
+#   sbatch --export=ALL,MODE=tools   --time=14:00:00 scripts/run_v21_partB_g2_passk.job
+#   sbatch --export=ALL,MODE=notools --time=04:00:00 scripts/run_v21_partB_g2_passk.job
+
+set -eo pipefail
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+: "${MODE:?MODE env var required (tools or notools)}"
+
+G2_MERGED="outputs/verl-sft-cwq-39g2_step500-merged"
+FILTER_IDS="results/task37_sample_ids.json"
+KG_PORT=$((18200 + SLURM_JOB_ID % 90))
+
+[ -d "$G2_MERGED" ] || { echo "ERROR: $G2_MERGED not found"; exit 1; }
+[ -f "$FILTER_IDS" ] || { echo "ERROR: $FILTER_IDS not found"; exit 1; }
+mkdir -p results/phase7 _handoff/data/w21
+
+NO_TOOLS_ARG=""
+OUT="_handoff/data/w21/wt21_partB_g2_passk_${MODE}.json"
+if [ "$MODE" = "notools" ]; then
+    NO_TOOLS_ARG="--no_tools"
+fi
+
+echo "=== v21 W21 Part B: G2@500 pass@16 MODE=$MODE ==="
+echo "Date: $(date)  KG port: $KG_PORT"
+echo "Model (merged): $G2_MERGED"
+echo "Output: $OUT"
+
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg \
+    --port $KG_PORT --log-level warning &
+KG_PID=$!
+trap 'kill $KG_PID 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready on port $KG_PORT"
+
+# `sft` codepath loads --base_model directly (= merged G2@500). checkpoint_dir/step
+# are required args but unused on the sft path; pass dummies.
+python scripts/task17_pass_at_k.py \
+    --checkpoint_dir "$G2_MERGED" \
+    --step 0 \
+    --base_model "$G2_MERGED" \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --kg_server_url http://localhost:$KG_PORT \
+    --filter_ids "$FILTER_IDS" \
+    --n_samples 16 \
+    --n_questions 200 \
+    --temperature 0.7 \
+    --models sft \
+    $NO_TOOLS_ARG \
+    --output "$OUT"
+
+kill $KG_PID 2>/dev/null
+echo "=== Done: $(date) ==="

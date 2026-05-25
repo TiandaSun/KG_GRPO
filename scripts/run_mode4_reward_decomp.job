@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=mode4_reward_decomp
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --cpus-per-task=8
+#SBATCH --time=01:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Mode-4 figure: re-score I-Self trajectories at steps {50,100,150,200,250,300,400}
+# using tool_type_bonus_retrieval_contrib. CPU-only compute_score path; the GPU
+# allocation is only because workq requires --gpus>=1.
+
+set -eo pipefail
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+python scripts/compute_reward_decomp_mode4.py

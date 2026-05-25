@@ -1,0 +1,8 @@
+{
+  "trainer_state": "outputs/verl-sft-cwq-14b-pilot/checkpoint-8/trainer_state.json",
+  "num_log_points": 0,
+  "losses": [],
+  "first_loss": null,
+  "last_loss": null,
+  "verdict": "UNKNOWN: no loss recorded"
+}

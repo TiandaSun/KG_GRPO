@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=39b_full
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=12:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Phase 7 Action I2: Full 3531-test eval of 39B at a specific step.
+#
+# Usage:
+#   sbatch --export=ALL,STEP=400 scripts/run_phase7_39b_full_eval.job
+#
+# Produces canonical Task-14-comparable numbers for paper. max_samples=0 → all 3531.
+# Same config as Task 14 Qwen: greedy, max_turns=5, max_new_tokens=512.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+: "${STEP:?STEP env var required (e.g. 300, 400, 500)}"
+
+CHECKPOINT_DIR="/projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/grpo-cwq-7b-39b-kl-20260413"
+BASE_MODEL="outputs/verl-sft-cwq-7b-merged"
+KG_PORT=$((18000 + SLURM_JOB_ID % 1000))
+
+OUT_JSON="results/phase7/39b_step${STEP}_full_test.json"
+TRAJ_DIR="results/trajectories/phase7/39b_step${STEP}_full"
+PS_DIR="results/phase7/39b_step${STEP}_full_per_sample"
+
+mkdir -p results/phase7 "$TRAJ_DIR" "$PS_DIR"
+
+echo "=== Phase 7 Action I2: full 3531-test eval, 39B @ step ${STEP} ==="
+echo "Date: $(date)"
+echo "Checkpoint: $CHECKPOINT_DIR/global_step_${STEP}"
+echo "Output: $OUT_JSON"
+echo "KG port: $KG_PORT"
+
+if [ ! -d "$CHECKPOINT_DIR/global_step_${STEP}/actor" ]; then
+    echo "ERROR: checkpoint not found at $CHECKPOINT_DIR/global_step_${STEP}/actor"
+    exit 1
+fi
+
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port $KG_PORT --log-level warning &
+KG_PID=$!
+trap 'kill $KG_PID 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready"
+
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$CHECKPOINT_DIR" \
+    --steps "$STEP" \
+    --base_model "$BASE_MODEL" \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --output "$OUT_JSON" \
+    --kg_server_url http://localhost:$KG_PORT \
+    --max_samples 0 \
+    --max_turns 5 \
+    --max_new_tokens 512 \
+    --save_per_sample "$PS_DIR" \
+    --save_every 100 \
+    --resume \
+    --save_trajectories "$TRAJ_DIR" \
+    --max_trajectory_samples 3531
+
+kill $KG_PID 2>/dev/null
+echo "=== Done: $(date) ==="

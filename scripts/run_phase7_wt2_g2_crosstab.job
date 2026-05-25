@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_wt2_g2_crosstab
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=4
+#SBATCH --gpus=0
+#SBATCH --mem=32G
+#SBATCH --time=04:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# WT-2 (G2 downstream cross-tab) per hpc_tasks.md v16 lines 207-230.
+# CPU-only analysis on the existing G2@500 trajectory dump.
+# Buckets each kg-incomplete / wrong-answer error into retrieval-failure vs
+# extraction-failure using a word-boundary regex on normalised gold strings.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+TRAJ="results/trajectories/phase7/39g2_step500_full/step_0/trajectories.json"
+CLS="results/phase7/v14_b1_failure_modes.json"
+OUT_JSON="kg_grpo_emnlp2026_v2/_handoff/data/g2_crosstab_2026_05_07.json"
+OUT_MD="kg_grpo_emnlp2026_v2/_handoff/data/g2_crosstab_2026_05_07_summary.md"
+
+mkdir -p "$(dirname "$OUT_JSON")"
+
+echo "=== WT-2 G2 cross-tab ==="
+echo "Date: $(date)"
+echo "Host: $(hostname)"
+echo "Trajectories: $TRAJ"
+echo "Classifier ref: $CLS"
+echo "Output JSON: $OUT_JSON"
+echo "Output MD:   $OUT_MD"
+echo
+
+# Sanity: confirm the input files exist before doing anything heavy.
+if [ ! -f "$TRAJ" ]; then
+    echo "ERROR: trajectory dump missing at $TRAJ" >&2
+    exit 1
+fi
+if [ ! -f "$CLS" ]; then
+    echo "WARN: v14_b1 classifier output missing at $CLS (script does not require it; canonical category logic is reused from task16_classify.py)" >&2
+fi
+
+# Spot-check sample_id overlap between v14_b1 per_sample list and the trajectory
+# dump (just for the log).
+python3 - <<'PYEOF'
+import json
+from pathlib import Path
+traj_path = Path("results/trajectories/phase7/39g2_step500_full/step_0/trajectories.json")
+cls_path = Path("results/phase7/v14_b1_failure_modes.json")
+trajs = json.load(open(traj_path))
+traj_ids = {t["sample_id"] for t in trajs}
+print(f"trajectories: {len(trajs)} records, {len(traj_ids)} unique sample_ids")
+if cls_path.exists():
+    cls = json.load(open(cls_path))
+    per_sample = cls.get("per_sample", [])
+    cls_ids = {s["sample_id"] for s in per_sample}
+    overlap = traj_ids & cls_ids
+    print(f"v14_b1 per_sample: {len(cls_ids)} unique sample_ids")
+    print(f"overlap (intersection): {len(overlap)}")
+    print(f"in v14_b1 but not in trajectories: {len(cls_ids - traj_ids)}")
+PYEOF
+
+echo
+echo "=== Running WT-2 cross-tab ==="
+python scripts/task_wt2_g2_crosstab.py \
+    --trajectories "$TRAJ" \
+    --output_json "$OUT_JSON" \
+    --output_md "$OUT_MD"
+
+echo
+echo "=== Output JSON head ==="
+python3 -c "
+import json
+d = json.load(open('$OUT_JSON'))
+print('verdict:', d['verdict'])
+print('extraction_pct:', d['extraction_pct'])
+print('retrieval_pct:', d['retrieval_pct'])
+print('buckets:', d['buckets'])
+print('no_retrieval_count:', d['no_retrieval_count'])
+print('total_errors_classified:', d['total_errors_classified'])
+print('sanity_anomalies:', d['sanity_anomalies'])
+"
+echo
+echo "=== Markdown summary ==="
+cat "$OUT_MD"
+
+echo
+echo "=== Done $(date) ==="

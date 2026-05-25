@@ -1,0 +1,306 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v15_aggregate
+#SBATCH --nodes=1
+#SBATCH --gpus=0
+#SBATCH --cpus-per-task=4
+#SBATCH --time=01:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# v15 aggregation epilogue — runs after all step-curve evals + multi-seed fills.
+# CPU-only, 1h walltime, 4 CPUs. Submitted with --dependency=afterok:<list>
+# so it fires when every upstream job has completed successfully.
+#
+# Usage:
+#   sbatch --dependency=afterok:JID1:JID2:... scripts/run_phase7_v15_aggregate_epilogue.job
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+export PYTHONUNBUFFERED=1
+
+echo "=== v15 aggregation epilogue ==="
+echo "Date: $(date)"
+echo ""
+
+mkdir -p results/phase7/v15_w5_kl_ablation
+
+# 1. S0.1 multi-seed I-Self band + decision rule
+echo "--- S0.1 multi-seed I-Self aggregation ---"
+python scripts/aggregate_s01_iself.py 2>&1 || echo "  WARN: S0.1 aggregation had issues (continuing)"
+echo ""
+
+# 2. S0.2 multi-seed G2 reproducibility
+echo "--- S0.2 multi-seed G2 aggregation ---"
+python scripts/aggregate_s02_g2.py 2>&1 || echo "  WARN: S0.2 aggregation had issues (continuing)"
+echo ""
+
+# 3. W5 KL ablation curve aggregation (inline since no dedicated script yet)
+echo "--- W5 KL ablation curve aggregation ---"
+python3 << 'PYEOF'
+"""
+v15 Lane 4 W5 KL-ablation aggregation.
+For each KL coef, gather steps 100/200/300/400/500 EM/CvT/Tools, identify
+collapse onset (smallest step where EM <= 5% of peak), produce summary table
++ matplotlib plot.
+"""
+import json
+import logging
+from pathlib import Path
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+log = logging.getLogger(__name__)
+
+KLS = ["001", "005", "01", "05", "25"]
+KL_DECIMAL = {"001": 0.001, "005": 0.005, "01": 0.01, "05": 0.05, "25": 0.25}
+STEPS = [100, 200, 300, 400, 500]
+
+REPO = Path("/lus/lfs1aip2/scratch/u6gg/ts1201.u6gg/Project/KG_GRPO")
+out_root = REPO / "results" / "phase7" / "v15_w5_kl_ablation"
+out_root.mkdir(parents=True, exist_ok=True)
+
+curves: dict[str, list[dict]] = {}
+collapse_onsets: dict[str, int | None] = {}
+
+for kl in KLS:
+    curve = []
+    for step in STEPS:
+        # Try chained-eval path first (w5_kl*), fall back to fill-job path (v15_w5_kl*)
+        f_chained = REPO / "results" / "phase7" / f"w5_kl{kl}_step{step}_full_test.json"
+        f_fill = REPO / "results" / "phase7" / f"v15_w5_kl{kl}_step{step}_full_test.json"
+        f = f_chained if f_chained.exists() else f_fill
+        if not f.exists():
+            log.warning(f"  kl={kl} step={step}: MISSING (tried {f_chained} and {f_fill})")
+            continue
+        with open(f) as fh:
+            d = json.load(fh)
+        # JSON top-level is {"0": {...}} per eval_with_tools.py output
+        s = d.get("0", {})
+        curve.append({
+            "step": step,
+            "em": s.get("em", 0),
+            "contains_em": s.get("contains_em", 0),
+            "f1": s.get("f1", 0),
+            "tools": s.get("avg_tool_calls", 0),
+        })
+    curves[kl] = curve
+
+    # Identify collapse onset: smallest step strictly after peak with EM <= 5% of peak
+    if curve:
+        peak_idx = max(range(len(curve)), key=lambda i: curve[i]["em"])
+        peak_em = curve[peak_idx]["em"]
+        threshold = 0.05 * peak_em
+        onset = None
+        for entry in curve[peak_idx + 1:]:
+            if entry["em"] <= threshold:
+                onset = entry["step"]
+                break
+        collapse_onsets[kl] = onset
+    else:
+        collapse_onsets[kl] = None
+
+# Save aggregate JSON
+agg = {
+    "kls": [{"kl_label": k, "kl_decimal": KL_DECIMAL[k], "curve": curves.get(k, []), "collapse_step": collapse_onsets.get(k)} for k in KLS],
+    "interpretation": {
+        "rule": "If collapse onset shifts with KL: KL-tether is part of mechanism (revise §5.3/§6.3). If invariant: collapse is L_sig-driven (validates §5.3).",
+        "collapse_steps_per_kl": collapse_onsets,
+    },
+}
+with open(out_root / "summary.json", "w") as fh:
+    json.dump(agg, fh, indent=2)
+log.info(f"Wrote {out_root / 'summary.json'}")
+
+# Plot the EM curves
+fig, ax = plt.subplots(figsize=(10, 6))
+for kl in KLS:
+    curve = curves.get(kl, [])
+    if not curve:
+        continue
+    xs = [e["step"] for e in curve]
+    ys = [e["em"] for e in curve]
+    ax.plot(xs, ys, marker="o", label=f"KL={KL_DECIMAL[kl]}")
+ax.set_xlabel("Training step")
+ax.set_ylabel("EM")
+ax.set_title("V15-W5 KL coefficient ablation: EM curves over training")
+ax.legend()
+ax.grid(alpha=0.3)
+plot_path = out_root / "kl_ablation_em_curve.png"
+fig.savefig(plot_path, dpi=120, bbox_inches="tight")
+log.info(f"Wrote {plot_path}")
+
+# Markdown summary
+md = ["# V15-W5 KL ablation summary\n"]
+md.append("| KL coef | step100 EM | step200 EM | step300 EM | step400 EM | step500 EM | Collapse step |")
+md.append("|---|---|---|---|---|---|---|")
+for kl in KLS:
+    curve = curves.get(kl, [])
+    em_by_step = {e["step"]: e["em"] for e in curve}
+    cells = [f"{em_by_step.get(s, '—'):.4f}" if s in em_by_step else "—" for s in STEPS]
+    onset = collapse_onsets.get(kl)
+    md.append(f"| {KL_DECIMAL[kl]} | " + " | ".join(cells) + f" | {onset if onset else 'no collapse'} |")
+with open(out_root / "summary.md", "w") as fh:
+    fh.write("\n".join(md) + "\n")
+log.info(f"Wrote {out_root / 'summary.md'}")
+PYEOF
+echo ""
+
+# 4. v15 Lane 1 multi-seed step-curve plots (overlaid on original seed 0 if extant)
+echo "--- v15 Lane 1 multi-seed step-curve overlay ---"
+python3 << 'PYEOF'
+"""Overlay multi-seed I-Self EM curves with the original single-seed."""
+import json
+from pathlib import Path
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+
+REPO = Path("/lus/lfs1aip2/scratch/u6gg/ts1201.u6gg/Project/KG_GRPO")
+STEPS = [50, 100, 150, 200, 250, 300, 350, 400]
+SEEDS = [0, 1, 2, 3]  # 0 = original single-seed
+
+out_root = REPO / "results" / "phase7" / "v15_w1_multiseed_selfv"
+out_root.mkdir(parents=True, exist_ok=True)
+
+curves = {}
+for seed in SEEDS:
+    curve = []
+    for step in STEPS:
+        if seed == 0:
+            f = REPO / "results" / "phase7" / f"39i_self_step{step}_full_test.json"
+        else:
+            f = REPO / "results" / "phase7" / f"39i_self_seed{seed}_step{step}_full_test.json"
+        if not f.exists():
+            continue
+        d = json.load(open(f))
+        s = d.get("0", {})
+        curve.append({"step": step, "em": s.get("em", 0), "contains_em": s.get("contains_em", 0), "tools": s.get("avg_tool_calls", 0)})
+    curves[seed] = curve
+
+fig, ax = plt.subplots(figsize=(10, 6))
+for seed in SEEDS:
+    curve = curves.get(seed, [])
+    if not curve:
+        continue
+    xs = [e["step"] for e in curve]
+    ys = [e["em"] for e in curve]
+    label = f"seed={seed} (original)" if seed == 0 else f"seed={seed}"
+    ls = "-" if seed == 0 else "--"
+    ax.plot(xs, ys, marker="o", linestyle=ls, label=label, alpha=0.85)
+ax.set_xlabel("Training step")
+ax.set_ylabel("EM")
+ax.set_title("V15-W1 Multi-seed I-Self peak-then-collapse signature")
+ax.legend()
+ax.grid(alpha=0.3)
+plot_path = out_root / "multiseed_em_curve.png"
+fig.savefig(plot_path, dpi=120, bbox_inches="tight")
+print(f"Wrote {plot_path}")
+
+# Save merged JSON
+with open(out_root / "merged_curves.json", "w") as fh:
+    json.dump({"steps": STEPS, "seeds": SEEDS, "curves": {str(s): curves[s] for s in SEEDS}}, fh, indent=2)
+print(f"Wrote {out_root / 'merged_curves.json'}")
+PYEOF
+echo ""
+
+# 5. Final consolidated v15 results report
+echo "--- Generating phase7_v15_results.md ---"
+python3 << 'PYEOF'
+"""Consolidated v15 results — drop-in for writing-agent handoff."""
+import json
+from pathlib import Path
+
+REPO = Path("/lus/lfs1aip2/scratch/u6gg/ts1201.u6gg/Project/KG_GRPO")
+out = REPO / "results" / "phase7" / "phase7_v15_results.md"
+
+lines = ["# Phase 7 v15 — Consolidated Results\n"]
+lines.append(f"Generated: {__import__('datetime').datetime.utcnow().isoformat()}Z\n")
+lines.append("Code-agent deliverable. Writing-agent integrates these into paper sections.\n\n")
+
+# Lane 1 W1 multi-seed
+lines.append("## Lane 1 — V15-W1 Multi-seed E5b+SelfV step-curve replication\n")
+mc_path = REPO / "results" / "phase7" / "v15_w1_multiseed_selfv" / "merged_curves.json"
+if mc_path.exists():
+    d = json.load(open(mc_path))
+    lines.append(f"Seeds: {d['seeds']}, Steps: {d['steps']}\n\n")
+    lines.append("| Step | seed=0 EM | seed=1 EM | seed=2 EM | seed=3 EM |")
+    lines.append("|---|---|---|---|---|")
+    for step in d["steps"]:
+        row = [f"step={step}"]
+        for s in d["seeds"]:
+            curve = d["curves"][str(s)]
+            ems = [e for e in curve if e["step"] == step]
+            row.append(f"{ems[0]['em']:.4f}" if ems else "—")
+        lines.append("| " + " | ".join(row) + " |")
+    lines.append(f"\nPlot: `results/phase7/v15_w1_multiseed_selfv/multiseed_em_curve.png`\n")
+else:
+    lines.append("(merged_curves.json not yet produced)\n")
+lines.append("\n")
+
+# Lane 2 G3
+lines.append("## Lane 2 — V15-G3 Clean init-source ablation\n")
+g3_em = {}
+for step in [100, 200, 300, 400, 500]:
+    f = REPO / "results" / "phase7" / f"39g3_step{step}_full_test.json"
+    if f.exists():
+        d = json.load(open(f))
+        g3_em[step] = d.get("0", {}).get("em", 0)
+lines.append("| Step | G3 EM |")
+lines.append("|---|---|")
+for s in [100, 200, 300, 400, 500]:
+    lines.append(f"| {s} | {g3_em.get(s, '—'):.4f}" + " |" if s in g3_em else f"| {s} | — |")
+lines.append("\n")
+
+# Lane 4 W5 KL ablation
+lines.append("## Lane 4 — V15-W5 KL coefficient ablation\n")
+w5_summary = REPO / "results" / "phase7" / "v15_w5_kl_ablation" / "summary.md"
+if w5_summary.exists():
+    lines.append(w5_summary.read_text())
+lines.append(f"Plot: `results/phase7/v15_w5_kl_ablation/kl_ablation_em_curve.png`\n\n")
+
+# Lane 6 Q3 entropy
+lines.append("## Lane 6 — V15-Q3 Token-entropy time series\n")
+q3_summary = REPO / "results" / "phase7" / "v15_q3_entropy" / "summary.json"
+if q3_summary.exists():
+    s = json.load(open(q3_summary))
+    lines.append("Per-step inside/outside-`<search>` entropy:\n")
+    lines.append("```json")
+    lines.append(json.dumps(s, indent=2))
+    lines.append("```\n")
+lines.append("\n")
+
+# Lane 7 W4 GPT-4o
+lines.append("## Lane 7 — V15-W4 GPT-4o n=500 baseline\n")
+w4 = REPO / "kg_grpo_emnlp2026_v2" / "_handoff" / "data" / "v15_w4_gpt4o_500q.json"
+if w4.exists():
+    d = json.load(open(w4))
+    if "aggregate" in d:
+        lines.append(f"```json\n{json.dumps(d['aggregate'], indent=2)}\n```\n")
+    else:
+        lines.append("(aggregate field not found in JSON — open file directly)\n")
+lines.append("\n")
+
+# Q2 trajectory dumps
+lines.append("## Lane 3 — V15-Q2 Mode-4 trajectory dumps (writing-agent input)\n")
+for step in [300, 400]:
+    f = REPO / "results" / "trajectories" / "phase7" / f"39i_self_step{step}_full" / "step_0" / "trajectories.json"
+    if f.exists():
+        d = json.load(open(f))
+        lines.append(f"- step {step}: `{f}` ({len(d)} trajectories)")
+lines.append("\n")
+
+with open(out, "w") as fh:
+    fh.write("\n".join(lines) + "\n")
+print(f"Wrote {out}")
+PYEOF
+
+echo ""
+echo "=== Aggregation epilogue done $(date) ==="

@@ -111,8 +111,44 @@ def generate_with_tools_sampled(
     max_new_tokens: int = 512,
     temperature: float = 0.7,
     device: str = "cuda",
+    use_tools: bool = True,
 ) -> tuple[str, int]:
-    """Multi-turn generation with sampling (temperature>0) for pass@k."""
+    """Multi-turn generation with sampling (temperature>0) for pass@k.
+
+    When use_tools=False, runs a single-turn generation with no KG server calls
+    and a system prompt that omits the tool interface — parametric-memory-only
+    baseline for Phase 7 II6 pass@k with/without tools comparison.
+    """
+    if not use_tools:
+        # Single-turn, no tools. Use a system prompt that doesn't mention tools.
+        no_tools_system = (
+            "You are a question answering assistant. Answer the user's question "
+            "with a short phrase inside <answer>...</answer> tags."
+        )
+        messages = [
+            {"role": "system", "content": no_tools_system},
+            {"role": "user", "content": question},
+        ]
+        text = tokenizer.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=True
+        )
+        inputs = tokenizer(
+            text, return_tensors="pt", truncation=True, max_length=4096
+        ).to(device)
+        with torch.no_grad():
+            out = model.generate(
+                **inputs,
+                max_new_tokens=max_new_tokens,
+                do_sample=True,
+                temperature=temperature,
+                top_p=0.95,
+                pad_token_id=tokenizer.pad_token_id,
+            )
+        response = tokenizer.decode(
+            out[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True
+        )
+        return response, 0
+
     messages = [
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": question},
@@ -192,6 +228,7 @@ def evaluate_model_pass_at_k(
     n_samples: int = 32,
     temperature: float = 0.7,
     device: str = "cuda",
+    use_tools: bool = True,
 ) -> dict:
     """Generate n_samples per question and compute pass@k."""
     k_values = [1, 4, 8, 16, 32]
@@ -209,6 +246,7 @@ def evaluate_model_pass_at_k(
             full_response, _ = generate_with_tools_sampled(
                 model, tokenizer, question, system_prompt,
                 kg_server_url, temperature=temperature, device=device,
+                use_tools=use_tools,
             )
             predicted = extract_answer(full_response)
             if exact_match(predicted, gold, all_answers) > 0:
@@ -257,9 +295,13 @@ def main() -> None:
     # Parallel splitting: process a subset of questions
     parser.add_argument("--start_idx", type=int, default=0, help="Start question index (for parallel splitting)")
     parser.add_argument("--end_idx", type=int, default=-1, help="End question index (-1 = all)")
+    parser.add_argument("--filter_ids", type=Path, default=None,
+                        help="JSON file with 'filter_ids' or 'category_b_ids' list to filter questions")
     # Which models to evaluate (for splitting SFT vs E3 across jobs)
     parser.add_argument("--models", type=str, nargs="+", default=["sft", "e3", "e2"],
                         help="Which models to evaluate: sft, e3, e2")
+    parser.add_argument("--no_tools", action="store_true",
+                        help="Phase 7 II6: disable KG tool calls (parametric memory only)")
     args = parser.parse_args()
 
     # Verify KG server
@@ -277,11 +319,24 @@ def main() -> None:
         tokenizer.pad_token = tokenizer.eos_token
     system_prompt = df.iloc[0]["prompt"][0]["content"]
 
-    # Prepare questions (subset based on start_idx/end_idx)
+    # Optional: filter to specific question IDs
+    filter_id_set = None
+    if args.filter_ids:
+        with open(args.filter_ids) as fid:
+            filter_data = json.load(fid)
+        filter_id_set = set(
+            filter_data.get("filter_ids", filter_data.get("category_b_ids", []))
+        )
+        logger.info("Filtering to %d question IDs from %s", len(filter_id_set), args.filter_ids)
+
+    # Prepare questions (subset based on start_idx/end_idx and filter_ids)
     all_questions = []
     for i, (_, row) in enumerate(df.iterrows()):
-        if i >= args.n_questions:
+        if filter_id_set is None and i >= args.n_questions:
             break
+        sample_id = row["extra_info"].get("sample_id", str(i))
+        if filter_id_set is not None and str(sample_id) not in filter_id_set:
+            continue
         gold = row["reward_model"]["ground_truth"]
         all_answers = row["extra_info"].get("all_answers", [gold])
         if hasattr(all_answers, "tolist"):
@@ -310,6 +365,7 @@ def main() -> None:
         sft_results = evaluate_model_pass_at_k(
             sft_model, tokenizer, questions, system_prompt,
             args.kg_server_url, args.n_samples, args.temperature, args.device,
+            use_tools=not args.no_tools,
         )
         sft_results["elapsed_s"] = time.time() - t0
         all_results["sft_base"] = sft_results
@@ -326,6 +382,7 @@ def main() -> None:
         e3_results = evaluate_model_pass_at_k(
             e3_model, tokenizer, questions, system_prompt,
             args.kg_server_url, args.n_samples, args.temperature, args.device,
+            use_tools=not args.no_tools,
         )
         e3_results["elapsed_s"] = time.time() - t0
         all_results[f"e3_step_{args.step}"] = e3_results
@@ -342,6 +399,7 @@ def main() -> None:
         e2_results = evaluate_model_pass_at_k(
             e2_model, tokenizer, questions, system_prompt,
             args.kg_server_url, args.n_samples, args.temperature, args.device,
+            use_tools=not args.no_tools,
         )
         e2_results["elapsed_s"] = time.time() - t0
         all_results[f"e2_step_{args.e2_step}"] = e2_results
@@ -362,24 +420,27 @@ def main() -> None:
         vals = " ".join(f"{res.get(f'pass@{k}', 0):>8.3f}" for k in [1, 4, 8, 16, 32])
         print(f"{model_name:<20} {vals}")
 
-    # Interpretation
-    sft_p1 = all_results["sft_base"].get("pass@1", 0)
-    sft_p32 = all_results["sft_base"].get("pass@32", 0)
+    # Interpretation (only if both sft_base and e3 are in results)
     e3_key = f"e3_step_{args.step}"
-    e3_p1 = all_results[e3_key].get("pass@1", 0)
-    e3_p32 = all_results[e3_key].get("pass@32", 0)
+    if "sft_base" in all_results and e3_key in all_results:
+        sft_p1 = all_results["sft_base"].get("pass@1", 0)
+        sft_p32 = all_results["sft_base"].get("pass@32", 0)
+        e3_p1 = all_results[e3_key].get("pass@1", 0)
+        e3_p32 = all_results[e3_key].get("pass@32", 0)
 
-    print(f"\npass@1:  E3={e3_p1:.3f} vs SFT={sft_p1:.3f} (ratio={e3_p1/max(sft_p1,1e-6):.1f}x)")
-    print(f"pass@32: E3={e3_p32:.3f} vs SFT={sft_p32:.3f} (ratio={e3_p32/max(sft_p32,1e-6):.1f}x)")
+        print(f"\npass@1:  E3={e3_p1:.3f} vs SFT={sft_p1:.3f} (ratio={e3_p1/max(sft_p1,1e-6):.1f}x)")
+        print(f"pass@32: E3={e3_p32:.3f} vs SFT={sft_p32:.3f} (ratio={e3_p32/max(sft_p32,1e-6):.1f}x)")
 
-    if e3_p1 > sft_p1 * 1.5 and abs(e3_p32 - sft_p32) < 0.1:
-        print("→ DISTRIBUTION SHARPENING: E3 pass@1 >> SFT but pass@32 ≈ SFT")
-    elif e3_p32 > sft_p32 * 1.3:
-        print("→ CAPABILITY EXPANSION: E3 pass@32 >> SFT pass@32")
-    elif sft_p32 > e3_p32 * 1.3:
-        print("→ CAPABILITY NARROWING: SFT pass@32 >> E3 pass@32")
+        if e3_p1 > sft_p1 * 1.5 and abs(e3_p32 - sft_p32) < 0.1:
+            print("→ DISTRIBUTION SHARPENING: E3 pass@1 >> SFT but pass@32 ≈ SFT")
+        elif e3_p32 > sft_p32 * 1.3:
+            print("→ CAPABILITY EXPANSION: E3 pass@32 >> SFT pass@32")
+        elif sft_p32 > e3_p32 * 1.3:
+            print("→ CAPABILITY NARROWING: SFT pass@32 >> E3 pass@32")
+        else:
+            print("→ INCONCLUSIVE: differences within noise margin")
     else:
-        print("→ INCONCLUSIVE: differences within noise margin")
+        print(f"\n[skip] Interpretation requires both 'sft_base' and '{e3_key}' in results.")
 
 
 if __name__ == "__main__":

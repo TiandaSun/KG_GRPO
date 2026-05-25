@@ -1,0 +1,139 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v14e1_sft_pilot
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --time=06:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# V14-E1 Qwen2.5-32B E5b-stabilized — SFT PILOT (0.1-epoch sanity check).
+# Mirrors V14-D1 14B pilot recipe scaled for 32B (LR halved further, batch=1).
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+MODEL="Qwen/Qwen2.5-32B-Instruct"
+TRAIN_FILE="data/freebase/sft_trajectories_pilot500.jsonl"
+OUTPUT_DIR="outputs/verl-sft-cwq-32b-pilot"
+LOSS_JSON="results/phase7/v14_e1_pilot_loss.json"
+
+mkdir -p results/phase7 logs "$OUTPUT_DIR"
+
+echo "=== V14-E1 Qwen2.5-32B SFT Pilot (FSDP, 4-GPU sharded) ==="
+echo "Date: $(date)"
+echo "Model: $MODEL"
+echo "Train: $TRAIN_FILE"
+echo "Hyperparams: LR=5e-6  per_device_bs=1  grad_accum=8  epochs=1  LoRA r=64 (DoRA off)"
+echo "FSDP: full_shard auto_wrap, Qwen2DecoderLayer wrap class, use_orig_params=True"
+
+[ -f "$TRAIN_FILE" ] || { echo "ERROR: pilot data missing at $TRAIN_FILE"; exit 1; }
+
+# 32B-specific config: LoRA r=64 (DoRA off — interacts poorly with FSDP),
+# FSDP full_shard wrapping Qwen2DecoderLayer; LR halved vs 14B.
+TMP_CONFIG="${TMPDIR:-/tmp}/sft_cwq_32b_pilot_${SLURM_JOB_ID}.yaml"
+cat > "$TMP_CONFIG" <<'YAML'
+model:
+  model_name: "Qwen/Qwen2.5-32B-Instruct"
+  torch_dtype: "bfloat16"
+  attn_implementation: "eager"
+
+lora:
+  lora_r: 64
+  lora_alpha: 128
+  lora_target_modules: "all-linear"
+  lora_dropout: 0.05
+  use_dora: false
+  use_rslora: true
+
+training:
+  num_train_epochs: 1
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 8
+  learning_rate: 5.0e-6
+  gradient_checkpointing: true
+  max_seq_length: 2048
+  logging_steps: 5
+  save_strategy: "epoch"
+  warmup_ratio: 0.05
+  optim: "adamw_torch"
+  fsdp: "full_shard auto_wrap"
+  fsdp_transformer_layer_cls_to_wrap: "Qwen2DecoderLayer"
+  fsdp_use_orig_params: true
+  fsdp_activation_checkpointing: false
+  fsdp_state_dict_type: "FULL_STATE_DICT"
+
+data:
+  train_file: "data/freebase/sft_trajectories_pilot500.jsonl"
+  output_dir: "outputs/verl-sft-cwq-32b-pilot"
+
+wandb:
+  wandb_project: "kg-align-verl"
+  wandb_run_name: "sft-cwq-32b-pilot"
+YAML
+
+cat "$TMP_CONFIG"
+echo ""
+
+# Multi-process launch: torchrun spawns one process per GPU; each holds an FSDP shard.
+# nproc_per_node = SLURM_GPUS allocated to this job.
+NPROC=${SLURM_GPUS:-4}
+echo "Launching torchrun with --nproc_per_node=$NPROC"
+
+torchrun --standalone --nproc_per_node=$NPROC \
+    src_verl/training/sft_multiturn.py \
+    --config "$TMP_CONFIG" \
+    --model_path "$MODEL" \
+    --output_dir "$OUTPUT_DIR" \
+    --num_train_epochs 1 \
+    --train_file "$TRAIN_FILE"
+
+STATE_FILE="$OUTPUT_DIR/trainer_state.json"
+if [ ! -f "$STATE_FILE" ]; then
+    LAST_CKPT=$(ls -d "$OUTPUT_DIR"/checkpoint-* 2>/dev/null | sort -V | tail -1 || true)
+    if [ -n "$LAST_CKPT" ] && [ -f "$LAST_CKPT/trainer_state.json" ]; then
+        STATE_FILE="$LAST_CKPT/trainer_state.json"
+    fi
+fi
+
+if [ -f "$STATE_FILE" ]; then
+    python3 - <<PYEOF
+import json, os
+sf = "$STATE_FILE"
+out = "$LOSS_JSON"
+with open(sf) as f:
+    state = json.load(f)
+history = state.get("log_history", [])
+losses = [(h.get("step"), h.get("loss")) for h in history if h.get("loss") is not None]
+summary = {"trainer_state": sf, "num_log_points": len(losses), "losses": losses,
+           "first_loss": losses[0][1] if losses else None,
+           "last_loss": losses[-1][1] if losses else None}
+if summary["first_loss"] and summary["last_loss"]:
+    summary["relative_drop_pct"] = 100.0 * (summary["first_loss"] - summary["last_loss"]) / summary["first_loss"]
+    drop = summary["relative_drop_pct"]
+    summary["verdict"] = "FAIL: loss drop <5% — investigate" if drop < 5 else (
+                         "WARN: loss drop >50% — reduce epochs in full run" if drop > 50 else
+                         "PASS: loss curve healthy")
+else:
+    summary["verdict"] = "UNKNOWN: no loss recorded"
+os.makedirs(os.path.dirname(out), exist_ok=True)
+with open(out, "w") as f:
+    json.dump(summary, f, indent=2)
+print(json.dumps(summary, indent=2))
+PYEOF
+fi
+echo "=== Done: $(date) ==="

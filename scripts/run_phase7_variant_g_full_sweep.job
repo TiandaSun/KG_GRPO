@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_g_sweep
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=20:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Variant G Step 1b: full 27,639-row self-distillation sweep with 39B@400
+# greedy+tools. Produces per-sample trajectories; feeds Step 2 (strict filter)
+# and Step 3 (SFT).
+#
+# Rate from pilot: ~6.65s/sample. 27,639 samples → ~51h for single GPU.
+# Therefore we SHARD into 3 chunks (0-9213, 9213-18426, 18426-27639).
+#
+# Usage:
+#   sbatch --export=ALL,SHARD=0 scripts/run_phase7_variant_g_full_sweep.job
+#   sbatch --export=ALL,SHARD=1 scripts/run_phase7_variant_g_full_sweep.job
+#   sbatch --export=ALL,SHARD=2 scripts/run_phase7_variant_g_full_sweep.job
+#
+# Incremental saves every 100 samples protect against timeout. Resume-safe via
+# --resume flag (re-submitting the same SHARD with an existing output file will
+# skip already-processed sample_ids).
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+: "${SHARD:?SHARD env var required (0, 1, or 2)}"
+
+N_TOTAL=27639
+N_SHARDS=3
+SHARD_SIZE=$(( (N_TOTAL + N_SHARDS - 1) / N_SHARDS ))
+START=$(( SHARD * SHARD_SIZE ))
+END=$(( (SHARD + 1) * SHARD_SIZE ))
+if [ $END -gt $N_TOTAL ]; then END=$N_TOTAL; fi
+
+OUT="data/freebase/verl_cwq/39b_full_sweep_shard${SHARD}.json"
+
+KG_PORT=$((18000 + SLURM_JOB_ID % 1000))
+
+echo "=== Variant G Step 1b: full-sweep shard ${SHARD} ==="
+echo "Date: $(date)"
+echo "Shard: [${START}, ${END})  size=$((END - START))"
+echo "Output: $OUT"
+echo "KG port: $KG_PORT"
+
+# Start KG server
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port $KG_PORT --log-level warning &
+KG_PID=$!
+trap 'kill $KG_PID 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready"
+
+python scripts/phase7_variant_g_pilot.py \
+    --checkpoint_dir /projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/grpo-cwq-7b-39b-kl-20260413 \
+    --step 400 \
+    --base_model outputs/verl-sft-cwq-7b-merged \
+    --train_parquet data/freebase/verl_cwq/train.parquet \
+    --kg_server_url http://localhost:$KG_PORT \
+    --n_pilot 0 \
+    --start_idx $START \
+    --end_idx $END \
+    --seed 42 \
+    --save_every 100 \
+    --resume \
+    --output $OUT
+
+echo ""
+echo "=== Done shard ${SHARD}: $(date) ==="

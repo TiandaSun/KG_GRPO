@@ -1,0 +1,113 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=t37_traj
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=12:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Task 37: Trajectory classification on test split (200 random questions, seed=42)
+# Sequential eval of 4 models: SFT, E3@500, E5b@100, E2@1200
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+CKPT_ROOT="/projects/u6gg/KG_GRPO/checkpoints/kg-align-verl"
+BASE_MODEL="outputs/verl-sft-cwq-7b-merged"
+FILTER_IDS="results/task37_sample_ids.json"
+KG_PORT=$((18000 + SLURM_JOB_ID % 1000))
+
+echo "=== Task 37: Trajectory Classification on Test Split ==="
+echo "Date: $(date)  KG port: $KG_PORT"
+
+# Start KG server
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port $KG_PORT --log-level warning &
+KG_PID=$!
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready"
+
+mkdir -p results/trajectories/task37
+
+# SFT base (step=0)
+echo ""
+echo "=== SFT base ==="
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$CKPT_ROOT/grpo-cwq-7b-verifiable-20260321" \
+    --steps 0 \
+    --base_model "$BASE_MODEL" \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --output results/task37_eval_sft.json \
+    --kg_server_url http://localhost:$KG_PORT \
+    --max_samples 0 \
+    --max_turns 5 \
+    --filter_ids "$FILTER_IDS" \
+    --save_trajectories results/trajectories/task37/sft \
+    --max_trajectory_samples 200
+
+# E3@500 (verifiable reward)
+echo ""
+echo "=== E3@500 ==="
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$CKPT_ROOT/grpo-cwq-7b-verifiable-20260321" \
+    --steps 500 \
+    --base_model "$BASE_MODEL" \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --output results/task37_eval_e3_500.json \
+    --kg_server_url http://localhost:$KG_PORT \
+    --max_samples 0 \
+    --max_turns 5 \
+    --filter_ids "$FILTER_IDS" \
+    --save_trajectories results/trajectories/task37/e3_500 \
+    --max_trajectory_samples 200
+
+# E5b@100 (tool-type bonus)
+echo ""
+echo "=== E5b@100 ==="
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$CKPT_ROOT/grpo-cwq-7b-tool-type-bonus-20260326" \
+    --steps 100 \
+    --base_model "$BASE_MODEL" \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --output results/task37_eval_e5b_100.json \
+    --kg_server_url http://localhost:$KG_PORT \
+    --max_samples 0 \
+    --max_turns 5 \
+    --filter_ids "$FILTER_IDS" \
+    --save_trajectories results/trajectories/task37/e5b_100 \
+    --max_trajectory_samples 200
+
+# E2@1200 (heuristic step)
+echo ""
+echo "=== E2@1200 ==="
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$CKPT_ROOT/grpo-cwq-7b-heuristic-20260325" \
+    --steps 1200 \
+    --base_model "$BASE_MODEL" \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --output results/task37_eval_e2_1200.json \
+    --kg_server_url http://localhost:$KG_PORT \
+    --max_samples 0 \
+    --max_turns 5 \
+    --filter_ids "$FILTER_IDS" \
+    --save_trajectories results/trajectories/task37/e2_1200 \
+    --max_trajectory_samples 200
+
+kill $KG_PID 2>/dev/null
+echo ""
+echo "=== Done: $(date) ==="

@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=v21_ladder
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --time=12:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# v20 W21 Part A — multi-seed reward-ladder middle rungs.
+# Re-run E3 (R-stepwise), E5b (R-toolverbs), E5b+KL (R-toolverbs.KL) with +2 seeds
+# each. SAME canonical recipe as the original single-seed runs (config defaults:
+# lr=5e-7, batch=64, init=outputs/verl-sft-cwq-7b-merged); only the seed changes.
+# 12h walltime + auto-resume (queue is fairshare-starved; short jobs backfill better).
+#
+# Usage:
+#   sbatch --export=ALL,RUNG=e3,SEED=2    scripts/run_v21_partA_ladder_grpo.job
+#   sbatch --export=ALL,RUNG=e3,SEED=3    ...
+#   sbatch --export=ALL,RUNG=e5b,SEED=2   ...
+#   sbatch --export=ALL,RUNG=e5b,SEED=3   ...
+#   sbatch --export=ALL,RUNG=e5bkl,SEED=2 ...
+#   sbatch --export=ALL,RUNG=e5bkl,SEED=3 ...
+
+set -eo pipefail
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+module load brics/nccl 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export VLLM_USE_V1=1
+export RAY_DEDUP_LOGS=1
+export RAY_TMPDIR="/tmp/ray-${SLURM_JOB_ID}"
+mkdir -p "$RAY_TMPDIR"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+: "${RUNG:?RUNG env var required (e3, e5b, or e5bkl)}"
+: "${SEED:?SEED env var required (2 or 3)}"
+
+# Per-rung reward + KL settings (canonical recipe)
+KL_ARGS=""
+case "$RUNG" in
+    e3)
+        export REWARD_TYPE=verifiable
+        ;;
+    e5b)
+        export REWARD_TYPE=tool_type_bonus
+        ;;
+    e5bkl)
+        export REWARD_TYPE=tool_type_bonus
+        KL_ARGS="actor_rollout_ref.actor.use_kl_loss=true actor_rollout_ref.actor.kl_loss_coef=0.05 actor_rollout_ref.actor.kl_loss_type=low_var_kl"
+        ;;
+    *)
+        echo "ERROR: RUNG must be e3, e5b, or e5bkl, got $RUNG"; exit 1 ;;
+esac
+
+INIT_BASE="outputs/verl-sft-cwq-7b-merged"
+EXPERIMENT_NAME="grpo-cwq-7b-w21-${RUNG}-seed${SEED}-20260522"
+KG_PORT=$((18100 + SLURM_JOB_ID % 90))
+
+echo "=== v21 W21 Part A: rung=${RUNG} seed=${SEED} ==="
+echo "Date: $(date)"
+echo "Reward: $REWARD_TYPE  KL_ARGS: ${KL_ARGS:-none}"
+echo "Experiment: $EXPERIMENT_NAME"
+echo "Init: $INIT_BASE  KG port: $KG_PORT"
+
+[ -d "$INIT_BASE" ] || { echo "ERROR: $INIT_BASE not found"; exit 1; }
+
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg \
+    --port $KG_PORT --log-level warning &
+KG_PID=$!
+TOOL_CFG="configs_verl/kg_tool_config_freebase_${SLURM_JOB_ID}.yaml"
+trap 'kill $KG_PID 2>/dev/null; rm -f "$TOOL_CFG" 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready on port $KG_PORT"
+sed "s|http://localhost:18901|http://localhost:${KG_PORT}|" \
+    configs_verl/kg_tool_config_freebase.yaml > "$TOOL_CFG"
+
+ray stop 2>/dev/null || true
+
+python -m verl.trainer.main_ppo \
+    --config-path="$PWD/configs_verl" \
+    --config-name=grpo_cwq_7b \
+    trainer.experiment_name="$EXPERIMENT_NAME" \
+    trainer.total_training_steps=400 \
+    trainer.save_freq=50 \
+    trainer.resume_mode=auto \
+    actor_rollout_ref.model.path="$INIT_BASE" \
+    actor_rollout_ref.actor.optim.lr=5.0e-7 \
+    ${KL_ARGS} \
+    ++data.seed=$SEED \
+    actor_rollout_ref.actor.data_loader_seed=$SEED \
+    +actor_rollout_ref.rollout.enable_sleep_mode=true \
+    actor_rollout_ref.rollout.agent.default_agent_loop=tool_agent \
+    actor_rollout_ref.rollout.multi_turn.tool_config_path="$TOOL_CFG" \
+    data.dataloader_num_workers=0
+
+kill $KG_PID 2>/dev/null
+echo "=== Done: $(date) ==="

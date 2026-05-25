@@ -1,0 +1,301 @@
+sample_id,question,first_search_call,error_mode
+WebQTrn-241_dfb6c97ac9bf2f0ac07f27dd80f9edc2,What country bordering France contains an airport that serves Nijmegen?,"get_tail_entities(France, Location.administrative_divisions)",wrong-relation
+WebQTrn-1077_f4a9e5f1e0dcfb82cbadf4771eda7bb5,The national anthem Afghan National Anthem is from the country which practices what religions?,"get_tail_entities(Afghan National Anthem, music_composer)",wrong-relation
+WebQTest-590_6aad73acb74f304bc9acae44314164be,"Which man is the leader of the country that uses Libya, Libya, Libya as its national anthem?","get_tail_entities(Libya, Location.administrative_divisions)",wrong-entity
+WebQTrn-60_68f0d0ad309d64a4af858a5ef4fb5713,"In which countries do the people speak Portuguese, where the child labor percentage was once 1.8?","get_tail_entities(Portuguese Language, language.writing_system)",wrong-relation
+WebQTrn-710_c264a6d11d7956741926d417b94327e2,When was the last time a team led by Larr Baer win the World Series?,"get_tail_entities(Larry Baer, sports.sports_league_participation.league)",wrong-relation
+WebQTrn-3100_143c89d70679c3e5257c93d8e2bc4c67,Which globe region with the UTCâ05:00 time zone does the Dominican Republic call home?,"get_tail_entities(Dominican Republic, Location.administrative_divisions)",wrong-relation
+WebQTest-1797_68a33792b0a1e18937dcd4b3f50d941e,What group fought in the Battle of Vicksburg that was based in Montgomery?,"get_tail_entities(Montgomery, location.containedby)",wrong-relation
+WebQTrn-1864_9dc4e22121d3a46d45b8f9bd9e8c7013,Which country that is situated in the ASEAN Common Time Zone has the largest population?,"get_tail_entities(ASEAN, organization.organization.founders)",wrong-entity
+WebQTrn-1841_b8df00139e3fa59b8633ef551ed8ca9f,What popular sport in Spain has a team that won the 2010 FIFA World Cup championship?,"get_tail_entities(Spain, Location.administrative_divisions)",wrong-relation
+WebQTrn-2722_8babdaa9ecd05a72e3227b43b1f98771,For what did the personage who was educated at the Dewitt High School win a gold medal?,"get_tail_entities(Dewitt High School, education.educational_institution.colors)",wrong-relation
+WebQTest-983_ccda690fb745939d0a62c3fbcf3e3769,"Where did Tennessee Williams go to college where the newspaper is ""The Maneater""?","get_tail_entities(Tennessee Williams, education)",wrong-relation
+WebQTrn-3376_0619d288bbed0ca782e60c6f841a6051,What colleges did the famous person who went to Castlemont High school go to?,"get_tail_entities(College/University, type)",wrong-entity
+WebQTrn-567_693feb48c0515cd069014e7ca2846b37,What movie with the character Teklel Hafouli did Ron Howard do?,"get_tail_entities(Ron Howard, film)",wrong-relation
+WebQTrn-1077_0c34ca057060e35aa5c74fbbca682dee,"In the nation that has the Badakhshan province, what religions are practiced?","get_tail_entities(Badakhshan, location.location.containedby)",wrong-entity
+WebQTrn-1864_67ecd1c247c3b2c9545fbcf1ad8d9d00,Which location in the Anadyr Timezone has the biggest population?,"get_tail_entities(Anadyr Time Zone, location.location.time_zones)",genuine-kg-miss
+WebQTest-998_f693ae2cb9aa6b8ffdf0f103a6777b62,What is the most recent event in which the sports team owned by James L. Dolan won the championship?,"get_tail_entities(James L. Dolan, organization.leadership)",wrong-relation
+WebQTrn-568_d54918e8e89ad97237bce821087a9818,In which US county is the TV program NBC Nightside filmed in?,"get_tail_entities(NBC Nightside, television.tv_program.episodes)",wrong-relation
+WebQTrn-2215_11c4cd5a25fd84f3980d7013c0329bad,Where was the artist that had This Summer Tour raised?,"get_tail_entities(This Summer Tour, music.concert_tour.artist)",wrong-entity
+WebQTrn-810_a188aff4a054e1ec66fafba1b8021f67,What year did the MLB franchise owned by Bill Neukom win the world series?,"get_tail_entities(Bill Neukom, organization.role)",wrong-relation
+WebQTrn-3744_26401b4c33bcb760afd734acaa0a1869,The Daily Cardinal is the school newspaper at which university that Russell Wilson attended?,"get_tail_entities(Russell Wilson, sports.sports_team_roster.player)",genuine-kg-miss
+WebQTrn-3744_b9bd90569bb7912ec3ea180bf164663c,What educational institution with men's  sports team named Wisconsin Badgers did Russell Wilson go to?,"get_tail_entities(Russell Wilson, sports.sports_team_roster.player)",genuine-kg-miss
+WebQTrn-60_39ba4faa87698cb0767d1a5ee7ce1827,What country do they speak Portuguese where the GDP real adjusted value was once 100349905926?,"get_tail_entities(Portuguese Language, language.writing_system)",wrong-relation
+WebQTest-121_333b95bd45af3e6e31e328bc8c24d84f,The person educated at Chase Lane Primary School played for what team in 2011?,"get_tail_entities(Chase Lane Primary School, educational_institution.school_district)",wrong-relation
+WebQTrn-2444_e5059ff268415917df330817b9c8ef8c,"In what stadium does the team who is owned by William DeWitt, Jr. play?","get_tail_entities(William DeWitt, Jr.)",wrong-entity
+WebQTrn-124_028bb5f442b37a4af9f9fd9fa0bc5e9a,What movies did the person who went to William O. Schafer Elementary School direct?,"get_tail_entities(William O. Schafer Elementary School, education.educational_institution.students_graduates)",wrong-entity
+WebQTest-96_11da03aa9cec8b011619c8ea0dbfdcf9,The person who attended education institution in East Whittier Elementary School died where?,"get_tail_entities(East Whittier Elementary School, educational_institution.school_district)",wrong-relation
+WebQTest-1528_25853c768670cd164d7793f094ba7cbb,What film with character Luke Castelland does Logan Lerman play in?,"get_tail_entities(Logan Lerman, film)",wrong-relation
+WebQTrn-1841_6bf772ee1b388c1b3c226b02c8244aa7,"Which popular sports team in Spain, that won the 2014 Eurocup Finals championship?","get_tail_entities(Spain, Location.administrative_divisions)",wrong-relation
+WebQTest-1119_8c41904eaef9fce2d95afd27eb9150ec,What organization led by Bentley B. Rayburn?,"get_tail_entities(Bentley B. Rayburn, organization.leadership.role)",wrong-relation
+WebQTrn-1812_5fb6c8c4d53d55c03445e4b2454ef810,What Caribbean countries use the East Caribbean dollar currency?,"get_tail_entities(Caribbean, type)",wrong-relation
+WebQTest-397_c7ee26d5c3f80107d7ae5fede489209a,What are the school colors of Harvard Art Museum?,"get_tail_entities(Harvard Art Museum, type)",wrong-entity
+WebQTest-1348_3bddf705b2a346fbdc2f00e9a02b84f3,What team did Payton Manning's father play for that has a mascot named Viktor the Viking?,"get_tail_entities(Baltimore Ravens, sports.sports_team.roster)",wrong-entity
+WebQTest-1560_1bee868ed5551a3cfdba70a720adbc04,"Who founded New York University, which held his governmental position from after 1795-03-04?","get_tail_entities(New York University, type)",wrong-relation
+WebQTest-1560_e2ff014eae4ff8dbe3cacbb3e4b0002c,Who are the founders of the educational institution where the sports team NYU Violets Men's Basketball plays?,"get_tail_entities(NYU Violets Men's Basketball, sports.sports_team.roster)",wrong-relation
+WebQTrn-1077_83f43b9f4c2707c689543b33efe1d28d,Which religion practiced in Afghanistan has a place of worship known as Ibrahim Mosque?,"get_tail_entities(Afghanistan, Location.administrative_divisions)",wrong-relation
+WebQTrn-3535_dfcf84e9ba3b9baef4ee1f2cc51994b6,Who did the voice of character Kovu?,"get_tail_entities(Kovu, film)",wrong-relation
+WebQTest-1012_7ee41dcd5e0ee726e65a46d891982c8f,What Hollywood studio produced the American Gladiators TV movie?,"get_tail_entities(American Gladiators, film_cut)",wrong-relation
+WebQTrn-1841_cac535ea48922ba42c75ec7ac67cf454,What popular Spanish sport has a basketball team with head coach Joan Plaza?,"get_tail_entities(Spain, Location.administrative_divisions)",wrong-relation
+WebQTest-1091_31c94b951f3d708ac503327d7979da93,"Which type of religions practiced in the United States, where the religion place of worship is called, Candi Laras?","get_tail_entities(United States of America, organization.organization_scope.organizations_with_this_scope)",wrong-relation
+WebQTrn-1077_3c58a650bf56f8c8d0f6931d08bd2598,What are the religions in the area whose major exports are from fruit and tree nut farming?,"get_tail_entities(Fruit and tree nut farming, type)",format-mismatch
+WebQTest-397_ef7c0ef1f2f2ee145c3e9fa70b47ab7d,What colors do the school where Donald Stanley Marshall is a grad student use?,"get_tail_entities(Donald Stanley Marshall, education.education.student)",genuine-kg-miss
+WebQTest-1560_260b848263a65518db6f4418d93a311e,"Holding his governmental position from earliest, who founde New York University?","get_tail_entities(New York University, type)",wrong-relation
+WebQTest-1260_018dc0c070e53555fa37f63d4b83ca87,In what year did mascot Poe's team win the Super Bowl?,"get_tail_entities(Super Bowl, sports.sports_championship_event.championship)",format-mismatch
+WebQTest-1000_a1edafe051cb7bc171f2beb523d3a90c,Which nation uses the CFP Franc as currency and is located in Oceania?,"get_tail_entities(Oceania, type)",wrong-relation
+WebQTrn-1532_cbf60f0a8068d6c5464651a537e93b13,What college with men's basketball sports team named UMKC Kangaroos did Harry S. Truman attend?,"get_tail_entities(Harry S. Truman, film)",wrong-relation
+WebQTest-837_c4e06c3a9e4b4f10bd1ae97f1742c198,In what year did a team win the superbowl and the 2013 AFC Championship Game ?,"get_tail_entities(Super Bowl, type)",wrong-relation
+WebQTrn-1484_1fbd766e1b1bf978da23e8646cadf3a1,The person who attended the education institution Colegio AlemÃ¡n Alexander von Humboldt did what kind of paintings?,"get_tail_entities(Colegio Alemán Alexander von Humboldt, education.educational_institution.colors)",wrong-relation
+WebQTest-12_c701ad2b5b8ef3f3ed26dd2ed8703d05,"Who held his governmental position from December 12, 1808 and was Governor of Ohio in 2011?","get_tail_entities(Governor of Ohio, organization.role.leaders)",wrong-entity
+WebQTrn-237_abc143e50fcf4915c8267215915795b5,Stelly McBeam is the team mascot for the sports team with who as head coach?,"get_tail_entities(Stelly McBeam, sports.mascot.team)",wrong-entity
+WebQTest-743_42588c6fd3d30a777953bbaf2b4079b9,Who are brothers of the individual who was educated at Edward Devotion School?,"get_tail_entities(Edward Devotion School, educational_institution.school_district)",wrong-relation
+WebQTrn-1077_02d4f95f5b408929cedd448772a62b5b,What religion in Afghanistan that worship in the mosque?,"get_tail_entities(Afghanistan, Location.administrative_divisions)",wrong-relation
+WebQTest-538_7051341e8a163515972dc322874d8aa0,What movies did the artist that had the concert tour called the Taylor Swift Fears 2009 Tour play in?,"get_tail_entities(Taylor Swift Fearless Tour 2009, music.concert_tour.artist)",wrong-entity
+WebQTrn-710_e3d40457273785e46c5b71732713a5f4,When is the last time the team whose mascot is called Crazy Cab win the World Series?,"get_tail_entities(Crazy Cab, sports.mascot.team)",wrong-entity
+WebQTest-1785_87df014c2b1d5440ea39f0d94fe211cb,Which movie has a character named Margie and featured Kim Richards as an Actor?,"get_tail_entities(Kim Richards, film.performance.actor)",genuine-kg-miss
+WebQTrn-1001_4e074d51c67d5358b05e462d1f48f3e5,What other Superbowls did the champion of the 1934 NFL Championship game win?,"get_tail_entities(Super Bowl, type)",format-mismatch
+WebQTrn-857_87f2309c33a86e13ce73f341a6f1dc46,Who was the vice president of the person who went to St. John's Catholic Elementary School?,"get_tail_entities(St. John's Catholic Elementary School, educational_institution.school_district)",wrong-relation
+WebQTrn-2738_910f8908e2d53dfb850b7b52b74e4a51,What art style was done by the person who lived at Le Chateau-Cambresis?,"get_tail_entities(Le Château-Cambresis, architecture.building.occupant)",wrong-entity
+WebQTrn-1077_7bd6b37d01a372aa5af2a8d5ef53d827,What religion practiced in Afghanistan has a sacred site in Jesusalem?,"get_tail_entities(Afghanistan, Location.administrative_divisions)",wrong-relation
+WebQTest-397_6a82d6252604de26338b33025b2a160a,What are the school colors of the educational institution that includes a grad student named Franklin Ford?,"get_tail_entities(Franklin Ford, education.education.student)",genuine-kg-miss
+WebQTrn-25_5bbab94cc6dc1cc59a76eb19aed3832f,What film has a character named Kate and Taylor Lautner played in?,"get_tail_entities(Taylor Lautner, film)",wrong-relation
+WebQTest-1560_fd6688bbf30871641ad813fcf09d673c,Which person held a government post from 1973-12-02 and established New York University?,"get_tail_entities(New York University, type)",wrong-relation
+WebQTrn-1841_6f818301283181e8199f67b080fce068,What basketball team in Spain is Pablo Laso head coach for?,"get_tail_entities(Spain, Location.administrative_divisions)",wrong-relation
+WebQTrn-1077_09020cbb000c86fda5910ec084690246,What religion holds sacred the place called Mecca and is observed in Afghanistan?,"get_tail_entities(Afghanistan, Location.adjoin_s)",wrong-relation
+WebQTrn-849_82e069064d66663276c549f47e5e179d,What European Union country within the  Atlantic Time Zone shares borders with Germany?,"get_tail_entities(Germany, Location.administrative_divisions)",wrong-relation
+WebQTrn-60_3fbdbecc8eff7b1125058d50ba70e19b,What country do people speak Portuguese where the long term unemployment rate is 15.5?,"get_tail_entities(Portuguese Language, language.writing_system)",wrong-relation
+WebQTrn-2641_496153141015e2276bf542bbf6a99b96,Where did the famous person who went to Horace Mann School for the Deaf die?,"get_tail_entities(Horace Mann School for the Deaf, organization.headquarters)",wrong-entity
+WebQTrn-237_f44adc4947a59c150317bb5923cf1c9b,"Who is the current head coach of the team the uses the song title ""Fight Polka""?","get_tail_entities(Fight Polka, music.composition.composer)",wrong-entity
+WebQTrn-1812_40353d146817f5fe5dd67cb0643abe20,What caribbean countries once had co2 emissions of 1961 metric tons?,"get_tail_entities(Caribbean, organization_scope)",wrong-relation
+WebQTest-106_f21253e8b8df81c378590e68b2cd107e,"In the film that has a charcter named Final Club Girl #1, who did Armie Hammer play?","get_tail_entities(Armie Hammer, film.performance.actor)",genuine-kg-miss
+WebQTrn-241_0652d8b1cb95848c9630860c92e38e6f,What country bordering France that is in the Western European Time Zone?,"get_tail_entities(France, Location.administrative_divisions)",wrong-relation
+WebQTrn-1812_82e069064d66663276c549f47e5e179d,What countries are in the Atlantic Time Zone in the Caribbean?,"get_tail_entities(Caribbean, organization_scope)",wrong-relation
+WebQTrn-2314_2e6d98fb779ac3b63a5dd2688034c0c9,"What currency is used in the country with Nobel Patria, tu hermosa as its national anthem?","get_tail_entities(Nobel Patria, tu hermosa)",wrong-entity
+WebQTrn-750_3678d94fca2cefdaebd9ae4df2b46ada,In what years did Stan Kasten's organization win the World Series?,"get_tail_entities(Stan Kasten, sports.sports_team_manager.team)",wrong-relation
+WebQTest-1785_0943c2e85ef4350a9672b44cf93291d4,Which film with Idi Amin as a character did Kim Richards appear in?,"get_tail_entities(Idi Amin, film)",wrong-relation
+WebQTrn-683_33af83d6d660a434aeb440fd6f82c8d5,"In film that has a charcter named World Security Council Member #3, who is playing Hawkeye?","get_tail_entities(m.09swsc3, film.performance.character)",wrong-entity
+WebQTrn-14_1d1c28cc9c5f4e83f9f932e3615e2391,Where is the city that hosted the 1960 Summer Olympics located?,"get_tail_entities(1960 Summer Olympics, sports.sports_competition.participating_teams)",wrong-relation
+WebQTrn-1659_96b4ef75cad08d1c7213c761f9c0c65f,What team with fight song Bow Down to Washington did Nate Robinson played for?,"get_tail_entities(Nate Robinson, sports.sports_team_roster.player)",genuine-kg-miss
+WebQTrn-1297_0ed55ab55fae21af5b4b03af90678e30,Where did the person who went to Statford Northwestern Secondary school grow up?,"get_tail_entities(Stony Northwester Secondary School, educational_institution.school_district)",wrong-entity
+WebQTrn-1521_3ddef42334254dad62fdbd0c3e4724e7,What is the mascot of the educational institution that has a sports team named the North Dakota State Bison?,"get_tail_entities(North Dakota State University, type)",wrong-entity
+WebQTest-996_3b05c852523638229a0ba552f2ac27dd,Which stadium did Ireland play in where it won the World Cup Championship in rugby in 1995?,"get_tail_entities(Ireland, Location.administrative_divisions)",wrong-entity
+WebQTrn-2023_a1424289baa01b0b74d44cdffa8ef18f,What is the location where the individual who attended Eli Whitney High School brought up?,"get_tail_entities(Eli Whitney High School, educational_institution.school_district)",wrong-relation
+WebQTest-537_955d6e0a1fc92093ca7adcbd82267c5b,What movie with character named Ben Dunham #2 has Charlie Nunnam been in?,"get_tail_entities(Charlie Hunnam, film)",wrong-relation
+WebQTest-1348_c1da6561b1fb496c7b1eae3b08eafca8,What NFL Team did Peyton Manning 's father play for also won the 2010 NFC Championship Game?,"get_tail_entities(Peyton Manning, sports.sports_team_roster.player)",genuine-kg-miss
+WebQTest-1348_426b5d500aec6111d69c3f6f9b16b3f3,What team with team mascot named Sir Saint did Peyton Manning's dad play for?,"get_tail_entities(Peyton Manning, sports.sports_team_roster.team)",genuine-kg-miss
+WebQTest-1260_6b1c0c0fb24a34937f450fdc16a3387b,"In what year did the sports team whose fight song is ""Seven Nation Army"" win the Super Bowl?","get_tail_entities(Super Bowl, sports.sports_championship_event.championship)",format-mismatch
+WebQTest-1528_a2694b95163afd08c03e36c6c195cab6,What film that has a character named Charles De Batz-Castelmore does Logan Lerman play in?,"get_tail_entities(Charles De Batz-Castelmore, film.performance.character)",wrong-entity
+WebQTrn-1077_f3866b9a2ec763921936d5aae203dcc0,What religion in Afghanistan that has a notable figure named Syed Aqeel-ul-Gharavi?,"get_tail_entities(Afghanistan, Location.administrative_divisions)",wrong-relation
+WebQTrn-1646_6050f9741fc20724152eafe912e420e2,"In the country that uses the DOminican Peso, which currnecy is used?","get_tail_entities(Dominican peso, type)",wrong-relation
+WebQTrn-894_d2fa08c8fbe626390ddbc99de7f9cfaa,Who inspired Scott Fitzgerald that is the architect who designed The Mount?,"get_tail_entities(Scott Fitzgerald, book.written_work.author)",wrong-entity
+WebQTest-213_1bb5d148e28985730d4603ae86c12405,"Who did Scarlett Johansson date, and is the player started his sports career in 1992?","get_tail_entities(m.09swsc3, film.performance.actor)",wrong-entity
+WebQTrn-25_ea583b84dc5dfe45c75fd39e26322506,What TV series with 50 episodes does Taylor Lautner play in?,"get_tail_entities(Taylor Lautner, film)",wrong-relation
+WebQTest-1340_872253e47dd6ddaa213ff31eeda8783b,Where is Steven Nash from in the Eastern Time Zone?,"get_tail_entities(Steven Nash, sports.sports_team_roster.player)",wrong-entity
+WebQTrn-1077_71f8695fd9d505f04a479ec4bf7a65c8,What religion with a place of worship named Madayi Palli is practiced in Afghanistan?,"get_tail_entities(Afghanistan, Location.administrative_divisions)",wrong-relation
+WebQTrn-1677_59282357ecb12eaa2c93c4580085afa4,What film with character named Ginger did Adam Sandler play in?,"get_tail_entities(Adam Sandler, film.performance.actor)",genuine-kg-miss
+WebQTrn-3515_a8f39779957aacb92b8f13790d0fb345,What educational institution with sports team named Miami RedHawks did Paul Ryan attend college?,"get_tail_entities(Paul Ryan, film)",wrong-relation
+WebQTrn-2576_8c6b952c6bd963f0ece4e401c9eb731a,What Central Tiem Zone continent do the Falkland Islands belong to?,"get_tail_entities(Central Time Zone, relation)",wrong-relation
+WebQTrn-775_5247c1be3efc99c92c92252207b7a20d,What group has Augrey o'Day in it and went on the concert tour Making the Band 4?,"get_tail_entities(Making the Band 4, music.album.artist)",wrong-entity
+WebQTrn-2444_78f882dc1f711bbf67aec90c079f9864,The sports team owner Fred Hanser Stadium is where?,"get_tail_entities(Fred Hanser Stadium, sports.sports_facility.teams)",wrong-entity
+WebQTrn-2400_56cc72c5eb2b46ff90577926dbe8cb1a,Who played the character Ratty Nepalese in the film Raiders of the Lost Ark?,"get_tail_entities(Raider of the Lost Ark, film.film.featured_film_locations)",wrong-entity
+WebQTest-1260_c4e06c3a9e4b4f10bd1ae97f1742c198,Which Super Bowl was won by the team that also won the AFC Championship Game in 2013?,"get_tail_entities(Super Bowl, type)",format-mismatch
+WebQTrn-3049_549e26794f52c12e657662c92cddfb02,What city hosted the 1996 Summer Olympics?,"get_tail_entities(m.0w9v_wz, location.containedby)",wrong-entity
+WebQTrn-1677_51c7c4987eaddd466e006afb819973d8,In what film with a character named Robinson did Adam Sandler play in?,"get_tail_entities(Adam Sandler, film)",wrong-relation
+WebQTest-1603_1f6f264bb8ed75d1f1faf9b26044401b,What is the sacred text of the religion who has Grotto-heavens as a sacred site?,"get_tail_entities(Grotto-heavens, location.location.containedby)",wrong-relation
+WebQTest-1560_d87e6003e0bb73430e71d08cbc015b56,Who is the governmental officer prior to 3-4-1795 and founded New York University?,"get_tail_entities(New York University, type)",wrong-relation
+WebQTrn-662_5ec0304dbb715858e564cb8426b7e4f7,What is the first name of the club that claimed the 2007-08 Premier League championship?,"get_tail_entities(2007–08 Premier League, sports.sports_league.season_regular_season)",wrong-relation
+WebQTrn-1539_de8059b06640bb0b9cbe51ff95a7589a,Who plays in the film with the character Commander Kent?,"get_tail_entities(Star Wars, film)",wrong-entity
+WebQTrn-2815_b0ec4891d80892c6499b17b0c8c363e2,Where was a famous person with the medical condition Addison's disease reared?,"get_tail_entities(Addison's disease, medical_treatment)",wrong-relation
+WebQTest-1560_9c92108cab15de86fd747fe1982c5294,Who founded the branch organization that was originally a project of the Margaret Sanger Papers?,"get_tail_entities(Margaret Sanger Papers, organization.founding_organization.founders)",wrong-entity
+WebQTrn-1077_12953ec0b5895afd7da838969d549013,What religions are practiced in the country that Pakistan exports to?,"get_tail_entities(Pakistani province, location.containedby)",wrong-entity
+WebQTrn-452_006b1f1ed800c636a01f3888644cc1eb,"In which city, does Lala Anthony live, where the TV show Ace of Cakes was filmed?","get_tail_entities(Lala Anthony, film)",wrong-entity
+WebQTest-1923_a5c10763224e9d1b176ceada6e84c464,What film with character named Troy Bolton has Miley Cyrus been in?,"get_tail_entities(Miley Cyrus, film)",wrong-relation
+WebQTest-397_0b3a8b0643fac530a078012a025201fa,Harvard Board of Overseers is part of the school with what colors?,"get_tail_entities(Harvard Board of Overseers, organization.organization.leadership)",wrong-relation
+WebQTrn-3083_8c30eccd3cde88b0a0d389f34d086641,"In the nation that uses The Internationale as the national anthem, who was the President in 1948?","get_tail_entities(1948, time.event.locations)",wrong-entity
+WebQTrn-3087_a82e8e886228ce0d1aecee4a2caab326,What is the religion of the First Church of Lombard?,"get_tail_entities(First Church of Lombard, organization.organization_founders)",wrong-relation
+WebQTrn-1259_11c4cd5a25fd84f3980d7013c0329bad,"Where did the ""Beat The Summer Tour"" artist graduate college?","get_tail_entities(Beat the Summer Tour, music.concert_tour.artist)",wrong-entity
+WebQTrn-2653_c78405f6f2157645f1098f8a871f1bc2,What wars did the country that Louis-EugÃ¨ne Cavaignac was a governmental position been involved in?,"get_tail_entities(Wars of the Vendée, event.included_in_event)",wrong-entity
+WebQTest-534_7184f912d2d2be62d80145479b29c642,What is the mascot of the sports team whose owner is Mark Attanasio?,"get_tail_entities(Mark Attanasio, organization.role)",wrong-relation
+WebQTest-61_4dbb23937c062d0f3a3496d2fbf26a12,"What religion is practiced in the place where there is a religious place of worship called St. Mary's Cathedral, Batticaloa?","get_tail_entities(St. Mary's Cathedral, Batticaloa)",wrong-entity
+WebQTest-590_e1cd6a19c1fe109a00e4149625e31531,Who is in charge of the usage of the Libyan dinar?,"get_tail_entities(Libyan dinar, type)",wrong-relation
+WebQTrn-1770_1128ef6d5d784cec508a041e2d3c87b9,What is the daughter's name of the person who attended education institution St. Mary's Elementary School?,"get_tail_entities(St. Mary's Elementary School, educational_institution.school_district)",wrong-relation
+WebQTest-759_ba7920b2a977b33afdc49bc8f82377b0,Who did Brad Pitt date that had bulimia nervosa?,"get_tail_entities(Brad Pitt, film)",wrong-relation
+WebQTrn-3744_296c958684f7d96df61d00c4711d9dd6,What educational institution with The Badger Herald newspaper did Russell Wilson go to?,"get_tail_entities(Russell Wilson, sports.sports_team_player_stats.team)",wrong-relation
+WebQTest-12_0267745d7968252ff8fbf5246c9287e9,"Who held his governmental position from after January 3, 1983 and was governor of Ohio in 2011?","get_tail_entities(m.011xdlvp, organization.leadership.role)",wrong-entity
+WebQTest-1320_7184f912d2d2be62d80145479b29c642,What's the home field for the sports team owned by Mark Attanasio?,"get_tail_entities(Mark Attanasio, organization.role)",wrong-relation
+WebQTrn-1731_c5d53d4eba0e558f65b11b34984d10b9,"In the concert tour named Raised on Radio Tour, what did Randy Jackson play?","get_tail_entities(Randy Jackson, music.featured_artist.recordings)",wrong-relation
+WebQTest-12_974c964a1a2810facfeb4b1a996e878a,Who held a government post from 1979-01-03 and was the governor of Ohio in 2011?,"get_tail_entities(m.011xdlvp, organization.leadership.role)",wrong-entity
+WebQTrn-683_3cfa649a5d5692f81e227ca73f32702f,Who is the actor that played Hawkeye in the movie that has a character named Senator Boynton?,"get_tail_entities(m.09swsc3, film.performance.character)",wrong-entity
+WebQTrn-2478_76926adb8d69a10516897671bc45b2ec,What university has Otto the Orange for a mascot?,"get_tail_entities(University of Florida, type)",wrong-entity
+WebQTrn-2486_bcd294e8b78226fb373c0a54e4dcba01,Where did the actor who played Forbes Cover Billionair graduate from?,"get_tail_entities(Forbes Cover Billionaire, film.film.featured_film_locations)",wrong-relation
+WebQTrn-2834_1a821009d9d43af7c2094125b1dd5136,"What is the major religion called that is the subject of ""Lies My Father Told Me"" in the United States?","get_tail_entities(Lies My Father Told Me, book.written_work.subjects)",genuine-kg-miss
+WebQTest-1528_f4911e93c40f00f8c256e3ccf42422c1,What Logan Leman movies were released on the distribution medium Blu-ray disc?,"get_tail_entities(Blu-ray, media_common.netflix_genre.titles)",wrong-entity
+WebQTrn-2784_abedc8acd0fdcd2e595d7ec6d58d6058,"In which movies does Tupac act in, that was edited by Malcolm Campbell?","get_tail_entities(Tupac Shakur, film)",wrong-relation
+WebQTest-191_1ca9a284fcd2c17f453b0fb590e8223f,What college Drew Brees attended is the  university with the smallest number of postgraduates?,"get_tail_entities(Drew Brees, sports.sports_team_player.stats)",wrong-relation
+WebQTrn-1577_fc314eae63710b1e1427ebe5eb345966,Which school with the latest founding date did James Baldwin attend?,"get_tail_entities(James Baldwin, type)",wrong-relation
+WebQTrn-497_5e9fcaa36ee91d7f8bbea0df75c2da02,"In which country is the location, where the film, ""Interview"" occurs?","get_tail_entities(Country, type)",wrong-entity
+WebQTrn-25_65269a6707b8923aa10626533b2f7ae9,What moviews feature the actor who was the topic of the image taylor_wolfpack.jpg?,"get_tail_entities(Taylor_lwolfpack.jpg, common.image.appears_in_topic_gallery)",wrong-entity
+WebQTest-450_32407709a2c3bb1902f55d63756250a4,What is the national flower of the state that held the United States Senate election of Hawaii in 2010?,"get_tail_entities(United States Senate election in Hawaii, 2010)",wrong-entity
+WebQTrn-124_a91831e360cbb879545474e6db3851c6,What movie directed by Angelina Jolie did C.J. Valleroy play in?,"get_tail_entities(Angelina Jolie, film.performance.actor)",genuine-kg-miss
+WebQTrn-2653_57622031abc6042a5a02dcf3b4300552,During which wars did France participate in using an army of less that 16544 soldiers?,"get_tail_entities(France, Location.administrative_divisions)",wrong-relation
+WebQTest-1923_1bc85cf9eab0a0714557180ac27e91a2,"Of the movies that Miley Cyrus been in, which film was released on December 25,2003?","get_tail_entities(Miley Cyrus, film)",wrong-relation
+WebQTrn-124_f3b167daf756d47d1ecd11a01d3ab353,What film directed by Angelina Jolie was written by Joel Coen?,"get_tail_entities(Angelina Jolie, film.performance.actor)",genuine-kg-miss
+WebQTrn-1841_a5bd6833f38c9345eb2286b787986daa,What popular sports team in Spain was founded before 1994?,"get_tail_entities(Spain, Location.administrative_divisions)",wrong-relation
+WebQTrn-3543_d7db4cdab1589b7c97a81236310a67f7,What country to which Japan exports contains a neighborhood called Al Barsha?,"get_tail_entities(Japan, Location.administrative_divisions)",wrong-relation
+WebQTrn-3084_73a0a036677106856ef62808aa205b70,What country that has the largest calling code does Japan export goods to?,"get_tail_entities(Japan, Location.administrative_divisions)",wrong-relation
+WebQTest-1171_6bdeb539174509f051a303e0ee59c246,What actor played the charactor Troy Bolton and also has done the voice of Star Wars villiam Darth Vader?,"get_tail_entities(Troy Bolton, film)",wrong-entity
+WebQTest-537_a8a56da657efbba90881cce421ae6962,What movies featuring Charlie Hunnam have a film netflix_id lower than 60031289?,"get_tail_entities(Charlie Hunnam, film.performance.actor)",genuine-kg-miss
+WebQTrn-2784_ed45c0405531af3d1f5b49a57c275835,What films featuring Tupac came out in 1992?,"get_tail_entities(Tupac Shakur, film)",wrong-relation
+WebQTrn-2152_c9be001aaf5f69c9067ba4b530ca0a93,"Of all the sports teams in the American League West, which team was founded first?","get_tail_entities(American League West, sports.sports_league_division.teams)",wrong-relation
+WebQTest-538_e767ac9ea2c1ea9896e9267b30ea9306,"What movie was nominiated with an award titled ""as Robby Ray Stewart"" and featured Taylor Swift?","get_tail_entities(Taylor Swift, film)",wrong-relation
+WebQTest-1000_b1236660c5bd74b3c7b1722628aa4861,"Which countries that are included in Oceania, where the country calling code is more than 682?","get_tail_entities(Oceania, type)",wrong-relation
+WebQTest-1923_275dfbe10c911cf65dff84afb1c5ede2,"What movies has the composer of the lyrics ""I learned from you"" played in?","get_tail_entities(I learned from you, music.composition.lyricist)",format-mismatch
+WebQTest-590_ef6d9d3c6a2c1a1b2cef32193eecfa29,"Who's in charge of the location,  currently, that has a governmental body called, the Libyan Revolutionary Command Council?","get_tail_entities(Libyan Revolutionary Command Council, organization.leadership)",wrong-relation
+WebQTest-561_c4965c0149340bcfe2620c82edcf5638,What event ended before 3-4-1865 while Abe Lincoln was the President?,"get_tail_entities(Abraham Lincoln, film)",wrong-relation
+WebQTrn-25_788ea75164ce87773e55b0753fd1b9f6,What movie that debuted at the Stockholm International Film Festival does Taylor Lautner play in?,"get_tail_entities(Taylor Lautner, film)",wrong-relation
+WebQTrn-837_6e82d9e61c6b514331784d0cedb1293d,What university did Jennifer Hudson attend that has a large number of undergraduates?,"get_tail_entities(Jennifer Hudson, film)",wrong-relation
+WebQTrn-837_690725e14115ca059d1bcbfb022bbf1f,What high school was attended by the actor who played Sister Rosemary?,"get_tail_entities(Sister Rosemary, film)",wrong-relation
+WebQTrn-808_b4ac4db1c6077de2d6de3bd634f5a8f0,"What was the primary topic of the image titled ""Triptolemos Louvre G187 's brothers and sisters""?","get_tail_entities(Triptolemos Louvre G187, art.artwork.art_form)",wrong-relation
+WebQTrn-3543_58fa00ab06c20e4ef19c1baa364ace47,What country to which Japan exports is the governmental jurisdiction where Ionatana Ionatana holds a governmental office?,"get_tail_entities(Japan, Location.adjoin_s)",wrong-relation
+WebQTrn-1770_6a7c160ace84e7908302f805739ad06d,"Who is the daughter of the composer for the work ""dangerously in Love 2""?","get_tail_entities(Dangerously in Love 2, music.recording.artist)",genuine-kg-miss
+WebQTrn-2904_19d54d9ec45bcb6a7c0ccc3d7472b2de,Which city serves as home to both Lauren Conrad and fictional character Chloe King?,"get_tail_entities(Lauren Conrad, film)",wrong-relation
+WebQTest-1923_4e9c47a2fdd065e939fe0da5b782f120,What movie with film casting director Denise Chamian had Miley Cyrus been in?,"get_tail_entities(Miley Cyrus, film)",wrong-relation
+WebQTest-712_11e9758e98422bc42f1d085d6723de33,Which country has territories in Oceania and is the location of the fictional universe of Captain Pugwash?,"get_tail_entities(Australian Silky Terrier, organization_scope)",wrong-entity
+WebQTrn-3671_fe491c425ea24501a960040ed645a049,Who played the Queen the movie that Liz Giles starred in Hair?,"get_tail_entities(Liz Giles, film.performance.actor)",genuine-kg-miss
+WebQTest-1178_7df82f515bf7947c2bfdd404503b50fd,"Where did the recording artist for ""Beccause I Got a Girl"" grow up?","get_tail_entities(Because I Got a Girl, music.composition.composer)",wrong-entity
+WebQTrn-567_5c5b62b8b365e36d8e8836335518d242,What movie by Ron Howard did Lois Freeman-Fox edit?,"get_tail_entities(Ron Howard, film)",wrong-relation
+WebQTrn-1394_a1572b994d19a14bef9e247c7fb4f300,Which country that trades with Turkey has the largest calling code?,"get_tail_entities(Turkey, Location.administrative_divisions)",wrong-relation
+WebQTest-106_8a7ae3422867fd4b2d40b06930915468,Who did Armie Hammer play in The Social Network?,"get_tail_entities(Armie Hammer, film)",wrong-relation
+WebQTrn-849_e70fa56a3d168a6acb77e5bc6f8fd78c,What country borders Germany with the smallest population?,"get_tail_entities(Germany, Location.administrative_divisions)",wrong-relation
+WebQTest-1012_131eaad9f6b360a7166467b5784470d4,"Which building in Hollywood, CA was opened on May 18, 1927, and can be visited this weekend?","get_tail_entities(Los Angeles, location.containedby)",wrong-entity
+WebQTrn-1629_baeb8abc8493b5cb1102c5be452b73ce,Who did the voice of Jack Skellington and plays Kurotowa?,"get_tail_entities(Jack Skellington, film)",wrong-relation
+WebQTrn-1841_5d1cba94c816bec220b9f98e97493b0f,What nominee of the Laureus World Sports Award for Team of the Year represents a popular sport in Spain?,"get_tail_entities(Spain, Location.administrative_divisions)",wrong-relation
+WebQTrn-1557_9ef8e50ae1e6ac1fdc18919ec4827748,"Of the colleges Charles Drew attended, which university has the largest number of undergraduates?","get_tail_entities(Charles Drew, education)",wrong-entity
+WebQTrn-849_9b403279ce33759325317d9de5030d6b,Which German border country has the largest country calling code?,"get_tail_entities(Germany, Location.administrative_divisions)",wrong-relation
+WebQTrn-2815_0ab198918959e0a63172be1705632a9c,"What is the hometown of the person who said ""Forgive your enemies, but never forget their names?""?","get_tail_entities(Forgive your enemies, but never forget their names.)",wrong-entity
+WebQTrn-738_75d0bf8a1c2aca91051597cd3bdfb371,What did the scientist who was the topic of the jj-thomson2 image discover?,"get_tail_entities(jj-thomson2, common.image.appears_in_topic_gallery)",wrong-entity
+WebQTest-712_66fa3665c34fb6170ebe265fce7d69aa,"On the countries locate din Oceania, which one has the smallest US population?","get_tail_entities(Oceania, type)",wrong-relation
+WebQTest-1171_698c190da80f4609edc89ea60e2181d2,"What voice of Darth Vader was the executive producer of ""That Awkward Moment""?","get_tail_entities(Darth Vader, film)",wrong-relation
+WebQTrn-1053_d1f5861f34b782e38a1c3caf9b076af5,What Star Wars character was played by an actor who was also a host of the history channel?,"get_tail_entities(Star Wars, film)",wrong-entity
+WebQTest-759_d5838dc0b2134997e3ba9eb8dc264db4,"Who has Brad Pitt dated, that had a romantic relationship that ended after 1988?","get_tail_entities(m.09swsc3, film.performance.actor)",wrong-entity
+WebQTest-743_0ab198918959e0a63172be1705632a9c,"Who is the brother of the person that said ""Forgive your enemies, but never forget their names.""?","get_tail_entities(Forgive your enemies, but never forget their names.)",wrong-entity
+WebQTest-699_de65246ed3d9b6daa0aadb8c7e4f8c71,"What is the name of the capital of Australia where the film ""The Squatter's Daughter"" was made?","get_tail_entities(Australia, Location.administrative_divisions)",wrong-entity
+WebQTrn-2152_1694f4392eb0ff79149337ee3f622d91,What team in the American League West was founded in 1965?,"get_tail_entities(American League West, sports.sports_league_division.teams)",wrong-relation
+WebQTrn-1069_27c5b94375b630c6227fa2eb1a394657,What language that's primarily spoken in the Faroe Islands is also used in Denmark?,"get_tail_entities(Denmark, Location.administrative_divisions)",wrong-relation
+WebQTest-538_eb6021cedc1eba84b02c43c7505331ef,"Which movie featuring Taylor Swift includes the song ""The Climb?""?","get_tail_entities(Taylor Swift, film)",wrong-relation
+WebQTrn-2859_1d0f95cbca773971acb85244d72bed62,"What did the person who said ""God's first creature, which was light"" do?","get_tail_entities(God's first creature, which was light.)",wrong-entity
+WebQTrn-894_b3a9eef2f5d4e40fd4221db45d001fd0,"Featured in Keats: A Biography, what inspired Scott Fitzgerald?","get_tail_entities(F. Scott Fitzgerald, type)",wrong-relation
+WebQTest-389_458b1d71d51b6cabc3666c123b19f0f9,What type of music did Claude Debussy play and is featured in the film Alice in Wonderland?,"get_tail_entities(Alice in Wonderland, film_cut)",wrong-relation
+WebQTrn-894_d4bc649d0d9285fcf788058ec07823ef,"What inspiration of F. Scott Fitzgerald said, ""Business today consists in persuading crowds""?","get_tail_entities(F. Scott Fitzgerald, book_edition.author_editor)",wrong-relation
+WebQTrn-2335_98439f8dd2aedbd0556385f02bcb358f,What is the national anthem of the country that has a position titled Ministry of Justice?,"get_tail_entities(Ministry of Justice, organization.role)",wrong-relation
+WebQTest-537_fb81be7900191a4d62e425e91ce1f2c7,What movie was Charlie Hunnam in that was about human extinction?,"get_tail_entities(Charlie Hunnam, film)",wrong-relation
+WebQTest-213_e8bb0c0bb8606f69379d8f300258b1c1,Which sports player who's career ended in 2014 dated Scarlett Johansson?,"get_tail_entities(Scarlett Johansson, film)",wrong-relation
+WebQTest-1923_a90c08a839ac4d0ac22ebbf436bb578b,What movie featuring Miley Cyrus was directed by Tom Vaughan?,"get_tail_entities(Miley Cyrus, film)",wrong-relation
+WebQTrn-849_87460bf17e29c445a270424ee7c886ce,What country that borders Germany has the smallest ISO numeric?,"get_tail_entities(Germany, Location.administrative_divisions)",wrong-relation
+WebQTrn-567_df97b91c1a9dfe15bdad689feb59f791,What is the movie about a child prodigy that Ron Howard did?,"get_tail_entities(Ron Howard, film)",wrong-relation
+WebQTrn-1841_8df543a977cf8e7f362482a73cab35d0,What is the popular sport that was founded earliest in Spain?,"get_tail_entities(Spain, Location.administrative_divisions)",wrong-relation
+WebQTrn-241_e4ddf37f1344bc533ac60131a15569f9,What nation that neighbors France is the home of Prignon FantÃ´me La Gourmande beer?,"get_tail_entities(France, Location.administrative_divisions)",wrong-relation
+WebQTest-759_33c0a2138ef3f4a4f61dbee8dc9714e5,"Who has Brad Pitt dated in the past, and was into Buddhism?","get_tail_entities(Brad Pitt, film.performance.actor)",genuine-kg-miss
+WebQTrn-831_0c00254aab32e227002a70740c5cc921,"What is the latest movie that the actor, who also played Emily-Jackson-Jacks, starred in?","get_tail_entities(Emily-Jackson-Jacks, film.performance.character)",wrong-entity
+WebQTrn-3605_da0c36850947f49fa1f94f4fd744cf3b,Which high school was attended by the person who was nominated for an award for Chapter V?,"get_tail_entities(Chapter V, type)",wrong-relation
+WebQTest-1387_9bff9b3325534dae4908b820d4364101,"What is the time zone in the location of the film ""Shoot Em Up""?","get_tail_entities(Shoot Em Up, film.film.featured_film_locations)",format-mismatch
+WebQTrn-1677_07b09c54d5283ed75072069f25c48469,"What movies, released before April 17, 2015, did Adam Sandler play in?","get_tail_entities(Adam Sandler, film)",wrong-relation
+WebQTrn-1557_83b3d35e3fcf2d866fb2ab3dc21034c0,What college with the least number of undergraduates did Charles Drew attend?,"get_tail_entities(Charles Drew, education)",wrong-entity
+WebQTest-1797_cd2ffcb3be5bcfdcbc61ea440aca05e3,Which politician who fought in the Battle of Vicksburg entered office first?,"get_tail_entities(Battle of Vicksburg, event.included_in_event)",wrong-entity
+WebQTrn-567_2a2de50d3b65cc5d2c88f54e283a4b8a,What movie released to video did Ron Howard do?,"get_tail_entities(Ron Howard, film)",wrong-relation
+WebQTest-213_facc2f7bae94c21d7ada586512f36c67,"Who produced the movie ""August"" and dated Scarlett Johansson?","get_tail_entities(Scarlett Johansson, film)",wrong-relation
+WebQTest-1965_b7c82cd0420f9f1934037e1625db4685,Who did the voice for Lola Bunny and was nominated for a BAFTA award?,"get_tail_entities(BAFTA Award, type)",wrong-entity
+WebQTest-1528_2f6fb6d585b98261a3ae6d2a112a4c91,What movie starring Logan Lerman that was edited by Thomas J Nordberg?,"get_tail_entities(Logan Lerman, film)",wrong-relation
+WebQTrn-1677_e3e49622bef77e700894cb4264a4a42d,What baseball movie did Adam Sandler play in?,"get_tail_entities(Adam Sandler, film)",wrong-relation
+WebQTrn-423_7fff0409c31ee1a4d75cacbbb2f8d816,"What Laughlin, Nevada popular attraction was launched in 1966?","get_tail_entities(Laughlin, Nevada)",wrong-relation
+WebQTrn-1677_2a3a93e58514bc11e89747fcb3188226,"Which movies did Adam Sandler act in, that was directed by Frank Coraci?","get_tail_entities(Adam Sandler, film)",wrong-relation
+WebQTrn-1812_15f60e5f0f3604ea4e91cd75c8c89a85,"Of the countries that are in the Caribbean, which has the Dutch Language as an official language?","get_tail_entities(Caribbean, organization_scope)",wrong-relation
+WebQTrn-3083_c2a695d13a6620d180fec4f94dfe9f9b,In the year 1948 who was the leader of the cuntry where the Chuvash language is used?,"get_tail_entities(1948, time.event.locations)",wrong-entity
+WebQTest-100_3fd000b7cbc17c620bb91588e1c3cda3,What is the current main speech medium in Haiti?,"get_tail_entities(Haiti, Location.administrative_divisions)",wrong-relation
+WebQTest-537_a52d362d7abdae05ae86743bdb72a808,"What movie has Charlie Hunnam been in, and the netflix_id is smallest?","get_tail_entities(Charlie Hunnam, film)",wrong-relation
+WebQTest-1348_5ffc0cd6eeaac072e00525704c710951,Which 1961 founded team did Peyton Manning's father play for?,"get_tail_entities(Peyton Manning, sports.sports_team_roster.player)",genuine-kg-miss
+WebQTrn-1677_80066cc2617f4e1301adab9b3e951711,What is the earlies movie released to feature Adam Sandler?,"get_tail_entities(Adam Sandler, film)",wrong-relation
+WebQTrn-1405_b98a27e21e904173168eb7517b123e51,Where did President Kennedy go to school that has less than 2416 postgraduates?,"get_tail_entities(John F. Kennedy, film)",wrong-relation
+WebQTrn-1532_7be2e3bf2a96cf21e0a1011841c6db76,"Which university did Harry S. Truman attend, that has less than 9,381 undergraduates?","get_tail_entities(Harry S. Truman, film)",wrong-relation
+WebQTest-1348_aaea2f2132c4959cb6212b418a40c985,For what teams did the father of the actor in the movie NFL Insider play?,"get_tail_entities(NFL Insider, media_common.quotation_source.quotations)",wrong-relation
+WebQTrn-2286_56479abdf8de613c8157280a9f1d1d1d,What's the location of the governmental jurisdiction in which there's a governmental body called Kentucky House of Representatives?,"get_tail_entities(Kentucky House of Representatives, organization.leadership)",wrong-relation
+WebQTrn-1629_78cb2280db26c05fdc9b59622dc04611,Who played in the Forbidden Zone and is the voice of Jack Skellington?,"get_tail_entities(Jack Skellington, film)",wrong-relation
+WebQTest-983_a4f4a46401a4dd8b2eb579dfc1290e0e,Which university attended by Tennessee Williams has more than 23799 undergraduates?,"get_tail_entities(Tennessee Williams, film)",wrong-relation
+WebQTest-537_b7771109a84a9b56518460dc9e8878ff,What Charlie Hunnam work was production designed by Geoffrey Kirkland?,"get_tail_entities(Charlie Hunnam, film)",wrong-relation
+WebQTrn-849_eba7931ddf28af4dfa20fb099196c91f,What country bordering Germany that involved in the Gulf War?,"get_tail_entities(Germany, Location.administrative_divisions)",wrong-relation
+WebQTest-538_74d534175719a2af18925085b2e1f726,Which film featuring Taylor Swift was written by Dan Berendsen?,"get_tail_entities(Taylor Swift, film)",wrong-relation
+WebQTrn-837_b5a16676e03dc3374f767914e2292443,What school Jennifer Hudson attended has an NCES school ID of 170993000588?,"get_tail_entities(Jennifer Hudson, film)",wrong-relation
+WebQTest-538_dfc99f6e8277309985f191b4575cee66,What is the latest film that was released starring Taylor Swift?,"get_tail_entities(Taylor Swift, film)",wrong-relation
+WebQTest-1705_35c94dc6944d964963b44949d8ed512c,Where did the composer of What She Came From come from?,"get_tail_entities(What She Came From, music.composition.composer)",wrong-entity
+WebQTest-538_82ccd8edba1636ce0563a04fba26099b,Which movies directed by Chris Renaud have featured Taylor Swift?,"get_tail_entities(Taylor Swift, film)",wrong-relation
+WebQTrn-25_f65ceb2f4ef98392b0177705932740a5,What other movies has the actor that played the character Eliot Murtaugh play in?,"get_tail_entities(Eliot Murtaugh, film.performance.film)",wrong-entity
+WebQTrn-849_e07b3359e02a6d6ceb68871f1dad7072,Which country that held the Ayrault Government legislative session borders Germany?,"get_tail_entities(Germany, Location.administrative_divisions)",wrong-relation
+WebQTrn-1278_1ef455d28d4c19f07ec1bf5ca5bad8c3,Who are the people the actor who played Ezekiel 'Spoon' Whitmore has dated?,"get_tail_entities(Ezekiel 'Spoon' Whitmore, film_character.appeared_in_films)",wrong-relation
+WebQTrn-241_b96b735d1d754f27bc8986b614669f7b,"What countries bordering the location of the film ""Amen""?","get_tail_entities(Countries Used, schema.context.schema)",wrong-entity
+WebQTrn-2570_719a19b4c8ab7d1b27c9529c394743ef,"What was the name of the president during World War II who left the position after April 12, 1945?","get_tail_entities(World War II, type)",wrong-relation
+WebQTest-1528_4d68dbe4294e979290940881e3008e0d,What movie was Logan Lerman in that was decorated by Barry Greaves?,"get_tail_entities(Logan Lerman, film)",wrong-relation
+WebQTest-1603_5aabdab4c50d62388224ccc564a50535,What sacred Daoist text had an influence on Jorge Luis Borges?,"get_tail_entities(Jorge Luis Borges, type)",wrong-relation
+WebQTest-1785_98806527b045c387792db297c407c023,Which film starring Kim Richards has the largest Netflix ID?,"get_tail_entities(Kim Richards, film.performance.actor)",genuine-kg-miss
+WebQTest-983_3caa263f40808e17c9c54948505772ee,What college Tennessee Williams attended is a university with fewer than 6439 postgraduates enrolled?,"get_tail_entities(Tennessee Williams, education)",wrong-relation
+WebQTest-561_87feb43d4b743e2f0172e00f50bfada2,"When was the person who said ""seriously, I do not think I'm fit for the presidency"" president?","get_tail_entities(Seriously, I don't think I'm fit for the presidency.)",wrong-entity
+WebQTrn-64_4b7058a69c5eb71df36a89837b1e4f60,What was the name of the composer who wrote Papa'z Song?,"get_tail_entities(Papa's Song, music.composition.composer)",wrong-entity
+WebQTrn-1677_9dd205fdfa5075d2f97abec58868d9c9,What Adam Sandler movie is in the Dutch language?,"get_tail_entities(Adam Sandler, film)",wrong-relation
+WebQTrn-2152_52aec0171d93064e46b6e747d8d82010,Which team from the American League West was founded the most recently?,"get_tail_entities(American League West, sports.sports_league_division.teams)",wrong-relation
+WebQTest-1560_2d851e09c04c135c6499a8e7bcf24ee9,What founder of New York University had a position in the 4th United States Congress?,"get_tail_entities(New York University, organization.organization_founders)",wrong-relation
+WebQTest-1923_4dc293c98f6d58868f7b2d33a7e06f2e,What movie was about the korean war and featued actress Miley Cyrus?,"get_tail_entities(Miley Cyrus, film)",wrong-relation
+WebQTrn-1677_33b7d857b3156faee9cb6c16741d8b6a,What Adam Sandler movie had cinematography done by Dean Semler?,"get_tail_entities(Adam Sandler, film)",wrong-relation
+WebQTrn-1405_56e8d2e51ce1a46013d0176a58f8d5b3,"Where did the President who ""An American Affair"" is about go to college?","get_tail_entities(An American Affair, media_common.quotation.author)",wrong-relation
+WebQTest-965_6149d3b479edde0d00035aa61c2a4a36,"Where did the person about whom the movie ""The Diary of Anne Frank"" was made go to school?","get_tail_entities(The Diary of Anne Frank, film_cut.film)",wrong-relation
+WebQTest-1560_540272628a3440c1e3ee0d073a890920,Who is the person that wrote a Vocabulary of Seneca and founded New York University?,"get_tail_entities(New York University, type)",wrong-relation
+WebQTrn-2006_d6eeef75a363b8c5bf405ea3b0684cfc,"For what magazines did the subject of the film ""The Raven"" work?","get_tail_entities(The Raven, film)",wrong-relation
+WebQTest-783_b181354faec01d121c5f050e0d0da2fd,"What county in Texas is the location where the movie ""Puncture"" takes place?","get_tail_entities(Texas, Location.containedby)",wrong-entity
+WebQTest-1785_f4a57ff81e8f60ff90735c3e1206bdc3,What film starring Kim Richards that was released on 3-21-1975?,"get_tail_entities(Kim Richards, film.performance.actor)",genuine-kg-miss
+WebQTrn-1677_e171598f0904aa80515342263bc45547,What movie produced by John Schneider was Adam Sandler in?,"get_tail_entities(John Schneider, film)",wrong-relation
+WebQTrn-1841_2f402f2c0487977d71bf7076a8db1e97,Which Spanish sports teams were founded after 1994?,"get_tail_entities(Spain, Location.administrative_divisions)",wrong-relation
+WebQTest-537_743ff6362bb2b9e550d92e0dc9b8b063,What movie starring Charlie Hunnam that had John Mathieson as the cinematographer?,"get_tail_entities(Charlie Hunnam, film)",wrong-relation
+WebQTrn-25_a87e077f0e759349480a544bd66cfe40,In which thriller movies does Taylor Lautner appear?,"get_tail_entities(Taylor Lautner, film)",wrong-relation
+WebQTrn-124_5e89e91ab1c8fd1eea3f415d52cb4738,What movie was directed by Angelina Jolie and directed by Mick Garris?,"get_tail_entities(Angelina Jolie, film.performance.actor)",genuine-kg-miss
+WebQTrn-567_a597ad8a4ef31ad09f1765593d4e7fcc,Which movies featuring the work of Ron Howard has the shortest run time?,"get_tail_entities(Ron Howard, film)",wrong-relation
+WebQTrn-1677_f440937e3c93270055861e78bf0e0c9a,What other movies is the person who plays Charlie Fineman in?,"get_tail_entities(Charlie Fineman, film.performance.film)",wrong-relation
+WebQTrn-124_0ebb5db67d331752adddbe06bca557fc,What movie directed by Angelina Jolie that was released after 12-22-2011?,"get_tail_entities(Angelina Jolie, film.performance.actor)",genuine-kg-miss
+WebQTest-213_4d64427814a804819d7bd73a4187dbe2,"Who did Scarlett Johansson date that was an actor in the movie ""The Croods 2""?","get_tail_entities(Scarlett Johansson, film)",wrong-relation
+WebQTrn-124_405a78f132e69f4771aff40d07cd0294,"Which movie did Angelina Jolie direct, that was produced by Erwin Stoff?","get_tail_entities(Angelina Jolie, film)",wrong-relation
+WebQTest-1376_f46d89a2e7090339e748bcf7dbd14692,"In which province, is the location that has a governmental body called, Montreal Executive Committee?","get_tail_entities(Montreal, Location.containedby)",wrong-entity
+WebQTrn-3049_ae2f0556c44ee8e111f11615ad14f9d8,For what is the area where the newspaper Creative Loafing circulates famous?,"get_tail_entities(Creative Loafing, organization.headquarters)",wrong-relation
+WebQTrn-1677_a3f3297c1fb33fa36090e79b89b6690c,What Adam Sandler movie had cinematography done by Michael Barrett?,"get_tail_entities(Adam Sandler, film)",wrong-relation
+WebQTrn-1939_87feb43d4b743e2f0172e00f50bfada2,"What political experience did the person have who said, ""Seriously, I do not think I fit for the presidency""?","get_tail_entities(Seriously, I do not think I fit for the presidency.)",wrong-entity
+WebQTest-1785_64f7f636c2ecaa51fcf62618fe76820a,Which movie did Kim Richards appear in and had a length of 112.0 minutes?,"get_tail_entities(Kim Richards, film)",wrong-relation
+WebQTrn-452_576be7cca909b5ccf4bbd2bcc0249607,Where does Lala Anthony live where the GNIS feature ID is the smallest?,"get_tail_entities(Lala Anthony, film.performance.actor)",wrong-entity
+WebQTest-213_0739c226a0ca72de240018da832e1221,"Who did Scarlett Johansson date that played in the movie ""Wild Horses""?","get_tail_entities(Scarlett Johansson, film)",wrong-relation
+WebQTrn-241_4982d29236a4ba64c2f0439d263f23aa,"On the countries that share a border with France, which country has the smallest army?","get_tail_entities(France, Location.administrative_divisions)",wrong-relation
+WebQTrn-3249_8854b6b321c9e210d83c0419d6d3b4c5,Which shows did the actor who played the character Danielle Warren play in?,"get_tail_entities(Danielle Warren, film)",wrong-relation
+WebQTest-1012_73741811f34519b29f7d19ccfd4d9553,"What structure opened in 1922 in Hollywood, CA?","get_tail_entities(Los Angeles, location.containedby)",wrong-entity
+WebQTest-1528_f8024d5f486967b395064aa07aa52d6e,"In which movie did Logan Lerman act in, that was written by Andrew Davies?","get_tail_entities(Logan Lerman, film)",wrong-relation
+WebQTrn-1812_93d2e88cddc04bc55b23c31bab096e16,Which Caribbean country has the largest calling code?,"get_tail_entities(Caribbean, type)",wrong-relation
+WebQTrn-3376_118a81ac3fc08ca8590bf8be836d1be1,What school attended by Kevin Hart had an organizational founding date of 1929?,"get_tail_entities(Kevin Hart, film)",wrong-relation
+WebQTrn-2784_b64250ae3c9d6c724133d09dad5593ec,What movie featuring Tupac was directed by Kirk M. Petruccelli?,"get_tail_entities(Tupac Shakur, film)",wrong-relation
+WebQTest-537_21673ea221c99d3d37931bb684325f49,What film featuring Charlie Humman has the earliest release date?,"get_tail_entities(Charlie Hunnam, film)",wrong-relation
+WebQTrn-3098_530c9b007d2e31175fa177ade7ae14ab,"Where was the person born that said ""Eat to please thyself, but dress to please others.""?","get_tail_entities(Eat to please thyself, but dress to please others.)",wrong-entity
+WebQTest-537_74f1761f9f9f53428fd2495202e0290f,Which movie edited by Bernat Vilaplana was Charlie Hunnam in?,"get_tail_entities(Charlie Hunnam, film)",wrong-relation
+WebQTrn-62_bce88015327268bc8f081292e2c80dcd,"Which of Walt Disney kids, who'c date of death is before November 19, 2013?","get_tail_entities(Walt Disney, film)",wrong-relation
+WebQTrn-1677_87deda135e48fdbc80ef86a95018f5c9,In which fantasy movies has Adam Sandler appeared?,"get_tail_entities(Adam Sandler, film)",wrong-relation
+WebQTest-538_e92ac6479096acfc8a23fa7ff3fa1b37,"Which movie was Taylor Swift in, that debuted at Ziegfeld Theatre?","get_tail_entities(Taylor Swift, film)",wrong-relation
+WebQTest-1379_255da87c2560e4248091e82a1c0686c5,"What was Franz Liszt' career that had him ending up leading a religious organization before March 27, 1993?","get_tail_entities(Franz Liszt, music.composer.compositions)",wrong-entity
+WebQTest-213_87ffe7c3404a14f726cc54ae6d6a6057,Who dated the nominee of the Theater World Award?,"get_tail_entities(Theater World Award, type)",wrong-entity
+WebQTest-712_d32363ebe2efd4cc816af57934dae747,What countries with calling codes over 677 have territories in Oceania?,"get_tail_entities(Oceania, type)",wrong-relation
+WebQTest-712_810a930318378edecdffe4b349276794,What country that is located in Oceania with the largest ISO numeric number?,"get_tail_entities(Oceania, type)",wrong-relation
+WebQTrn-124_24e0665d6867419f9f3d2e4a2c1a997f,What movie was direct by Angelina Jolie and also included Laua Hollenbrand as an author?,"get_tail_entities(Angelina Jolie, film.performance.actor)",genuine-kg-miss
+WebQTrn-2653_7a1f9047f5100e2853d54d69c6793f2d,"In what wars has the government where the French Minister of the Economy, Finance and Industry is in office fought?","get_tail_entities(French Minister of the Economy, Finance and Industry)",wrong-entity
+WebQTrn-3034_0e7444ddeac8c5f9b236df292cb8ba04,"Where did the artist nominated for an award for ""Why I Oppose the War in Vietnam"" get his doctorate?","get_tail_entities(Why I Oppose the War in Vietnam, type)",wrong-relation
+WebQTest-537_153e44a43ac711a8a5f9f24667ba66ec,"What has Charlie Hunnam acted in, as well as the movie that Emily Coutts played in?","get_tail_entities(Charlie Hunnam, film)",wrong-relation
+WebQTest-561_5096e7f87655bfead420edf88c0629f0,In what years was the main character of Gore Vidal's movie Lincoln president?,"get_tail_entities(Gore Vidal, film)",wrong-entity
+WebQTrn-3249_a5b4b068155de58edc7e632f9bece371,What TV Drama show does Tamera Mowry act on?,"get_tail_entities(TV Drama, type.type.domain)",wrong-entity
+WebQTest-1686_66d1d64f0a7a4de1241baa7f8b34c42a,Who was the governor at the same time that the 20th Arizona Territorial Legislature was in session?,"get_tail_entities(20th Arizona Territorial Legislature, organization.leadership.role)",genuine-kg-miss
+WebQTrn-3084_c48e6de5044e564c757dd8332cdd7570,Which country that has the administrative division of United Arab Emirates does Japan export to?,"get_tail_entities(Japan, Location.administrative_divisions)",wrong-relation
+WebQTrn-1532_44fde88468878cac60f3380a368f4f7f,What university wer at some point attended by Harry S. Truman?,"get_tail_entities(Harry S. Truman, film)",wrong-entity
+WebQTest-1785_af362c96a2cac646e86161f0f87a1a9b,What television film was Kim Richard starred in?,"get_tail_entities(Kim Richard, film.performance.actor)",wrong-entity
+WebQTrn-3226_938e33c523abe9c97a8bcd68f436c773,What acrtess is featured in a movie that had Phil Dagort as a crew member?,"get_tail_entities(Phil Dagort, film)",wrong-relation
+WebQTest-1923_dee4b5d50db015ba91d5f2aeeb876f27,What movie starring Mylie Cyrus that features the song Gotta Go My Own Way?,"get_tail_entities(Miley Cyrus, film)",wrong-relation
+WebQTest-1785_a46f6053d6c82eaf3574d4a8853999c3,What Kim Richards film is 111.0 minutes long?,"get_tail_entities(Kim Richards, film.performance.actor)",genuine-kg-miss
+WebQTest-1528_c3a338c3684d073518350521455aaa8f,"In which movies, does Logan Lerman act in, that was production designed by Andrew Menzies?","get_tail_entities(Logan Lerman, film)",wrong-relation
+WebQTrn-3384_8728d31e67df2c6d6395deed585552cc,"Which language do people from Denmark speak, and that start with the initials, fa?","get_tail_entities(Denmark, Location.administrative_divisions)",wrong-relation

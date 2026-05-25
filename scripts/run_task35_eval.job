@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=t35_eval
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=08:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Task 35: KGQAGen-10k (Wikidata) eval for one checkpoint
+# Usage:
+#   sbatch --export=ALL,MODEL_KEY=e3_500 scripts/run_task35_eval.job
+#
+# Supported MODEL_KEY: sft, e1_1250, e2_1200, e3_500, e3_750, e4_1250, e5a_1000, e5b_100,
+#                      llama_sft, llama_e3_1293, llama_e5b_1293
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+MODEL_KEY="${MODEL_KEY:?MODEL_KEY env var required}"
+CKPT_ROOT="/projects/u6gg/KG_GRPO/checkpoints/kg-align-verl"
+
+# Default max_turns per backbone (Llama is slower)
+MAX_TURNS=5
+
+case "$MODEL_KEY" in
+    sft)            CKPT_DIR="$CKPT_ROOT/grpo-cwq-7b-verifiable-20260321"; STEP=0;    BASE_MODEL="outputs/verl-sft-cwq-7b-merged" ;;
+    e1_1250)        CKPT_DIR="$CKPT_ROOT/grpo-cwq-7b-outcome-20260321";    STEP=1250; BASE_MODEL="outputs/verl-sft-cwq-7b-merged" ;;
+    e2_1200)        CKPT_DIR="$CKPT_ROOT/grpo-cwq-7b-heuristic-20260325";  STEP=1200; BASE_MODEL="outputs/verl-sft-cwq-7b-merged" ;;
+    e3_500)         CKPT_DIR="$CKPT_ROOT/grpo-cwq-7b-verifiable-20260321"; STEP=500;  BASE_MODEL="outputs/verl-sft-cwq-7b-merged" ;;
+    e3_750)         CKPT_DIR="$CKPT_ROOT/grpo-cwq-7b-verifiable-20260321"; STEP=750;  BASE_MODEL="outputs/verl-sft-cwq-7b-merged" ;;
+    e4_1250)        CKPT_DIR="$CKPT_ROOT/grpo-cwq-7b-random-20260326";     STEP=1250; BASE_MODEL="outputs/verl-sft-cwq-7b-merged" ;;
+    e5a_1000)       CKPT_DIR="$CKPT_ROOT/grpo-cwq-7b-retrieval-grounded-20260326"; STEP=1000; BASE_MODEL="outputs/verl-sft-cwq-7b-merged" ;;
+    e5b_100)        CKPT_DIR="$CKPT_ROOT/grpo-cwq-7b-tool-type-bonus-20260326";    STEP=100;  BASE_MODEL="outputs/verl-sft-cwq-7b-merged" ;;
+    llama_sft)      CKPT_DIR="$CKPT_ROOT/grpo-cwq-llama-8b-verifiable-20260331";       STEP=0;    BASE_MODEL="outputs/verl-sft-llama-8b-merged"; MAX_TURNS=3 ;;
+    llama_e3_1293)  CKPT_DIR="$CKPT_ROOT/grpo-cwq-llama-8b-verifiable-20260331";       STEP=1293; BASE_MODEL="outputs/verl-sft-llama-8b-merged"; MAX_TURNS=3 ;;
+    llama_e5b_1293) CKPT_DIR="$CKPT_ROOT/grpo-cwq-llama-8b-tool-type-bonus-20260331";  STEP=1293; BASE_MODEL="outputs/verl-sft-llama-8b-merged"; MAX_TURNS=3 ;;
+    *) echo "Unknown MODEL_KEY: $MODEL_KEY"; exit 1 ;;
+esac
+
+OUT_JSON="results/task35_kgqagen_${MODEL_KEY}.json"
+PER_SAMPLE_DIR="results/task35_per_sample/${MODEL_KEY}"
+TRAJ_DIR="results/trajectories/task35/${MODEL_KEY}"
+
+# Unique port per job
+KG_PORT=$((18000 + SLURM_JOB_ID % 1000))
+
+echo "=== Task 35: KGQAGen-10k Eval ==="
+echo "Model: $MODEL_KEY  Step: $STEP  max_turns: $MAX_TURNS"
+echo "Checkpoint: $CKPT_DIR"
+echo "KG port: $KG_PORT"
+echo "Date: $(date)"
+echo ""
+
+# Start Wikidata KG server
+python -m src_verl.kg_server.server --kg wikidata --wikidata_dir data/wikidata_cache --port $KG_PORT --log-level warning &
+KG_PID=$!
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready"
+
+mkdir -p results "$PER_SAMPLE_DIR" "$TRAJ_DIR"
+
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$CKPT_DIR" \
+    --steps "$STEP" \
+    --base_model "$BASE_MODEL" \
+    --eval_data data/wikidata/verl_kgqagen/test.parquet \
+    --output "$OUT_JSON" \
+    --kg_server_url http://localhost:$KG_PORT \
+    --max_samples 0 \
+    --max_turns $MAX_TURNS \
+    --save_per_sample "$PER_SAMPLE_DIR" \
+    --save_every 100 \
+    --resume \
+    --save_trajectories "$TRAJ_DIR" \
+    --max_trajectory_samples 100
+
+kill $KG_PID 2>/dev/null
+echo "=== Done: $(date) ==="

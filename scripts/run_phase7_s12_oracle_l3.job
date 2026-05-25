@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_s12_oracle_l3
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=12:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# S1.2 — Oracle L3 upper bound (gold-relation inference-time intervention).
+#
+# Runs G2@500 (merged) inference on full CWQ test (3531 questions). Every
+# <search>action(entity, relation)</search> call has its relation argument
+# REPLACED with the gold relation (chosen by V14-B2 edit-closeness from
+# extra_info.kg_path) before dispatch to the KG server. The entity argument
+# the policy chose is preserved.
+#
+# Greedy decode (do_sample=False), max_turns=5, max_new_tokens=512 — same
+# inference config as the existing 39g2_step500 full-test eval, so the
+# oracle's EM is directly comparable.
+#
+# Outputs:
+#   results/phase7/oracle_l3_upper_bound_full_test.json
+#   results/phase7/oracle_l3_upper_bound_per_sample/step_0_per_sample.json
+#   results/trajectories/phase7/oracle_l3_full/step_0/trajectories.json
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+# Defaults (override via --export=ALL,VAR=...).
+MERGED_CKPT="${MERGED_CKPT:-outputs/verl-sft-cwq-39g2_step500-merged}"
+EVAL_DATA="${EVAL_DATA:-data/freebase/verl_cwq/test.parquet}"
+KG_PORT=$((18900 + SLURM_JOB_ID % 100))
+
+OUT_JSON="results/phase7/oracle_l3_upper_bound_full_test.json"
+TRAJ_DIR="results/trajectories/phase7/oracle_l3_full"
+PS_DIR="results/phase7/oracle_l3_upper_bound_per_sample"
+
+mkdir -p results/phase7 "$TRAJ_DIR" "$PS_DIR" logs
+
+echo "=== S1.2 oracle L3 upper-bound eval ==="
+echo "Date:        $(date)"
+echo "Merged ckpt: $MERGED_CKPT"
+echo "Eval data:   $EVAL_DATA"
+echo "KG port:     $KG_PORT"
+echo "Output:      $OUT_JSON"
+
+if [ ! -d "$MERGED_CKPT" ]; then
+    echo "ERROR: merged checkpoint not found at $MERGED_CKPT"
+    exit 1
+fi
+
+# ---- Start KG server -------------------------------------------------------
+python -m src_verl.kg_server.server \
+    --kg freebase \
+    --freebase_dir data/freebase/kg \
+    --port $KG_PORT \
+    --log-level warning &
+KG_PID=$!
+trap 'kill $KG_PID 2>/dev/null' EXIT
+
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready"
+
+# ---- Run oracle L3 eval ----------------------------------------------------
+python scripts/task_s12_oracle_l3.py \
+    --merged_checkpoint "$MERGED_CKPT" \
+    --eval_data "$EVAL_DATA" \
+    --output "$OUT_JSON" \
+    --save_per_sample "$PS_DIR" \
+    --save_trajectories "$TRAJ_DIR" \
+    --kg_server_url http://localhost:$KG_PORT \
+    --max_samples 0 \
+    --max_turns 5 \
+    --max_new_tokens 512 \
+    --save_every 100 \
+    --resume
+
+kill $KG_PID 2>/dev/null
+echo "=== Done: $(date) ==="

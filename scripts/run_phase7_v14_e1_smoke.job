@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v14e1_smoke
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --cpus-per-task=72
+#SBATCH --time=01:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# V14-E1 Qwen2.5-32B step-200 DIAGNOSTIC smoke (50 samples, dump full text trajectories).
+#
+# Purpose: the full-3531 eval (4377212) hit walltime at 1600/3531 with EM=0.000
+# (in-training val EM = 41.5% at step 200, so something is mismatched). We need
+# to see actual model outputs to disambiguate:
+#   (a) Format collapse: model not emitting <answer>...</answer> tags
+#   (b) Eval-pipeline bug: tags emitted but extractor/normalizer broken
+#
+# Reuses the already-merged checkpoint (no re-merge), runs 50 samples, dumps
+# full trajectories, then `cat` the first 3 to the log for inspection.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+DST="outputs/verl-sft-cwq-32b-v14_e1_qwen32b_e5b_step200-merged"
+OUT_JSON="results/phase7/v14_e1_qwen32b_e5b_step200_smoke50.json"
+TRAJ_DIR="results/trajectories/phase7/v14_e1_qwen32b_e5b_step200_smoke50"
+KG_PORT=$((18000 + SLURM_JOB_ID % 1000))
+
+mkdir -p results/phase7 "$TRAJ_DIR" logs
+
+[ -d "$DST" ] || { echo "ERROR: merged checkpoint not found at $DST"; exit 1; }
+
+echo "=== V14-E1 step-200 SMOKE diagnostic (50 samples) ==="
+echo "Date: $(date)"
+echo "Model: $DST"
+
+# --- KG server ---
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port $KG_PORT --log-level warning &
+KG_PID=$!
+trap 'kill $KG_PID 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready on port $KG_PORT"
+
+# --- Eval: 50 samples, full trajectories ---
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$DST" \
+    --steps 0 \
+    --base_model "$DST" \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --output "$OUT_JSON" \
+    --kg_server_url http://localhost:$KG_PORT \
+    --max_samples 50 \
+    --max_turns 5 \
+    --max_new_tokens 512 \
+    --save_trajectories "$TRAJ_DIR" \
+    --max_trajectory_samples 50
+
+kill $KG_PID 2>/dev/null
+
+# --- Inspect first 3 trajectories (so they end up in the log) ---
+echo ""
+echo "=== First 3 trajectories (full_response) ==="
+python3 << 'PYEOF'
+import json, glob
+files = glob.glob("results/trajectories/phase7/v14_e1_qwen32b_e5b_step200_smoke50/step_0/trajectories.json")
+if not files:
+    print("ERROR: no trajectory file found")
+else:
+    with open(files[0]) as f:
+        traj = json.load(f)
+    n_with_answer_tag = sum(1 for t in traj if "<answer>" in t.get("full_response", "") and "</answer>" in t.get("full_response", ""))
+    n_with_open_tag = sum(1 for t in traj if "<answer>" in t.get("full_response", ""))
+    print(f"Total trajectories: {len(traj)}")
+    print(f"  with <answer> open tag:  {n_with_open_tag}/{len(traj)}")
+    print(f"  with both open+close:    {n_with_answer_tag}/{len(traj)}")
+    print(f"  predicted is non-empty:  {sum(1 for t in traj if t.get('predicted'))}/{len(traj)}")
+    print(f"  EM=1:                    {sum(1 for t in traj if t.get('em', 0) >= 0.5)}/{len(traj)}")
+    print()
+    for i, t in enumerate(traj[:3]):
+        print(f"--- sample {i}: id={t.get('sample_id')} (em={t.get('em')}, hops={t.get('hops')}) ---")
+        print(f"Q: {t.get('question')[:200]}")
+        print(f"GOLD: {t.get('gold_answer')}")
+        print(f"PREDICTED: {repr(t.get('predicted'))[:300]}")
+        print(f"FULL_RESPONSE (last 1000 chars):")
+        fr = t.get('full_response', '')
+        print(fr[-1000:] if len(fr) > 1000 else fr)
+        print()
+PYEOF
+
+echo "=== Done: $(date) ==="

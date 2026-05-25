@@ -1,0 +1,648 @@
+{
+  "summary": {
+    "model": "gpt-4o",
+    "n": 50,
+    "em_mean": 0.0,
+    "avg_tool_calls": 3.64,
+    "elapsed_s": 173.68602514266968
+  },
+  "per_sample": [
+    {
+      "sample_id": "WebQTrn-2722_8babdaa9ecd05a72e3227b43b1f98771",
+      "question": "For what did the personage who was educated at the Dewitt High School win a gold medal?",
+      "gold": [
+        "Gymnastics at the 2012 Summer Olympics \u2013 Women's artistic team all-around"
+      ],
+      "prediction": "It seems there is an issue retrieving information about Dewitt High School from the knowledge graph. Without access to the specific data, I can't determine which personage educated at Dewitt High School won a gold medal or for what achievement. If you have any additional details or another query, feel free to ask!",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.032786885245901634
+    },
+    {
+      "sample_id": "WebQTrn-124_028bb5f442b37a4af9f9fd9fa0bc5e9a",
+      "question": "What movies did the person who went to William O. Schafer Elementary School direct?",
+      "gold": [
+        "By the Sea",
+        "In the Land of Blood and Honey",
+        "A Place in Time",
+        "Unbroken"
+      ],
+      "prediction": "It seems there is an issue retrieving information about William O. Schafer Elementary School from the knowledge graph. Without this data, I can't directly find the person who attended this school or the movies they directed.\n\nIf you have any other questions or need further assistance, feel free to ask!",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-54_d14abf7768bdbdaa66897780b56dace1",
+      "question": "What country did the person who went to B Steyr control?",
+      "gold": [
+        "Nazi Germany"
+      ],
+      "prediction": "It seems there is an issue retrieving information about \"B Steyr\" from the knowledge graph. Could you please provide more context or clarify the entity you are referring to?",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-3535_dfcf84e9ba3b9baef4ee1f2cc51994b6",
+      "question": "Who did the voice of character Kovu?",
+      "gold": [
+        "Jason Marsden"
+      ],
+      "prediction": "It seems there is an issue accessing the information from the knowledge graph. However, I can provide the information based on what I know: The character Kovu from \"The Lion King II: Simba's Pride\" was voiced by Jason Marsden.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.1111111111111111
+    },
+    {
+      "sample_id": "WebQTest-1091_31c94b951f3d708ac503327d7979da93",
+      "question": "Which type of religions practiced in the United States, where the religion place of worship is called, Candi Laras?",
+      "gold": [
+        "Buddhism"
+      ],
+      "prediction": "It seems there is an issue retrieving information about \"Candi Laras\" from the knowledge graph. However, \"Candi\" typically refers to ancient Hindu or Buddhist temples in Indonesia. If \"Candi Laras\" is indeed a place of worship, it might be associated with Hinduism or Buddhism. \n\nIn the United States, Hinduism and Buddhism are practiced, among other religions. If you have more specific information or another query, feel free to ask!",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 1.0,
+      "f1": 0.030303030303030307
+    },
+    {
+      "sample_id": "WebQTrn-60_eae3033643523fd3a54b6c147fdfa728",
+      "question": "What Portuguese=speaking country had the net migration number of -10000?",
+      "gold": [
+        "Guinea-Bissau"
+      ],
+      "prediction": "It seems there is a persistent issue with retrieving data from the knowledge graph. Unfortunately, I'm unable to access the necessary information to determine which Portuguese-speaking country had a net migration number of -10000. \n\nIf you have any other questions or need further assistance, feel free to ask!",
+      "em": 0.0,
+      "num_tool_calls": 12,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-1001_4e074d51c67d5358b05e462d1f48f3e5",
+      "question": "What other Superbowls did the champion of the 1934 NFL Championship game win?",
+      "gold": [
+        "Super Bowl XLVI",
+        "Super Bowl XLII",
+        "Super Bowl XXI",
+        "Super Bowl XXV"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-1077_7bd6b37d01a372aa5af2a8d5ef53d827",
+      "question": "What religion practiced in Afghanistan has a sacred site in Jesusalem?",
+      "gold": [
+        "Sunni Islam"
+      ],
+      "prediction": "It seems there is an issue with retrieving data from the knowledge graph. However, based on general knowledge, the religion practiced in Afghanistan that has a sacred site in Jerusalem is Islam. The Al-Aqsa Mosque in Jerusalem is considered the third holiest site in Islam.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.047619047619047616
+    },
+    {
+      "sample_id": "WebQTrn-60_c417b54801bbb53466b1157ffb79cc29",
+      "question": "What country do they speak Portuguese and where they appointed Jos\u00c3\u00a9 Manuel Barroso to a governmental position?",
+      "gold": [
+        "Portugal",
+        "Portugal",
+        "Portugal"
+      ],
+      "prediction": "It seems there is an issue retrieving information about Jos\u00c3\u00a9 Manuel Barroso from the knowledge graph. However, I can provide information based on general knowledge.\n\nJos\u00c3\u00a9 Manuel Barroso is a Portuguese politician who served as the Prime Minister of Portugal and later as the President of the European Commission. Therefore, the country where Portuguese is spoken and where he was appointed to a governmental position is Portugal.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.03333333333333333
+    },
+    {
+      "sample_id": "WebQTrn-513_64fc62dc06d16e612aafb00889d4ada1",
+      "question": "What location that appointed Mikheil Saakashvili to governmental position is a country in Eastern Europe?",
+      "gold": [
+        "Georgia"
+      ],
+      "prediction": "It seems there is an issue with accessing the knowledge graph. However, I can provide information based on what I know.\n\nMikheil Saakashvili, the former President of Georgia, was appointed to a governmental position in Ukraine, which is a country in Eastern Europe.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 1.0,
+      "f1": 0.05128205128205127
+    },
+    {
+      "sample_id": "WebQTest-1348_d50300a04640da2d3013e859ecdc9257",
+      "question": "Which team did Peyton Manning 's father play for, where the sports team owner is Rita Benson LeBlanc?",
+      "gold": [
+        "New Orleans Saints"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-1823_6ac48b436d99ed7cd3f2d9329d95a0c8",
+      "question": "What is the government type where \"Ardulfurataini Estan\" is the national anthem?",
+      "gold": [
+        "Parliamentary system",
+        "Republic",
+        "Parliamentary republic",
+        "Federal republic"
+      ],
+      "prediction": "It seems there is an issue accessing the knowledge graph with the entity \"Ardulfurataini Estan.\" However, I can provide information based on general knowledge.\n\n\"Ardulfurataini Estan\" is the national anthem of Iraq. The government type of Iraq is a federal parliamentary republic.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.10526315789473684
+    },
+    {
+      "sample_id": "WebQTrn-1722_4c9c478708f3daab701711f12484d823",
+      "question": "Which continent includes the country that is home to the city of New Providence?",
+      "gold": [
+        "North America"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-1817_e04d0ee5dcbfd8b2dbb1e8be247e94d4",
+      "question": "What university with a sports team named Oxford University RFC did JRR Tolkien go to?",
+      "gold": [
+        "University of Oxford"
+      ],
+      "prediction": "It seems there is an issue with accessing the knowledge graph. However, based on general knowledge, J.R.R. Tolkien attended the University of Oxford.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.24000000000000002
+    },
+    {
+      "sample_id": "WebQTrn-21_2b2e7b36b664bdd3e85b7c3a190677fc",
+      "question": "Who is the prime minister of the country that has Loma?",
+      "gold": [
+        "Hailemariam Desalegn"
+      ],
+      "prediction": "It seems there is an issue retrieving information about \"Loma\" from the knowledge graph. Could you please provide more context or specify if \"Loma\" refers to a specific place or entity?",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-14_2c7762d283ed24be7f442f301fb3a5c4",
+      "question": "Where with a population once of less than 5732212 is Rome, Italy located?",
+      "gold": [
+        "Lazio",
+        "Province of Rome"
+      ],
+      "prediction": "It seems there is an issue with retrieving data for \"Rome\" from the knowledge graph. However, I can provide the information based on general knowledge: Rome, Italy is located in the region of Lazio.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 1.0,
+      "f1": 0.1212121212121212
+    },
+    {
+      "sample_id": "WebQTest-998_7b6c0cc98675b4b7a6638ef625cfa860",
+      "question": "When was the last championship won by the 1970 NBA Finals Champions?",
+      "gold": [
+        "1973 NBA Finals"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-2834_d3301dedbdcb2d171a75be1631e8cec5",
+      "question": "What major religion in the US has Lumbini as a sacred site?",
+      "gold": [
+        "Buddhism"
+      ],
+      "prediction": "Lumbini is a sacred site in Buddhism.",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 1.0,
+      "f1": 0.2857142857142857
+    },
+    {
+      "sample_id": "WebQTest-361_d4b7b091dfd540b6b8efcab6634968d1",
+      "question": "What museum that opened later than 1891 should I visit when I go to Vienna, Austria next year?",
+      "gold": [
+        "Sigmund Freud Museum"
+      ],
+      "prediction": "It seems there is a technical issue preventing access to the data needed to answer your question. Unfortunately, I'm unable to retrieve the list of museums in Vienna or Austria at the moment. You might want to check online resources or travel guides for up-to-date information on museums in Vienna.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-1528_a2694b95163afd08c03e36c6c195cab6",
+      "question": "What film that has a character named Charles De Batz-Castelmore does Logan Lerman play in?",
+      "gold": [
+        "The Three Musketeers"
+      ],
+      "prediction": "It seems there is an issue with accessing the knowledge graph. However, I can provide the answer based on my training data.\n\nLogan Lerman plays in the film \"The Three Musketeers\" (2011), which features a character named Charles De Batz-Castelmore, also known as d'Artagnan.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.09523809523809523
+    },
+    {
+      "sample_id": "WebQTrn-237_f43785599ba51bf943f98f8d9bbf102a",
+      "question": "Who is the man in the position of head coach of the squad that earned victory in the 2011 AFC Championship Game?",
+      "gold": [
+        "Mike Tomlin"
+      ],
+      "prediction": "It seems there is an issue retrieving information about the 2011 AFC Championship Game from the knowledge graph. However, I can provide the answer based on general knowledge.\n\nThe New England Patriots won the 2011 AFC Championship Game. The head coach of the New England Patriots at that time was Bill Belichick.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-2250_06a710540c2c24122b76d789e90023a9",
+      "question": "What city is the child organization of Sony Canada's headquarters set in?",
+      "gold": [
+        "Minato"
+      ],
+      "prediction": "It seems there is an issue retrieving data for \"Sony Canada\" or \"Sony Corporation\" from the knowledge graph. Unfortunately, I can't provide the answer at this moment. Please try again later or check the information from another source.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-2478_e53e37596014fb9723a81c577c51b4f3",
+      "question": "What is the school mascot of the organization where you'd find the Syracuse University Video Production Unit?",
+      "gold": [
+        "Syracuse University Otto the Orange"
+      ],
+      "prediction": "It seems there is an issue with retrieving data from the knowledge graph. However, I can provide information based on general knowledge. The school mascot for Syracuse University is Otto the Orange.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.25
+    },
+    {
+      "sample_id": "WebQTest-832_1315945fdcb4fad1310ab7862120be0f",
+      "question": "When was the most recent World Series win for the team which won the 2010 World Series?",
+      "gold": [
+        "2014 World Series"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-2218_dacbec08f8d31829038751934850ed95",
+      "question": "What is the hometown of the architect who designed Mount Vernon?",
+      "gold": [
+        "Westmoreland County"
+      ],
+      "prediction": "It seems there is an issue retrieving information about Mount Vernon from the knowledge graph. However, I can provide some general information: Mount Vernon was the plantation home of George Washington, the first President of the United States. The design of Mount Vernon is attributed to George Washington himself, as he played a significant role in its architectural design and expansion.\n\nIf you are looking for the hometown of George Washington, he was born in Westmoreland County, Virginia.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.05555555555555556
+    },
+    {
+      "sample_id": "WebQTrn-1539_de8059b06640bb0b9cbe51ff95a7589a",
+      "question": "Who plays in the film with the character Commander Kent?",
+      "gold": [
+        "Kevin James"
+      ],
+      "prediction": "It seems there is an issue retrieving information about \"Commander Kent\" from the knowledge graph. The character might not be directly available in the database, or there might be a different way to reference it.\n\nCould you provide more context or details about the film or other characters involved? This might help in identifying the correct entity or relation to query.",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-1557_25aa66737549ccec679a88f7ec71c350",
+      "question": "What college did Charles Drew attend that has McGill Redman soccer team?",
+      "gold": [
+        "McGill University"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-61_4dbb23937c062d0f3a3496d2fbf26a12",
+      "question": "What religion is practiced in the place where there is a religious place of worship called St. Mary's Cathedral, Batticaloa?",
+      "gold": [
+        "Catholicism"
+      ],
+      "prediction": "It seems there is an issue accessing the information from the knowledge graph. However, based on general knowledge, St. Mary's Cathedral in Batticaloa is a Roman Catholic church. Therefore, the religion practiced there is Christianity, specifically Roman Catholicism.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.05714285714285715
+    },
+    {
+      "sample_id": "WebQTrn-2069_cd2a8c46c7872f3823f42c32e37aaff2",
+      "question": "What spoken languages are used in the country that has national anthem of Chile?",
+      "gold": [
+        "Aymara language",
+        "Mapudungun Language",
+        "Rapa Nui Language",
+        "Spanish Language",
+        "Puquina Language"
+      ],
+      "prediction": "It seems there is an issue with retrieving data from the knowledge graph. However, I can provide the information based on general knowledge.\n\nThe national anthem of Chile is \"Himno Nacional de Chile.\" The country that has this national anthem is Chile. The primary spoken language in Chile is Spanish.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.08695652173913045
+    },
+    {
+      "sample_id": "WebQTrn-513_f1baf868abb7a6160db9dddb32a4058c",
+      "question": "Of the countries that are in eastern Europe, which has a country capital of Grodno?",
+      "gold": [
+        "Belarusian People's Republic"
+      ],
+      "prediction": "It seems there was an issue retrieving information about Grodno. However, I can provide some general knowledge: Grodno is not the capital of any country. It is a city in Belarus, and the capital of Belarus is Minsk. Therefore, there is no country in Eastern Europe with Grodno as its capital.",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-1023_52deecbffa5c67b0c724c84174c5e019",
+      "question": "What is the currency of the place whose religious organization leadership is the Society of Jesus?",
+      "gold": [
+        "Argentine peso"
+      ],
+      "prediction": "It seems there is an issue accessing the information about the \"Society of Jesus\" in the knowledge graph. However, I can provide some general information: The Society of Jesus, also known as the Jesuits, is a religious order within the Catholic Church. They are not directly associated with a specific country or currency, as they operate globally. However, the Vatican City, which is the headquarters of the Catholic Church, uses the Euro as its currency.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-2486_bcd294e8b78226fb373c0a54e4dcba01",
+      "question": "Where did the actor who played Forbes Cover Billionair graduate from?",
+      "gold": [
+        "Wharton School of the University of Pennsylvania"
+      ],
+      "prediction": "It seems there is an issue retrieving the actor for \"Forbes Cover Billionaire.\" Could you provide the name of the actor or more context about the film or show?",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 0.0,
+      "f1": 0.06666666666666667
+    },
+    {
+      "sample_id": "WebQTrn-2314_3b127d6561a71b006b3e6bcf490bf6bc",
+      "question": "What is the currency in the governmental jurisdiction with office holder Astrid Fischel Volio?",
+      "gold": [
+        "Costa Rican col\u00f3n"
+      ],
+      "prediction": "It seems there is an issue accessing the information about Astrid Fischel Volio in the knowledge graph. However, I can provide some general information: Astrid Fischel Volio is a Costa Rican politician and academic. Therefore, the currency in Costa Rica, where she would hold office, is the Costa Rican col\u00f3n.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.1276595744680851
+    },
+    {
+      "sample_id": "WebQTrn-2215_2fa90adc92b5095b8e1fd27754180250",
+      "question": "Where was the person who recorded \"I'm Gonna Get Drunk and Play Hank Williams\" born?",
+      "gold": [
+        "Glen Dale"
+      ],
+      "prediction": "It seems there is a persistent issue with retrieving data from the knowledge graph. However, I can provide the information based on general knowledge: Jerry Jeff Walker was born in Oneonta, New York.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-538_e650705713c2b0f407612c8935722c71",
+      "question": "Which film had Lois lowry as it's wirter and starrted musical artist Taylor Swift?",
+      "gold": [
+        "The Giver"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-567_5c5b62b8b365e36d8e8836335518d242",
+      "question": "What movie by Ron Howard did Lois Freeman-Fox edit?",
+      "gold": [
+        "Osmosis Jones"
+      ],
+      "prediction": "It seems there is an issue accessing the knowledge graph to retrieve information about Lois Freeman-Fox and Ron Howard. Therefore, I'm unable to directly find the movie edited by Lois Freeman-Fox that was directed by Ron Howard. \n\nHowever, you might want to check external databases or resources like IMDb for detailed filmography and collaborations between editors and directors.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-1528_ac372aaf6e68f8a1bd4b4c8e75972875",
+      "question": "What Joel Schumacher directed movie is Logan Lerman in?",
+      "gold": [
+        "The Number 23"
+      ],
+      "prediction": "It seems there is an issue with accessing the knowledge graph to retrieve the necessary information. However, based on external knowledge, Logan Lerman starred in the movie \"The Number 23,\" which was directed by Joel Schumacher.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 1.0,
+      "f1": 0.12121212121212122
+    },
+    {
+      "sample_id": "WebQTrn-783_8df6a029e48ff843dee388bf684c1054",
+      "question": "Which language with the initials fra do Jewish people speak?",
+      "gold": [
+        "French"
+      ],
+      "prediction": "It seems there is an issue with accessing the knowledge graph using the entity \"fra\". However, based on general knowledge, the language with the initials \"fra\" that Jewish people speak is likely \"Judeo-French\" or \"Zarphatic\".",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.0625
+    },
+    {
+      "sample_id": "WebQTest-983_e296550bdbe5592272f3980a755ff750",
+      "question": "Where did Tennessee Williams attend college, and has an organization headquarters located in New York City?",
+      "gold": [
+        "The New School"
+      ],
+      "prediction": "It seems there is an issue with accessing the knowledge graph. However, I can provide some information based on what I know:\n\nTennessee Williams attended the University of Missouri, Washington University in St. Louis, and graduated from the University of Iowa. \n\nAs for organizations headquartered in New York City, there are many, including the United Nations, JPMorgan Chase, and the Metropolitan Museum of Art, among others. If you have a specific organization in mind, please let me know!",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.027397260273972605
+    },
+    {
+      "sample_id": "WebQTrn-567_2a2de50d3b65cc5d2c88f54e283a4b8a",
+      "question": "What movie released to video did Ron Howard do?",
+      "gold": [
+        "American Graffiti"
+      ],
+      "prediction": "It seems there is an issue with accessing the knowledge graph. However, based on my knowledge, Ron Howard directed the movie \"The Missing,\" which was released to video.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-983_a4f4a46401a4dd8b2eb579dfc1290e0e",
+      "question": "Which university attended by Tennessee Williams has more than 23799 undergraduates?",
+      "gold": [
+        "University of Missouri"
+      ],
+      "prediction": "It seems there is an issue with retrieving data from the knowledge graph. Unfortunately, I can't access the information about Tennessee Williams' university attendance at the moment. However, I can provide some general information.\n\nTennessee Williams attended several universities, including the University of Missouri, Washington University in St. Louis, and the University of Iowa. Among these, the University of Missouri is known to have a large undergraduate population, often exceeding 23,799 students.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 1.0,
+      "f1": 0.08695652173913045
+    },
+    {
+      "sample_id": "WebQTest-1560_597bd7b2c629237d470d67390eba7edb",
+      "question": "Who founded the New York University, and was buried in Philadelphia?",
+      "gold": [
+        "Mordecai Manuel Noah"
+      ],
+      "prediction": "It seems there is an issue with accessing the knowledge graph to retrieve information about the founder of New York University. However, historically, New York University was founded by Albert Gallatin. He was also buried in Philadelphia.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-241_b96b735d1d754f27bc8986b614669f7b",
+      "question": "What countries bordering the location of the film \"Amen\"?",
+      "gold": [
+        "Belgium",
+        "Germany",
+        "Italy",
+        "Luxembourg",
+        "Monaco",
+        "Spain",
+        "Switzerland",
+        "United Kingdom",
+        "Andorra"
+      ],
+      "prediction": "It seems there is an issue retrieving information about the film \"Amen\" from the knowledge graph. However, I can provide some general information. The film \"Amen\" directed by Costa-Gavras is set during World War II, primarily in Germany and Vatican City. Therefore, the countries bordering Germany and Vatican City during that time would be relevant.\n\nWould you like me to list those countries based on historical context?",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 1.0,
+      "f1": 0.03125
+    },
+    {
+      "sample_id": "WebQTrn-347_6f7252fc04cfac2cabbe4d12f43b4b42",
+      "question": "What is the causes of death of the actor who played the character NASCAR Driver #2?",
+      "gold": [
+        "Racing Accident",
+        "Basilar skull fracture"
+      ],
+      "prediction": "It seems there is an issue retrieving information directly related to the character \"NASCAR Driver #2\". To proceed, I will need to identify the actor who played this character through other means. Could you provide more context or details about the film or show where this character appears?",
+      "em": 0.0,
+      "num_tool_calls": 2,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-1069_1ad460cd0410838a2d94b2dd7bd93efe",
+      "question": "What languages are spoken in the country where Faroese is used?",
+      "gold": [
+        "Greenlandic language",
+        "Danish Language",
+        "Faroese",
+        "German Language"
+      ],
+      "prediction": "It seems there is an issue with retrieving data from the knowledge graph. However, I can provide information based on general knowledge.\n\nFaroese is primarily spoken in the Faroe Islands. The official languages of the Faroe Islands are Faroese and Danish.",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 1.0,
+      "f1": 0.05405405405405406
+    },
+    {
+      "sample_id": "WebQTrn-3170_4c56262d6806c8bd5c0fadb75177520a",
+      "question": "What degree did the official who held the title Director for Multilateral Affairs have?",
+      "gold": [
+        "Political Science"
+      ],
+      "prediction": "It seems there is an issue retrieving information about the \"Director for Multilateral Affairs\" from the knowledge graph. This could be due to the entity not being present or an error in the query process. Without access to the specific data, I'm unable to determine the degree held by the official with that title. If you have more specific information or another query, feel free to ask!",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-3384_e83e8190540386b20d8b60496674e1d5",
+      "question": "What language is spoken by the people governed by the government of Denmark?",
+      "gold": [
+        "Greenlandic language",
+        "Danish Language",
+        "Faroese",
+        "German Language"
+      ],
+      "prediction": "It seems there is an issue with accessing the knowledge graph. However, I can provide the information based on general knowledge: The official language spoken in Denmark is Danish.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.14814814814814814
+    },
+    {
+      "sample_id": "WebQTrn-2006_e258f4c46fa686cf9c12150935e9211f",
+      "question": "What magazine did the person who said \"To observe attentively is to remember distinctly.\" work for?",
+      "gold": [
+        "Graham's Magazine",
+        "Broadway Journal",
+        "Burton's Gentleman's Magazine"
+      ],
+      "prediction": "I am currently unable to access the knowledge graph to retrieve the information. However, Edgar Allan Poe worked for several magazines during his career, including the \"Southern Literary Messenger.\"",
+      "em": 0.0,
+      "num_tool_calls": 3,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTest-1171_a8ed8aa8e8eaf11e4b00b81b2ac2ac23",
+      "question": "What actor was featured in Mike and Dave Need Wedding Dates and didthe voice of Darth Vader?",
+      "gold": [
+        "Zac Efron"
+      ],
+      "prediction": "",
+      "em": 0.0,
+      "num_tool_calls": 5,
+      "contains_em": 0.0,
+      "f1": 0.0
+    },
+    {
+      "sample_id": "WebQTrn-2006_1ce88b8c60eb9aa20dc2bba16e8075a9",
+      "question": "What magazine with earliest publication end date did Edgar Allan Poe work for?",
+      "gold": [
+        "Burton's Gentleman's Magazine"
+      ],
+      "prediction": "It seems there is an issue with retrieving data from the knowledge graph. Unfortunately, I am unable to access the necessary information to answer your question at this time.",
+      "em": 0.0,
+      "num_tool_calls": 4,
+      "contains_em": 0.0,
+      "f1": 0.0
+    }
+  ],
+  "em": 0.0,
+  "contains_em": 0.34,
+  "f1": 0.04658724799906871,
+  "abandoned_count": 41
+}

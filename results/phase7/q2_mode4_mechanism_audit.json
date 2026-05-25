@@ -1,0 +1,34 @@
+{
+  "label": "39i_self_step300_POSTCOLLAPSE",
+  "input_path": "results/phase7/39i_self_step300_full_per_sample/step_0_per_sample.json",
+  "data_completeness": "PARTIAL: per_sample only, no full_response text",
+  "blocked_metrics": [
+    "last_answer",
+    "last_response",
+    "is_substring",
+    "response_entities",
+    "quote_and_stop"
+  ],
+  "n_total_in_file": 1400,
+  "n_expected_full_test": 3531,
+  "n_audited": 1400,
+  "n_tool_calls_dist": {
+    "0": 1,
+    "1": 1398,
+    "2": 1
+  },
+  "n_tool_calls_pct": {
+    "1": 0.9986,
+    "0": 0.0007,
+    "2": 0.0007
+  },
+  "em_rate": 0.0,
+  "contains_em_rate": 0.1214,
+  "structural_collapse_verified": true,
+  "structural_collapse_reason": "99.86% of samples emit exactly 1 tool call (vs ~3.0 mean at step 200/250)",
+  "semantic_quote_and_stop_verified": "UNKNOWN \u2014 requires re-eval with --save_trajectories",
+  "see_also": [
+    "results/phase7/post_collapse_inspection.md (Apr 27 prior analysis)",
+    "results/phase7/v14_w1_i_self_memo.md (Apr 25 I-Self peak-then-collapse memo)"
+  ]
+}

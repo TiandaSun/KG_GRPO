@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v15_w6_llama_sft
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --time=12:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# v15 Lane 5 (W6) Step 1: Llama-3.1-8B-Instruct SFT on the 5K rule-based
+# format-scaffolding corpus (same as the Qwen W6 SFT corpus).
+#
+# Mirrors run_phase7_s02_g2_sft_seed.job but inits from the raw HF Llama
+# checkpoint (not from a pre-existing SFT) and uses configs_verl/sft_cwq_llama_8b_w6.yaml.
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export HF_TOKEN=$(cat "$HOME/.cache/huggingface/token" 2>/dev/null)
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+INIT_BASE="meta-llama/Llama-3.1-8B-Instruct"
+TRAIN_FILE="data/freebase/sft_trajectories.jsonl"
+OUTPUT_DIR="outputs/verl-sft-cwq-llama8b-w6"
+MERGED_DIR="${OUTPUT_DIR}-merged"
+WANDB_RUN="sft-cwq-llama8b-w6-20260505"
+
+echo "=== v15 W6 Llama SFT (4x GH200) ==="
+echo "Date: $(date)"
+echo "Init: $INIT_BASE (HF)"
+echo "Train: $TRAIN_FILE"
+echo "Output: $OUTPUT_DIR"
+echo "Merged: $MERGED_DIR"
+
+[ -f "$TRAIN_FILE" ] || { echo "ERROR: $TRAIN_FILE not found"; exit 1; }
+TRAIN_LINES=$(wc -l < "$TRAIN_FILE")
+echo "Trajectories in $TRAIN_FILE: $TRAIN_LINES (expected 5000)"
+
+# Sanity: HF model cache present (avoids surprise download).
+LLAMA_CACHE="$HF_HOME/hub/models--meta-llama--Llama-3.1-8B-Instruct"
+if [ -d "$LLAMA_CACHE" ]; then
+    echo "[ok] Llama-3.1-8B-Instruct cached: $LLAMA_CACHE"
+else
+    echo "[warn] Llama cache not found — will download (~16GB) on first load"
+fi
+
+python src_verl/training/sft_multiturn.py \
+    --config configs_verl/sft_cwq_llama_8b_w6.yaml \
+    --model_path "$INIT_BASE" \
+    --output_dir "$OUTPUT_DIR" \
+    --num_train_epochs 2 \
+    --train_file "$TRAIN_FILE" \
+    --seed 42 \
+    --wandb_run_name "$WANDB_RUN"
+
+echo ""
+echo "=== Merge LoRA adapter ==="
+python scripts/merge_sft_adapter.py \
+    --base_model "$INIT_BASE" \
+    --adapter_path "$OUTPUT_DIR" \
+    --output_path "$MERGED_DIR"
+
+# Llama tokenizer / chat template are saved by merge_sft_adapter (from adapter
+# dir, which inherits the Llama tokenizer). No copy step needed because there
+# is no separate tokenizer-source dir like in the seed-from-base-sft case.
+
+echo ""
+echo "=== Done: $(date) ==="
+echo "Merged checkpoint: $MERGED_DIR"

@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_v14d2_tok
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=00:30:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# V14-D2 Qwen3-4B-Instruct-2507 tokenizer + chat-template + <think>-tag sanity.
+# Must run inside SLURM (never login): performs a forward pass on the base model.
+# Output: results/phase7/v14_d2_tokenizer_check.json
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+QWEN3_MODEL="Qwen/Qwen3-4B-Instruct-2507"
+QWEN25_MODEL="Qwen/Qwen2.5-7B-Instruct"
+SFT_FILE="data/freebase/sft_trajectories_pilot500.jsonl"
+OUT_JSON="results/phase7/v14_d2_tokenizer_check.json"
+
+mkdir -p "$(dirname "$OUT_JSON")"
+
+echo "=== V14-D2 tokenizer sanity: $(date) ==="
+echo "qwen3_model = $QWEN3_MODEL"
+echo "qwen25_model = $QWEN25_MODEL"
+echo "sft_file = $SFT_FILE"
+echo "output = $OUT_JSON"
+
+# If model isn't cached yet this first call will download it (~8 GB bf16).
+python scripts/task_v14_d2_tokenizer_sanity.py \
+    --qwen3_model "$QWEN3_MODEL" \
+    --qwen25_model "$QWEN25_MODEL" \
+    --sft_file "$SFT_FILE" \
+    --output "$OUT_JSON" \
+    --num_samples 10 \
+    --generate_samples 10 \
+    --max_new_tokens 128 \
+    --do_generation
+
+echo ""
+echo "=== Summary ==="
+python -c "
+import json
+r = json.load(open('$OUT_JSON'))
+print(f'  has_think_tags       = {r[\"has_think_tags\"]}')
+print(f'  length_delta_pct     = {r[\"length_delta_pct\"]:.2f}%')
+print(f'  qwen25 tok counts    = {r[\"qwen25_token_counts\"]}')
+print(f'  qwen3  tok counts    = {r[\"qwen3_token_counts\"]}')
+print(f'  generation_ran       = {r[\"generation_ran\"]}')
+"
+echo "=== Done: $(date) ==="

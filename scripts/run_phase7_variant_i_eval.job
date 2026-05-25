@@ -1,0 +1,157 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_i_eval
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --time=12:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Phase 7 Variant I post-training: merge + full-test eval + trajectory save.
+#
+# Runs sequentially: (1) FSDP → HF merge via verl.model_merger, (2) full-3531
+# test eval with trajectories saved for CvT classification, (3) writes a
+# one-line summary next to existing full-test audit table.
+#
+# Usage:
+#   sbatch --export=ALL,ARM=oracle scripts/run_phase7_variant_i_eval.job
+#   sbatch --export=ALL,ARM=self   scripts/run_phase7_variant_i_eval.job
+#
+# Optional overrides:
+#   STEP=400  (default — final step of the training runs)
+#   FORCE_MERGE=1  (re-run merge even if output dir already exists)
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+: "${ARM:?ARM env var required (oracle or self)}"
+STEP="${STEP:-400}"
+
+if [ "$ARM" = "oracle" ]; then
+    EXPERIMENT="grpo-cwq-7b-39i-oracle-20260415"
+    MODEL_TAG="39i_oracle_step${STEP}"
+elif [ "$ARM" = "self" ]; then
+    EXPERIMENT="grpo-cwq-7b-39i-self-20260415"
+    MODEL_TAG="39i_self_step${STEP}"
+else
+    echo "ERROR: ARM must be 'oracle' or 'self', got: $ARM"
+    exit 1
+fi
+
+BASE_MODEL="outputs/verl-sft-cwq-7b-merged"
+SRC="/projects/u6gg/KG_GRPO/checkpoints/kg-align-verl/${EXPERIMENT}/global_step_${STEP}/actor"
+DST="outputs/verl-sft-cwq-${MODEL_TAG}-merged"
+OUT_JSON="results/phase7/${MODEL_TAG}_full_test.json"
+TRAJ_DIR="results/trajectories/phase7/${MODEL_TAG}_full"
+PS_DIR="results/phase7/${MODEL_TAG}_full_per_sample"
+KG_PORT=$((18000 + SLURM_JOB_ID % 1000))
+
+mkdir -p results/phase7 "$TRAJ_DIR" "$PS_DIR"
+
+echo "=== Phase 7 Variant I Eval: ${ARM} @ step ${STEP} ==="
+echo "Date: $(date)"
+echo "Source FSDP: $SRC"
+echo "Merged target: $DST"
+echo "Output: $OUT_JSON"
+echo "KG port: $KG_PORT"
+
+if [ ! -d "$SRC" ]; then
+    echo "ERROR: FSDP checkpoint not found at $SRC"
+    echo "Training may still be running; wait for step $STEP to complete."
+    exit 1
+fi
+
+# --- (1) Merge FSDP → HF ---
+if [ ! -f "$DST/config.json" ] || [ "${FORCE_MERGE:-0}" = "1" ]; then
+    echo ""
+    echo "=== Merging FSDP → HF ==="
+    mkdir -p "$DST"
+    python -m verl.model_merger merge \
+        --backend fsdp \
+        --local_dir "$SRC" \
+        --target_dir "$DST"
+
+    # Tokenizer fall-through from base model
+    if [ ! -f "$DST/tokenizer.json" ]; then
+        echo "Copying tokenizer from base model..."
+        cp -n "$BASE_MODEL"/tokenizer* "$DST/" 2>/dev/null || true
+        cp -n "$BASE_MODEL"/chat_template.jinja "$DST/" 2>/dev/null || true
+    fi
+    echo "Merge complete."
+else
+    echo "[skip] merged checkpoint already exists at $DST"
+fi
+
+ls -la "$DST" | head -12
+
+# --- (2) Start KG server ---
+python -m src_verl.kg_server.server --kg freebase --freebase_dir data/freebase/kg --port $KG_PORT --log-level warning &
+KG_PID=$!
+trap 'kill $KG_PID 2>/dev/null' EXIT
+sleep 30
+for i in $(seq 1 12); do
+    curl -s -o /dev/null -w "%{http_code}" http://localhost:$KG_PORT/health 2>/dev/null | grep -q "200" && break
+    sleep 10
+done
+echo "KG server ready"
+
+# --- (3) Full-3531 test eval, save trajectories for CvT classification ---
+echo ""
+echo "=== Full 3531-test eval ==="
+python scripts/eval_with_tools.py \
+    --checkpoint_dir "$DST" \
+    --steps 0 \
+    --base_model "$DST" \
+    --eval_data data/freebase/verl_cwq/test.parquet \
+    --output "$OUT_JSON" \
+    --kg_server_url http://localhost:$KG_PORT \
+    --max_samples 0 \
+    --max_turns 5 \
+    --max_new_tokens 512 \
+    --save_trajectories "$TRAJ_DIR" \
+    --max_trajectory_samples 3531 \
+    --save_per_sample "$PS_DIR"
+
+kill $KG_PID 2>/dev/null
+
+# --- (4) One-line summary so the next-step classifier knows it's ready ---
+echo ""
+echo "=== Variant I ${ARM} step ${STEP} summary ==="
+python - <<PY
+import json
+from pathlib import Path
+p = Path("$OUT_JSON")
+if p.exists():
+    d = json.loads(p.read_text())
+    for step, r in d.items():
+        print(
+            f"  ${MODEL_TAG}: EM={r.get('em', 0):.4f}  "
+            f"ContEM={r.get('contains_em', 0):.4f}  "
+            f"F1={r.get('f1', 0):.4f}  "
+            f"Tools={r.get('avg_tool_calls', 0):.2f}  "
+            f"n={r.get('n_samples', 0)}"
+        )
+else:
+    print(f"ERROR: output file $OUT_JSON not written")
+PY
+
+echo "=== Done: $(date) ==="
+echo ""
+echo "Next steps:"
+echo "  1. Ensure both arms completed: results/phase7/39i_oracle_step${STEP}_full_test.json + 39i_self_..."
+echo "  2. Add both to DEFAULT_TARGETS in phase7_ii1_classify_full_test.py"
+echo "  3. Re-run: python scripts/phase7_ii1_classify_full_test.py"
+echo "     → updates full_test_cvt_audit.{json,md} with I-Oracle vs I-Self vs 39B@400 CvT comparison"

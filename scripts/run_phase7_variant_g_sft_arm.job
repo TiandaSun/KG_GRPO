@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=p7_g_sft
+#SBATCH --nodes=1
+#SBATCH --gpus=4
+#SBATCH --time=10:00:00
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.err
+#SBATCH --partition=workq
+
+# Variant G Step 3: SFT on 39B self-distilled trajectories.
+#
+# Parameterised by ARM to run either G1 (init from 39B@400) or G2 (init from
+# pre-GRPO SFT, following ReST-EM which found init-from-base transfers better).
+#
+# Usage:
+#   sbatch --export=ALL,ARM=G1 scripts/run_phase7_variant_g_sft_arm.job
+#   sbatch --export=ALL,ARM=G2 scripts/run_phase7_variant_g_sft_arm.job
+
+set -eo pipefail
+
+source "$HOME/miniforge3/bin/activate"
+conda activate kg_verl
+module load cudatoolkit 2>/dev/null || true
+module load gcc-native/14.2 2>/dev/null || true
+
+export CC=gcc CXX=g++
+export LIBRARY_PATH=/opt/nvidia/hpc_sdk/Linux_aarch64/24.11/REDIST/math_libs/12.6/targets/sbsa-linux/lib:${LIBRARY_PATH:-}
+export TRITON_CACHE_DIR=/scratch/u6gg/ts1201.u6gg/.triton
+export HF_HOME=/scratch/u6gg/ts1201.u6gg/hf_cache
+export PYTHONUNBUFFERED=1
+export TMPDIR="/tmp"
+
+cd "$SLURM_SUBMIT_DIR"
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+: "${ARM:?ARM env var required (G1 or G2)}"
+TRAIN_FILE="${TRAIN_FILE:-data/freebase/verl_cwq/39b_self_distill.jsonl}"
+
+if [ "$ARM" = "G1" ]; then
+    INIT_BASE="outputs/verl-sft-cwq-39b-step400"
+    OUTPUT_DIR="outputs/verl-sft-cwq-7b-G1-from-39b"
+elif [ "$ARM" = "G2" ]; then
+    INIT_BASE="outputs/verl-sft-cwq-7b-merged"
+    OUTPUT_DIR="outputs/verl-sft-cwq-7b-G2-from-base-sft"
+else
+    echo "ERROR: ARM must be G1 or G2, got $ARM"
+    exit 1
+fi
+
+echo "=== Variant G Step 3 Arm ${ARM}: SFT on self-distilled trajectories ==="
+echo "Date: $(date)"
+echo "Init: $INIT_BASE"
+echo "Train: $TRAIN_FILE"
+echo "Output: $OUTPUT_DIR"
+
+if [ ! -d "$INIT_BASE" ]; then
+    echo "ERROR: $INIT_BASE not found"
+    exit 1
+fi
+if [ ! -f "$TRAIN_FILE" ]; then
+    echo "ERROR: $TRAIN_FILE not found — run the yield pilot + filter first"
+    exit 1
+fi
+
+python src_verl/training/sft_multiturn.py \
+    --config configs_verl/sft_cwq.yaml \
+    --model_path "$INIT_BASE" \
+    --output_dir "$OUTPUT_DIR" \
+    --num_train_epochs 1 \
+    --train_file "$TRAIN_FILE"
+
+echo ""
+echo "=== Merge LoRA adapter ==="
+MERGED_DIR="${OUTPUT_DIR}-merged"
+python scripts/merge_sft_adapter.py \
+    --base_model "$INIT_BASE" \
+    --adapter_path "$OUTPUT_DIR" \
+    --output_path "$MERGED_DIR"
+
+cp -n "$INIT_BASE"/tokenizer* "$MERGED_DIR/" 2>/dev/null || true
+cp -n "$INIT_BASE"/chat_template.jinja "$MERGED_DIR/" 2>/dev/null || true
+
+echo ""
+echo "=== Done: $(date) ==="
+echo "Merged checkpoint: $MERGED_DIR"
