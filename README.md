@@ -60,12 +60,14 @@ data/
 | `CHANGELOG.md` | Historical: detailed code change log |
 | `SETUP_PROGRESS.md` | Isambard environment setup tracking |
 
-## HPC Platforms
+## Data & Reproducibility
 
-| | Viking | Isambard-AI |
-|--|--------|-------------|
-| GPU | H100 80GB | GH200 120GB |
-| GPUs/node | 1-2 | 4 |
-| Architecture | x86_64 | aarch64 (ARM) |
-| Role | Dev, debug, SFT | All GRPO experiments |
-| Budget | supplementary | 10,000 GPU-hours |
+All code, configs, and the paper-ready summary tables live in this repository. The bulk
+evidence artifacts — per-checkpoint eval results, 7-category classified trajectories,
+mode-4 reward/entropy series, and the rule-based (no-LLM-teacher) SFT corpus — are
+archived on Zenodo:
+
+**📦 Zenodo — [10.5281/zenodo.20380101](https://doi.org/10.5281/zenodo.20380101)**
+
+See **[`DATA.md`](DATA.md)** for the full data-availability statement: what is included,
+what is regenerable from source (Freebase / CWQ), and the reproduction commands.
