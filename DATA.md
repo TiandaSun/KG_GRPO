@@ -23,8 +23,9 @@ not model weights.
 
 ## Bulk artifacts — archived on Zenodo (NOT in git)
 
-The following are **deposited on Zenodo** (DOI: **_to be deposited_**) because they are
-large (~300–400 MB) but are the raw material a reviewer re-runs the classifier on:
+The following are **deposited on Zenodo** — **DOI: [10.5281/zenodo.20380101](https://doi.org/10.5281/zenodo.20380101)**
+(record `kg_grpo_evidence_v1.tar.gz`, ~550 MB raw / 59 MB packed; _currently a draft pending
+publish_) — because they are the raw material a reviewer re-runs the classifier on:
 
 - Full per-checkpoint eval JSONs: `results/phase7/*_full_test.json`,
   `_handoff/data/*/...json`.
