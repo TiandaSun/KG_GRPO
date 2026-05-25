@@ -2,6 +2,8 @@
 
 Train agentic KG reasoning models with GRPO (Group Relative Policy Optimisation), comparing three reward types to study when and why reward verifiability matters. KG serves as a **verification oracle**, not a knowledge source.
 
+**Authors:** Tianda Sun and Dimitar Kazakov — University of York · Contact: tianda.sun@york.ac.uk
+
 ## Research Question
 
 > When and why does deterministic step-level verification outperform heuristic rewards in RL post-training?
