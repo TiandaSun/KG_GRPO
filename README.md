@@ -1,4 +1,5 @@
 # KG-Align-RL: Verifiable Process Supervision via Knowledge Graphs
+> 📄 **Paper:** [arXiv:2605.26037](https://arxiv.org/abs/2605.26037) 
 
 Train agentic KG reasoning models with GRPO (Group Relative Policy Optimisation), comparing three reward types to study when and why reward verifiability matters. KG serves as a **verification oracle**, not a knowledge source.
 
