@@ -64,7 +64,9 @@ archived on Zenodo:
 See **[`DATA.md`](DATA.md)** for the full data-availability statement: what is included,
 what is regenerable from source (Freebase / CWQ), and the reproduction commands.
 
+## Citation
 
+```bibtex
 @article{sun2026peakcollapse,
   title   = {Peak-Then-Collapse and the Four Interface Channels of Knowledge-Graph Tool Use},
   author  = {Sun, Tianda and Kazakov, Dimitar},
@@ -72,3 +74,4 @@ what is regenerable from source (Freebase / CWQ), and the reproduction commands.
   year    = {2026},
   note    = {arXiv:2605.26037}
 }
+```
